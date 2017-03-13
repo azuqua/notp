@@ -17,6 +17,10 @@ class MockTable extends EventEmitter {
   id() {
     return "foo";
   }
+
+  stop() {
+    return this;
+  }
 }
 
 module.exports = function (mocks, lib) {
@@ -135,12 +139,13 @@ module.exports = function (mocks, lib) {
         assert.ok(gossip._interval);
         assert.ok(gossip._flush);
         assert.lengthOf(gossip.kernel().listeners(ringID), 1);
-        assert.lengthOf(gossip.listeners("leave"), 1);
+        assert.lengthOf(gossip.listeners("pause"), 1);
         var events = ["ring"];
         events.forEach((val) => {
           assert.lengthOf(gossip.listeners(val), 1);
         });
-        assert.lengthOf(gossip.listeners("stop"), events.length);
+        assert.lengthOf(gossip.listeners("pause"), events.length);
+        gossip.stop(true);
       });
 
       it("Should stop gossip process", function (done) {
@@ -156,7 +161,7 @@ module.exports = function (mocks, lib) {
           events.forEach((val) => {
             assert.lengthOf(gossip.listeners(val), 0);
           });
-          assert.lengthOf(gossip.listeners("stop"), 0);
+          assert.lengthOf(gossip.listeners("pause"), 0);
           done();
         });
         gossip.stop();
@@ -176,10 +181,38 @@ module.exports = function (mocks, lib) {
         gossip.stop(true);
       });
 
+      it("Should pause gossip process", function () {
+        var ringID = "foo";
+        gossip.start(ringID);
+        gossip.pause();
+        assert.lengthOf(gossip.kernel().listeners(ringID), 0);
+        assert.lengthOf(gossip.listeners("pause"), 0);
+        assert.equal(gossip._interval, null);
+        assert.equal(gossip._flush, null);
+      });
+
+      it("Should resume gossip process", function () {
+        var ringID = "foo";
+        gossip.start(ringID);
+        gossip.pause();
+        gossip.resume();
+        assert.lengthOf(gossip.kernel().listeners(ringID), 1);
+        assert.lengthOf(gossip.listeners("pause"), 1);
+        assert.ok(gossip._interval);
+        assert.ok(gossip._flush);
+      });
+
       it("Should register table with gossip process", function () {
         gossip.registerTable(new MockTable("foo"));
         assert.equal(gossip._tables.size, 1);
         assert.ok(gossip._tables.has("foo"));
+      });
+
+      it("Should unregister table with gossip process", function () {
+        var table = new MockTable("foo");
+        gossip.registerTable(table);
+        gossip.unregisterTable(table);
+        assert.notOk(gossip._tables.has("foo"));
       });
 
       it("Should immediately emit 'close' if no tables", function () {
@@ -199,7 +232,7 @@ module.exports = function (mocks, lib) {
         gossip.once("leave", () => {
           async.nextTick(() => {
             gossip._tables.delete("foo");
-            table.emit("purge");
+            table.emit("resume");
           });
         });
         gossip.registerTable(table);
@@ -300,11 +333,12 @@ module.exports = function (mocks, lib) {
         gossip.meet(node2);
         gossip.kernel().connection(node2).once("send", (msg, data) => {
           var inner = JSON.parse(Buffer.from(data.data.data));
-          assert.equal(inner.type, "join");
-          assert.equal(inner.actor, gossip._actor);
-          assert.deepEqual(inner.data, gossip._ring.toJSON(true));
-          assert.deepEqual(inner.vclock, gossip._vclock.toJSON(true));
-          assert.equal(inner.round, 0);
+          var job = inner.data;
+          assert.equal(job.type, "join");
+          assert.equal(job.actor, gossip._actor);
+          assert.deepEqual(job.data, gossip._ring.toJSON(true));
+          assert.deepEqual(job.vclock, gossip._vclock.toJSON(true));
+          assert.equal(job.round, 0);
           called++;
           if (called === 2) done();
         });
@@ -337,11 +371,12 @@ module.exports = function (mocks, lib) {
         assert.ok(gossip.kernel().isConnected(node2));
         gossip.kernel().connection(node2).once("send", (msg, data) => {
           var inner = JSON.parse(Buffer.from(data.data.data));
-          assert.equal(inner.type, "update");
-          assert.equal(inner.actor, gossip._actor);
-          assert.deepEqual(inner.data, gossip.ring().toJSON(true));
-          assert.deepEqual(inner.vclock, gossip.vclock().toJSON(true));
-          assert.equal(inner.round, GossipRing.maxMsgRound(gossip.ring())-1);
+          var job = inner.data;
+          assert.equal(job.type, "update");
+          assert.equal(job.actor, gossip._actor);
+          assert.deepEqual(job.data, gossip.ring().toJSON(true));
+          assert.deepEqual(job.vclock, gossip.vclock().toJSON(true));
+          assert.equal(job.round, GossipRing.maxMsgRound(gossip.ring())-1);
           done();
         });
       });
@@ -358,11 +393,12 @@ module.exports = function (mocks, lib) {
           assert.ok(gossip.kernel().isConnected(node2));
           gossip.kernel().connection(node2).once("send", (msg, data) => {
             var inner = JSON.parse(Buffer.from(data.data.data));
-            assert.equal(inner.type, "update");
-            assert.equal(inner.actor, gossip._actor);
-            assert.deepEqual(inner.data, gossip.ring().toJSON(true));
-            assert.deepEqual(inner.vclock, gossip.vclock().toJSON(true));
-            assert.equal(inner.round, GossipRing.maxMsgRound(gossip.ring())-1);
+            var job = inner.data;
+            assert.equal(job.type, "update");
+            assert.equal(job.actor, gossip._actor);
+            assert.deepEqual(job.data, gossip.ring().toJSON(true));
+            assert.deepEqual(job.vclock, gossip.vclock().toJSON(true));
+            assert.equal(job.round, GossipRing.maxMsgRound(gossip.ring())-1);
             done();
           });
         });
@@ -394,11 +430,12 @@ module.exports = function (mocks, lib) {
         assert.ok(gossip.kernel().isConnected(node2));
         gossip.kernel().connection(node2).once("send", (msg, data) => {
           var inner = JSON.parse(Buffer.from(data.data.data));
-          assert.equal(inner.type, "update");
-          assert.equal(inner.actor, gossip._actor);
-          assert.deepEqual(inner.data, gossip.ring().toJSON(true));
-          assert.deepEqual(inner.vclock, gossip.vclock().toJSON(true));
-          assert.equal(inner.round, GossipRing.maxMsgRound(gossip.ring())-1);
+          var job = inner.data;
+          assert.equal(job.type, "update");
+          assert.equal(job.actor, gossip._actor);
+          assert.deepEqual(job.data, gossip.ring().toJSON(true));
+          assert.deepEqual(job.vclock, gossip.vclock().toJSON(true));
+          assert.equal(job.round, GossipRing.maxMsgRound(gossip.ring())-1);
           done();
         });
       });
@@ -430,11 +467,12 @@ module.exports = function (mocks, lib) {
         assert.ok(gossip.kernel().isConnected(node2));
         gossip.kernel().connection(node2).once("send", (msg, data) => {
           var inner = JSON.parse(Buffer.from(data.data.data));
-          assert.equal(inner.type, "update");
-          assert.equal(inner.actor, gossip._actor);
-          assert.deepEqual(inner.data, gossip.ring().toJSON(true));
-          assert.deepEqual(inner.vclock, gossip.vclock().toJSON(true));
-          assert.equal(inner.round, GossipRing.maxMsgRound(gossip.ring())-1);
+          var job = inner.data;
+          assert.equal(job.type, "update");
+          assert.equal(job.actor, gossip._actor);
+          assert.deepEqual(job.data, gossip.ring().toJSON(true));
+          assert.deepEqual(job.vclock, gossip.vclock().toJSON(true));
+          assert.equal(job.round, GossipRing.maxMsgRound(gossip.ring())-1);
           done();
         });
       });
@@ -450,7 +488,7 @@ module.exports = function (mocks, lib) {
           assert.ok(gossip.vclock().has(gossip._actor));
           assert.ok(gossip.kernel().isConnected(node2));
           gossip.kernel().connection(node2).once("send", (msg, data) => {
-            var inner = JSON.parse(Buffer.from(data.data.data));
+            var inner = JSON.parse(Buffer.from(data.data.data)).data;
             assert.equal(inner.type, "update");
             assert.equal(inner.actor, gossip._actor);
             assert.deepEqual(inner.data, gossip.ring().toJSON(true));
@@ -486,7 +524,7 @@ module.exports = function (mocks, lib) {
         assert.ok(gossip.vclock().has(gossip._actor));
         assert.ok(gossip.kernel().isConnected(node2));
         gossip.kernel().connection(node2).once("send", (msg, data) => {
-          var inner = JSON.parse(Buffer.from(data.data.data));
+          var inner = JSON.parse(Buffer.from(data.data.data)).data;
           assert.equal(inner.type, "update");
           assert.equal(inner.actor, gossip._actor);
           assert.deepEqual(inner.data, gossip.ring().toJSON(true));
@@ -797,7 +835,7 @@ module.exports = function (mocks, lib) {
         });
         gossip.sendRing(1);
         gossip.kernel().connection(node2).once("send", function (msg, data) {
-          var parsed = JSON.parse(Buffer.from(data.data.data));
+          var parsed = JSON.parse(Buffer.from(data.data.data)).data;
           assert.equal(parsed.type, "update");
           assert.equal(parsed.actor, gossip._actor);
           assert.deepEqual(parsed.data, gossip.ring().toJSON(true));
@@ -1221,7 +1259,7 @@ module.exports = function (mocks, lib) {
         sinon.stub(kernel, "abcast", (nodes, id, state) => {
           assert.equal(_.find(nodes, _.partial(_.eq, kernel.self()).bind(_.eq)), undefined);
           assert.equal(id, oldID);
-          state = JSON.parse(state);
+          state = JSON.parse(state).data;
           assert.equal(state.type, "leave");
           assert.notEqual(state.actor, gossip._actor);
           assert.equal(state.round, 0);

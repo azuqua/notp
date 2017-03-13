@@ -94,7 +94,7 @@ module.exports = function (mocks, lib) {
         server.start(name);
         assert.equal(server._id, name);
         assert.lengthOf(server.kernel().listeners(name), 1);
-        assert.lengthOf(server.listeners("stop"), 1);
+        assert.lengthOf(server.listeners("pause"), 1);
         server.stop();
       });
 
@@ -103,7 +103,7 @@ module.exports = function (mocks, lib) {
         server.start();
         assert.equal(server._id, id);
         assert.lengthOf(server.kernel().listeners(id), 1);
-        assert.lengthOf(server.listeners("stop"), 1);
+        assert.lengthOf(server.listeners("pause"), 1);
         server.stop();
       });
 
@@ -112,7 +112,7 @@ module.exports = function (mocks, lib) {
         server.start(name);
         server.once("stop", () => {
           assert.equal(server._streams.size, 0);
-          assert.lengthOf(server.listeners("stop"), 0);
+          assert.lengthOf(server.listeners("pause"), 0);
           assert.lengthOf(server.kernel().listeners(name), 0);
           done();
         });
@@ -124,7 +124,7 @@ module.exports = function (mocks, lib) {
         server.start(name);
         server.once("stop", () => {
           assert.equal(server._streams.size, 0);
-          assert.lengthOf(server.listeners("stop"), 0);
+          assert.lengthOf(server.listeners("pause"), 0);
           assert.lengthOf(server.kernel().listeners(name), 0);
           done();
         });
@@ -135,6 +135,9 @@ module.exports = function (mocks, lib) {
         var job = Buffer.from(JSON.stringify({event: "foo", data: "bar", hello: "world"}));
         var out = server.decodeJob(job);
         assert.deepEqual(out, {event: "foo", data: "bar"});
+
+        out = server.decodeJob(Buffer.from("foo"));
+        assert.ok(out instanceof Error);
       });
     });
 

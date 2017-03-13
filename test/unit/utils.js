@@ -42,10 +42,20 @@ module.exports = function (mocks, lib) {
     });
 
     it("Should scan iterator, consuming exact amount of values", () => {
-      var  m = new Map([["foo", "bar"]]);
+      var m = new Map([["foo", "bar"]]);
       var out = utils.scanIterator(m.entries(), 1);
       assert.deepEqual(out.values, [["foo", "bar"]]);
       assert.equal(out.iterator.next().done, true);
+    });
+
+    it("Should safely parse JSON", () => {
+      var val = JSON.stringify("foo");
+      var out = utils.safeParse(val);
+      assert.equal(out, "foo");
+
+      val = "foo";
+      out = utils.safeParse(val);
+      assert.ok(out instanceof Error);
     });
   });
 };
