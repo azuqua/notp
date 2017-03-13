@@ -67,9 +67,9 @@ function createKernel(id, opts) {
   return new lib.kernel(ipc, id, opts.networkHost, opts.networkPort);
 }
 
-function createCluster(id, host, port, opts) {
+function createCluster(id, opts) {
   opts = utils.isPlainObject(opts) ? _.cloneDeep(opts) : {};
-  var kernel = createKernel(id, host, port, opts.kernelOpts);
+  var kernel = createKernel(id, opts.kernelOpts);
   var gossip = createGossip(kernel, opts.gossipOpts);
   return new lib.cluster_node(kernel, gossip);
 }
