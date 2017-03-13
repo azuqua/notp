@@ -57,5 +57,13 @@ module.exports = function (mocks, lib) {
       out = utils.safeParse(val);
       assert.ok(out instanceof Error);
     });
+
+    it("Should return if value is a plain object", () => {
+      var val = "foo";
+      assert.notOk(utils.isPlainObject(val));
+      
+      val = {};
+      assert.ok(utils.isPlainObject(val));
+    });
   });
 };

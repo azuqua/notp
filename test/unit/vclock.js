@@ -300,5 +300,13 @@ module.exports = function (mocks, lib) {
       assert.equal(vclock.size(), 1);
       assert.deepEqual(vclock._vector, vector);
     });
+
+    it("Should check for valid JSON", function () {
+      var val = "foo";
+      assert.notOk(VectorClock.validJSON(val));
+
+      val = {};
+      assert.ok(VectorClock.validJSON(val));
+    });
   });
 };

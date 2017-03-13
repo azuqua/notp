@@ -131,6 +131,16 @@ module.exports = function (mocks, lib) {
         assert.equal(gossip._actor, "foo");
       });
 
+      it("Should grab registered tables", function () {
+        gossip._tables = "foo";
+        assert.equal(gossip.tables(), gossip._tables);
+      });
+
+      it("Shoudl set registered tables", function () {
+        gossip.tables("foo");
+        assert.equal(gossip.tables(), "foo");
+      });
+
       it("Should start gossip process", function () {
         var ringID = "foo";
         gossip.vclock().increment(uuid.v4());
@@ -238,6 +248,80 @@ module.exports = function (mocks, lib) {
         gossip.registerTable(table);
         gossip.emit("leave");
         gossip._closeTables(new CHash(chash.rfactor(), chash.pfactor()));
+      });
+
+      it("Should skip loading state from disk if flush path isn't a string", function (done) {
+        gossip._flushPath = null;
+        sinon.spy(fs, "readFile");
+        gossip.load((err) => {
+          assert.notOk(err);
+          assert.notOk(fs.readFile.called);
+          fs.readFile.restore();
+          done();
+        });
+      });
+
+      it("Should fail to load state from disk if call results in error", function (done) {
+        sinon.stub(fs, "readFile", (path, cb) => {
+          async.nextTick(() => {
+            cb(new Error("error"));
+          });
+        });
+        gossip.load((err) => {
+          assert.ok(err);
+          fs.readFile.restore();
+          done();
+        });
+      });
+
+      it("Should fail to load state from disk if data is not valid JSON", function (done) {
+        sinon.stub(fs, "readFile", (path, cb) => {
+          async.nextTick(() => {
+            cb(null, "foo");
+          });
+        });
+        gossip.load((err) => {
+          assert.ok(err);
+          fs.readFile.restore();
+          done();
+        });
+      });
+
+      it("Should fail to load state from disk if data is not a JSON object", function (done) {
+        sinon.stub(fs, "readFile", (path, cb) => {
+          async.nextTick(() => {
+            cb(null, "\"foo\"");
+          });
+        });
+        gossip.load((err) => {
+          assert.ok(err);
+          fs.readFile.restore();
+          done();
+        });
+      });
+
+      it("Should load state from disk", function (done) {
+        var chash2 = (new CHash(chash.rfactor(), chash.pfactor())).insert(new Node("id2", host, port+1));
+        var vclock2 = new VectorClock("baz", 1);
+        sinon.stub(fs, "readFile", (path, cb) => {
+          async.nextTick(() => {
+            cb(null, JSON.stringify({
+              ring: "foo",
+              chash: chash2.toJSON(true),
+              vclock: vclock2.toJSON(true),
+              actor: "bar"
+            }));
+          });
+        });
+        gossip.load((err) => {
+          assert.notOk(err);
+          assert.deepEqual(gossip.ring(), chash2);
+          assert.deepEqual(gossip.vclock(), vclock2);
+          assert.equal(gossip.actor(), "bar");
+          assert.equal(gossip._ringID, "foo");
+          fs.readFile.restore();
+          done();
+        });
       });
     });
 

@@ -47,7 +47,6 @@ module.exports = function (mocks, lib) {
         table = new StateTable(kernel, gossip, {
           vclockOpts: {lowerBound: 10},
           pollOpts: {interval: 100, block: 5},
-          flushOpts: {interval: 100},
           purgeMax: 5
         });
       });
@@ -57,15 +56,13 @@ module.exports = function (mocks, lib) {
         assert.deepEqual(table._gossip, gossip);
         assert.isObject(table._vclockOpts);
         assert.isObject(table._pollOpts);
-        assert.isObject(table._flushOpts);
         assert.isNumber(table._purgeMax);
         assert(gossip._streams instanceof Map);
         assert.equal(gossip._streams.size, 0);
 
         var nTable = new StateTable(kernel, gossip, {
           vclockOpts: {lowerBound: 10},
-          pollOpts: {interval: 100, block: 5},
-          flushOpts: {interval: 100}
+          pollOpts: {interval: 100, block: 5}
         });
         assert.equal(table._purgeMax, 5);
       });
@@ -107,10 +104,6 @@ module.exports = function (mocks, lib) {
         table._migrateCursor = 1;
         assert.notOk(table.idle());
         table._migrateCursor = null;
-
-        table._flushCursor = 1;
-        assert.notOk(table.idle());
-        table._flushCursor = null;
       });
 
       it("Should not start table if stopped", function () {
@@ -141,7 +134,6 @@ module.exports = function (mocks, lib) {
         assert.lengthOf(table.listeners("pause"), 1);
         assert.deepEqual(gossip._tables.get(name), table);
         assert.ok(table._pollInterval);
-        assert.ok(table._flushInterval);
         table.stop(true);
       });
 
@@ -233,11 +225,9 @@ module.exports = function (mocks, lib) {
         assert.lengthOf(table.listeners("pause"), 0);
         assert.lengthOf(table.kernel().listeners(name), 0);
         assert.notOk(table._pollInterval);
-        assert.notOk(table._flushInterval);
         [
           {cursor: "_pollCursor", next: "_nextPoll"},
           {cursor: "_migrateCursor", next: "nextMigrate"},
-          {cursor: "_flushCursor", next: "_nextFlush"},
           {cursor: "_purgeCursor"}
         ].forEach((ent) => {
           assert.notOk(table[ent.cursor]);
@@ -254,7 +244,6 @@ module.exports = function (mocks, lib) {
         assert.lengthOf(table.listeners("pause"), 1);
         assert.lengthOf(table.kernel().listeners(name), 1);
         assert.ok(table._pollInterval);
-        assert.ok(table._flushInterval);
       });
 
       it("Should get gossip ring", function () {
@@ -386,7 +375,6 @@ module.exports = function (mocks, lib) {
         table = new StateTable(kernel, gossip, {
           vclockOpts: {lowerBound: 10},
           pollOpts: {interval: 100},
-          flushOpts: {interval: 100},
           purgeMax: 5
         });
         table.start("bar");
@@ -607,48 +595,6 @@ module.exports = function (mocks, lib) {
         assert.notOk(table._migrations.has("foo"));
         assert.ok(table.reply.called);
         table.reply.restore();
-      });
-
-      it("Should flush state to disk", function () {
-        sinon.spy(table, "emit").withArgs("flush");
-        table.flush();
-        assert.ok(table.emit.called);
-        table.emit.restore();
-      });
-
-      it("Should skip flushing state to disk", function () {
-        table._flushCursor = 1;
-        sinon.spy(table, "emit").withArgs("flush");
-        table.flush();
-        assert.notOk(table.emit.called);
-
-        table._flushCursor = null;
-        table._stopped = true;
-        table.flush();
-        assert.notOk(table.emit.called);
-        table.emit.restore();
-        table._stopped = false;
-      });
-
-      it("Should flush state to disk sync", function () {
-        sinon.spy(table, "emit").withArgs("flush");
-        table.flushSync();
-        assert.ok(table.emit.called);
-        table.emit.restore();
-      });
-
-      it("Should skip flushing state to disk sync", function () {
-        table._flushCursor = 1;
-        sinon.spy(table, "emit").withArgs("flush");
-        table.flushSync();
-        assert.notOk(table.emit.called);
-
-        table._flushCursor = null;
-        table._stopped = true;
-        table.flush();
-        assert.notOk(table.emit.called);
-        table.emit.restore();
-        table._stopped = false;
       });
 
       it("Should purge table", function (done) {

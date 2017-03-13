@@ -9,7 +9,9 @@ module.exports = function (mocks, lib) {
     require("./gen_server")(mocks, lib);
     require("./gossip")(mocks, lib);
     require("./table")(mocks, lib);
+    require("./dtable")(mocks, lib);
     require("./table_term")(mocks, lib);
     require("./utils")(mocks, lib);
+    require("./cluster_node")(mocks, lib);
   });
 };
