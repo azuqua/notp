@@ -126,74 +126,29 @@ module.exports = function (mocks, lib) {
         });
       });
 
-      // it("Should not start table if already started", function () {
-      //   table._stopped = false;
-      //   table.start("foo");
-      //   assert.notOk(table._flushInterval);
-      //   table._stopped = true;
-      // });
+      it("Should stop node non-forcefully", function (done) {
+        cluster.start("cookie", "ring", () => {
+          cluster.once("stop", () => {
+            assert.notOk(cluster.gossip()._ringID);
+            assert.equal(cluster.gossip().tables().size, 0);
+            assert.equal(cluster.kernel().sources().size, 0);
+            done();
+          });
+          cluster.stop(false);
+        });
+      });
 
-      // it("Should start table", function () {
-      //   var name = "foo";
-      //   var events = ["state", "migrate"];
-      //   var gEvents = ["process", "leave"];
-      //   var oldCounts = gEvents.reduce((memo, val) => {
-      //     memo[val] = gossip.listeners(val).length;
-      //     return memo;
-      //   }, {});
-      //   table.start(name);
-      //   assert.equal(table._id, name);
-      //   assert.lengthOf(table.kernel().listeners(name), 1);
-      //   events.forEach((val) => {
-      //     assert.lengthOf(table.listeners(val), 1);
-      //   });
-      //   gEvents.forEach((val) => {
-      //     assert.lengthOf(gossip.listeners(val), oldCounts[val]+1);
-      //   });
-      //   assert.lengthOf(table.listeners("stop"), events.length + gEvents.length);
-      //   assert.lengthOf(table.listeners("pause"), 1);
-      //   assert.deepEqual(gossip._tables.get(name), table);
-      //   assert.ok(table._pollInterval);
-      //   assert.ok(table._flushInterval);
-      //   table.stop(true);
-      // });
-
-      // it("Should fail to stop table if already stopped", function () {
-      //   table._stopped = true;
-      //   table.stop();
-      //   assert.equal(table._stopped, true);
-      // });
-
-      // it("Should pause table", function () {
-      //   var name = "foo";
-      //   table.start(name);
-      //   table.pause();
-      //   assert.lengthOf(table.listeners("pause"), 0);
-      //   assert.lengthOf(table.kernel().listeners(name), 0);
-      //   assert.notOk(table._pollInterval);
-      //   assert.notOk(table._flushInterval);
-      //   [
-      //     {cursor: "_pollCursor", next: "_nextPoll"},
-      //     {cursor: "_migrateCursor", next: "nextMigrate"},
-      //     {cursor: "_flushCursor"},
-      //     {cursor: "_purgeCursor"}
-      //   ].forEach((ent) => {
-      //     assert.notOk(table[ent.cursor]);
-      //     assert.notOk(table[ent.next]);
-      //   });
-      //   assert.equal(table._migrations.size, 0);
-      // });
-
-      // it("Should resume table", function () {
-      //   var name = "foo";
-      //   table.start(name);
-      //   table.pause();
-      //   table.resume();
-      //   assert.lengthOf(table.listeners("pause"), 1);
-      //   assert.lengthOf(table.kernel().listeners(name), 1);
-      //   assert.ok(table._pollInterval);
-      //   assert.ok(table._flushInterval);
-      // });
+      it("Should stop node forcefully", function (done) {
+        cluster.start("cookie", "ring", () => {
+          cluster.once("stop", () => {
+            assert.notOk(cluster.gossip()._ringID);
+            assert.equal(cluster.gossip().tables().size, 0);
+            assert.equal(cluster.kernel().sources().size, 0);
+            done();
+          });
+          cluster.stop(true);
+        });
+      });
     });
   });
 };
