@@ -13,17 +13,22 @@ var vclockOpts = {
   oldBound: 86400000
 };
 
+var networkHost = os.hostname();
+var networkPort = 7022;
+
 var consts = {
-  networkHost: os.hostname(),
-  networkPort: 7022,
+  networkHost: networkHost,
+  networkPort: networkPort,
   kernelOpts: Object.freeze({
-    networkHost: consts.networkHost,
-    networkPort: consts.networkPort,
+    networkHost: networkHost,
+    networkPort: networkPort,
     retry: 5000,
-    tls: {},
+    tls: null,
     silent: true
   }),
   gossipOpts: Object.freeze({
+    rfactor: 3,
+    pfactor: 2,
     interval: 1000,
     flushInterval: 1000,
     flushPath: null,
@@ -51,8 +56,8 @@ function createVClock(id, count) {
 
 function createGossip(kernel, opts) {
   opts = _.defaultsDeep(utils.isPlainObject(opts) ? _.cloneDeep(opts) : {}, consts.gossipOpts);
-  var chash = (new lib.chash()).insert(kernel.self());
-  var vclock = new lib.vclock();
+  var chash = createCHash(opts.rfactor, opts.pfactor).insert(kernel.self());
+  var vclock = createVClock();
   return new lib.gossip(kernel, chash, vclock, opts);
 }
 
@@ -64,7 +69,7 @@ function createKernel(id, opts) {
   inst.config.retry = opts.retry;
   inst.config.tls = opts.tls;
   inst.config.silent = opts.silent;
-  return new lib.kernel(ipc, id, opts.networkHost, opts.networkPort);
+  return new lib.kernel(inst, id, opts.networkHost, opts.networkPort);
 }
 
 function createCluster(id, opts) {

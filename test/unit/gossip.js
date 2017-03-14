@@ -403,11 +403,12 @@ module.exports = function (mocks, lib) {
       it("Should join a cluster by meeting a node", function (done) {
         var node2 = new Node("id2", host, port+1);
         var called = 0;
+        var beforeActor = gossip.actor();
+        var beforeSize = gossip.vclock().size();
         gossip.once("send", (clock, event, ring) => {
-          assert.ok(gossip._actor);
+          assert.equal(beforeActor, gossip._actor);
           assert.equal(event, "ring");
-          assert.equal(gossip.vclock().size(), 2);
-          assert.ok(gossip.vclock().has(gossip._actor));
+          assert.equal(gossip.vclock().size(), beforeSize);
           assert(gossip.kernel().isConnected(node2));
           assert.deepEqual(clock.toJSON(true), gossip.vclock().toJSON(true));
           assert.deepEqual(ring, gossip.ring().toJSON(true));
@@ -419,7 +420,7 @@ module.exports = function (mocks, lib) {
           var inner = JSON.parse(Buffer.from(data.data.data));
           var job = inner.data;
           assert.equal(job.type, "join");
-          assert.equal(job.actor, gossip._actor);
+          assert.notEqual(job.actor, gossip._actor);
           assert.deepEqual(job.data, gossip._ring.toJSON(true));
           assert.deepEqual(job.vclock, gossip._vclock.toJSON(true));
           assert.equal(job.round, 0);
