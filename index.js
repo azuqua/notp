@@ -6,48 +6,9 @@ var _ = require("lodash"),
 
 var utils = lib.utils;
 
-var vclockOpts = {
-  lowerBound: 10,
-  youndBound: 20000,
-  upperBound: 50,
-  oldBound: 86400000
-};
+var consts = lib.consts;
 
-var networkHost = os.hostname();
-var networkPort = 7022;
-
-var consts = {
-  networkHost: networkHost,
-  networkPort: networkPort,
-  kernelOpts: Object.freeze({
-    networkHost: networkHost,
-    networkPort: networkPort,
-    retry: 5000,
-    tls: null,
-    maxRetries: Infinity,
-    silent: true
-  }),
-  gossipOpts: Object.freeze({
-    rfactor: 3,
-    pfactor: 2,
-    interval: 1000,
-    flushInterval: 1000,
-    flushPath: null,
-    vclockOpts: _.cloneDeep(vclockOpts)
-  }),
-  tableOpts: Object.freeze({
-    pollOpts: {
-      interval: 5000,
-      block: 100
-    },
-    disk: false,
-    vclockOpts: _.cloneDeep(vclockOpts),
-    purgeMax: 5
-  }),
-  vclockOpts: Object.freeze(_.cloneDeep(vclockOpts))
-};
-
-function createCHash(rfactor, pfactor) {
+function createCHash(rfactor = 3, pfactor = 2) {
   return new lib.chash(rfactor, pfactor);
 }
 

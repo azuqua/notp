@@ -3,13 +3,14 @@ var path = require("path"),
 
 module.exports = function (grunt) {
   var files = [
-    "lib/conn.js",
     "lib/chash.js",
-    "lib/vclock.js",
-    "lib/kernel.js",
+    "lib/cluster_node.js",
+    "lib/conn.js",
+    "lib/gen_server.js",
     "lib/gossip.js",
-    "lib/table.js",
-    "lib/gen_server.js"
+    "lib/kernel.js",
+    "lib/node.js",
+    "lib/vclock.js",
   ];
 
   grunt.initConfig({
