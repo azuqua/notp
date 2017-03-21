@@ -131,16 +131,6 @@ module.exports = function (mocks, lib) {
         assert.equal(gossip._actor, "foo");
       });
 
-      it("Should grab registered tables", function () {
-        gossip._tables = "foo";
-        assert.equal(gossip.tables(), gossip._tables);
-      });
-
-      it("Shoudl set registered tables", function () {
-        gossip.tables("foo");
-        assert.equal(gossip.tables(), "foo");
-      });
-
       it("Should start gossip process", function () {
         var ringID = "foo";
         gossip.vclock().increment(uuid.v4());
@@ -212,42 +202,11 @@ module.exports = function (mocks, lib) {
         assert.ok(gossip._flush);
       });
 
-      it("Should register table with gossip process", function () {
-        gossip.registerTable(new MockTable("foo"));
-        assert.equal(gossip._tables.size, 1);
-        assert.ok(gossip._tables.has("foo"));
-      });
-
-      it("Should unregister table with gossip process", function () {
-        var table = new MockTable("foo");
-        gossip.registerTable(table);
-        gossip.unregisterTable(table);
-        assert.notOk(gossip._tables.has("foo"));
-      });
-
-      it("Should immediately emit 'close' if no tables", function () {
+      it("Should immediately emit 'close'", function () {
         gossip.once("close", () => {
           assert.equal(gossip._ringID, null);
         });
-        gossip._closeTables(new CHash(chash.rfactor(), chash.pfactor()));
-      });
-
-      it("Should close tables on 'stop'", function (done) {
-        gossip.once("close", () => {
-          assert.equal(gossip._ringID, null);
-          assert.equal(gossip._tables.size, 0);
-          done();
-        });
-        var table = new MockTable("foo");
-        gossip.once("leave", () => {
-          async.nextTick(() => {
-            gossip._tables.delete("foo");
-            table.emit("resume");
-          });
-        });
-        gossip.registerTable(table);
-        gossip.emit("leave");
-        gossip._closeTables(new CHash(chash.rfactor(), chash.pfactor()));
+        gossip.leave();
       });
 
       it("Should skip loading state from disk if flush path isn't a string", function (done) {

@@ -24,6 +24,7 @@ var consts = {
     networkPort: networkPort,
     retry: 5000,
     tls: null,
+    maxRetries: Infinity,
     silent: true
   }),
   gossipOpts: Object.freeze({
@@ -67,6 +68,7 @@ function createKernel(id, opts) {
   inst.config.networkHost = opts.networkHost;
   inst.config.networkPort = opts.networkPort;
   inst.config.retry = opts.retry;
+  inst.config.maxRetries = opts.maxRetries;
   inst.config.tls = opts.tls;
   inst.config.silent = opts.silent;
   return new lib.kernel(inst, id, opts.networkHost, opts.networkPort);
@@ -77,22 +79,6 @@ function createCluster(id, opts) {
   var kernel = createKernel(id, opts.kernelOpts);
   var gossip = createGossip(kernel, opts.gossipOpts);
   return new lib.cluster_node(kernel, gossip);
-}
-
-function createTable(cluster, name, opts) {
-  var table;
-  opts = _.defaultsDeep(utils.isPlainObject(opts) ? _.cloneDeep(opts) : {}, opts.tableOpts);
-  if (opts.disk !== true) {
-    table = new lib.table(cluster.kernel(), cluster.gossip(), opts);
-  }
-  else {
-    if (!utils.isPlainObject(opts.flushOpts)) {
-      throw new Error("Expected 'flushOpts' key inside options input for disk-based table.");
-    }
-    table = new lib.dtable(cluster.kernel(), cluster.gossip(), opts);
-  }
-  table.id(name);
-  return table;
 }
 
 function createGenServer(cluster) {
@@ -114,7 +100,6 @@ module.exports = {
   createGossip: createGossip,
   createCluster: createCluster,
   createKernel: createKernel,
-  createTable: createTable,
   createGenServer: createGenServer,
   consts: consts
 };

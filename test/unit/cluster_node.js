@@ -130,7 +130,6 @@ module.exports = function (mocks, lib) {
         cluster.start("cookie", "ring", () => {
           cluster.once("stop", () => {
             assert.notOk(cluster.gossip()._ringID);
-            assert.equal(cluster.gossip().tables().size, 0);
             assert.equal(cluster.kernel().sources().size, 0);
             done();
           });
@@ -142,7 +141,6 @@ module.exports = function (mocks, lib) {
         cluster.start("cookie", "ring", () => {
           cluster.once("stop", () => {
             assert.notOk(cluster.gossip()._ringID);
-            assert.equal(cluster.gossip().tables().size, 0);
             assert.equal(cluster.kernel().sources().size, 0);
             done();
           });
