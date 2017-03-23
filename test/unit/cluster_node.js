@@ -11,6 +11,7 @@ module.exports = function (mocks, lib) {
         CHash = lib.chash,
         NetKernel = lib.kernel,
         GossipRing = lib.gossip,
+        CommsServer = lib.command_server,
         ClusterNode = lib.cluster_node,
         Node = lib.node,
         MockIPC = mocks.ipc;
@@ -19,6 +20,7 @@ module.exports = function (mocks, lib) {
       var kernel,
           nkernel,
           gossip,
+          comms,
           vclock,
           chash,
           cluster,
@@ -39,10 +41,11 @@ module.exports = function (mocks, lib) {
           flushPath: "/foo/bar",
           vclockOpts: {}
         });
+        comms = new CommsServer(gossip, kernel);
       });
 
       beforeEach(function () {
-        cluster = new ClusterNode(kernel, gossip);
+        cluster = new ClusterNode(kernel, gossip, comms);
       });
 
       it("Should construct a cluster", function () {
@@ -68,6 +71,16 @@ module.exports = function (mocks, lib) {
       it("Should set gossip", function () {
         cluster.gossip("foo");
         assert.equal(cluster.gossip(), "foo");
+      });
+
+      it("Should grab command server", function () {
+        cluster._comms = "foo";
+        assert.equal(cluster.commandServer(), "foo");
+      });
+
+      it("Should set command server", function () {
+        cluster.commandServer("foo");
+        assert.equal(cluster.commandServer(), "foo");
       });
 
       it("Should load data from disk", function (done) {

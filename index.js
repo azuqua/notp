@@ -23,11 +23,11 @@ function createGossip(kernel, opts) {
   return new lib.gossip(kernel, chash, vclock, opts);
 }
 
-function createKernel(id, opts) {
+function createKernel(id, host = os.hostname(), port = 7022, opts = {}) {
   opts = _.defaultsDeep(utils.isPlainObject(opts) ? _.cloneDeep(opts) : {}, consts.kernelOpts);
   var inst = new ipc.IPC();
-  inst.config.networkHost = opts.networkHost;
-  inst.config.networkPort = opts.networkPort;
+  inst.config.networkHost = host || opts.networkHost;
+  inst.config.networkPort = port || opts.networkPort;
   inst.config.retry = opts.retry;
   inst.config.maxRetries = opts.maxRetries;
   inst.config.tls = opts.tls;
@@ -35,11 +35,16 @@ function createKernel(id, opts) {
   return new lib.kernel(inst, id, opts.networkHost, opts.networkPort);
 }
 
-function createCluster(id, opts) {
+function createCommServer(gossip, kernel) {
+  return new lib.command_server(gossip, kernel);
+}
+
+function createCluster(id, host = os.hostname(), port = 7022, opts = {}) {
   opts = utils.isPlainObject(opts) ? _.cloneDeep(opts) : {};
-  var kernel = createKernel(id, opts.kernelOpts);
+  var kernel = createKernel(id, host, port, opts.kernelOpts);
   var gossip = createGossip(kernel, opts.gossipOpts);
-  return new lib.cluster_node(kernel, gossip);
+  var comms = createCommServer(gossip, kernel);
+  return new lib.cluster_node(kernel, gossip, comms);
 }
 
 function createGenServer(cluster) {
