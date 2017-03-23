@@ -51,5 +51,12 @@ module.exports = function (mocks, lib) {
       queue.enqueue("foo");
       assert.equal(queue.size(), 1);
     });
+
+    it("Should return first entry when peeking", function () {
+      queue.enqueue("foo");
+      assert.equal(queue.peek(), "foo");
+      queue.dequeue();
+      assert.equal(queue.peek(), undefined);
+    });
   });
 };
