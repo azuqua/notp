@@ -227,7 +227,7 @@ module.exports = function (mocks, lib) {
           assert(Buffer.isBuffer(data));
           assert.equal(Buffer.compare(data, buf), 0);
           assert.deepEqual(str, stream);
-          assert.deepEqual(from, {
+          assert.deepEqual(_.pick(from, ["tag", "node"]), {
             tag: null,
             node: other
           });
@@ -917,7 +917,7 @@ module.exports = function (mocks, lib) {
         });
         nKernel.once(job, (data, rstream, from) => {
           assert.deepEqual(stream, rstream);
-          assert.deepEqual(from, {
+          assert.deepEqual(_.pick(from, ["node", "tag"]), {
             tag: tag,
             node: kernel.self()
           });
@@ -950,7 +950,7 @@ module.exports = function (mocks, lib) {
         });
         nKernel.once(job, (data, rstream, from) => {
           assert.deepEqual(stream, rstream);
-          assert.deepEqual(from, {
+          assert.deepEqual(_.pick(from, ["node", "tag"]), {
             tag: tag,
             node: kernel.self()
           });
@@ -998,7 +998,7 @@ module.exports = function (mocks, lib) {
         });
         nKernel.once(job, (data, rstream, from) => {
           assert.deepEqual(rstream, dstream);
-          assert.deepEqual(from, {
+          assert.deepEqual(_.pick(from, ["node", "tag"]), {
             tag: tag,
             node: kernel.self()
           });

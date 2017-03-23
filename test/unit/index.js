@@ -8,6 +8,7 @@ module.exports = function (mocks, lib) {
     require("./kernel")(mocks, lib);
     require("./gen_server")(mocks, lib);
     require("./gossip")(mocks, lib);
+    require("./command_server")(mocks, lib);
     require("./utils")(mocks, lib);
     require("./cluster_node")(mocks, lib);
   });
