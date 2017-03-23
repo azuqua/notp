@@ -32,7 +32,7 @@ function createKernel(id, host = os.hostname(), port = 7022, opts = {}) {
   inst.config.maxRetries = opts.maxRetries;
   inst.config.tls = opts.tls;
   inst.config.silent = opts.silent;
-  return new lib.kernel(inst, id, opts.networkHost, opts.networkPort);
+  return new lib.kernel(inst, id, inst.config.networkHost, inst.config.networkPort);
 }
 
 function createCommServer(gossip, kernel) {
