@@ -1,17 +1,37 @@
 os:
-  - linux
+- linux
 language: node_js
+notifications:
+  email:
+    on_success: never
+    on_failure: never
 sudo: false
 node_js:
-  - "7"
-  - "6"
+- '7'
+- '6'
+cache:
+  apt: true
+  directories:
+  - node_modules
 before_install: npm install -g grunt-cli
-
+script: npm run-script test-travis
+after_script:
+- cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js
+- |
+  [ $TRAVIS_BRANCH = master ] &&
+  [ $TRAVIS_PULL_REQUEST = false ] &&
+  grunt docs &&
+  echo "<meta http-equiv=refresh content=0;url=`echo $TRAVIS_REPO_SLUG | cut -d '/' -f 2`/index.html>" > doc/index.html &&
+  sudo pip install ghp-import &&
+  ghp-import -n doc &&
+  git push -fq https://${GH_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git gh-pages
 env:
-  - CXX=g++-4.8
+  global:
+    - CXX=g++-4.8
+    - secure: "lQ8RjCelcoFiDrtW82GczFV0h87g/ROgvl5/jS78ZAiVOyGkh9odvx+u4QZvT+vTGLpV0JJgffPNOBH/69oiP1Lirc1rkLnoc6S67ZAUmcW+KfBndEfpQQUOXYgHgab43rnB5e67YivDFE/w+oN8IKeDh+nV5mJl6+kFqabtmHKtX12AsC9gdIrz+4ZHeK6K3iUp3+XJs7NkGDIWZw5+/yTGGLRO0a3d+f25W4MfkrZaC5PhIe/lt1dEhjzaRREXM9U/HxPrGuLF79jWAsnTbdG32ob/mtUeJ5qvtSVIjQhmUufsbSdciLE0vacXElGbMaIC7dwQA+3pvdDk1kD7Z/1yaQgV/aYPAI3uaNRa1U+I6J23t63WXwSvpCGgPpzsi4yUAE1YbgWhpU5oHt4ZxFa0JkWOlqPHNdkh8feA/p918NGNYc9wjV2bSGJ9NSfugo2x69LeKsupdj9X3v2O2Kl+1j8VfZq50NNCojWYLGUTGlI+zRuibsdCU9TMmOZHC+8cK26Mk5MgaO+r6/5syil8GnzMkvyGnEuR/naUmSn5IEvqMvNqxWL8RKONMOs/qmy/gzBUjkxc/GndMxKKoSpLWauxM2F1tsF46Lp/vWw0oCFD2EvHlqrhRIGsorwOhe7IA7pHjuhMf9aV43QxPYoTsJf7pd0lkGpoh1yGPgg="
 addons:
   apt:
     sources:
-      - ubuntu-toolchain-r-test
+    - ubuntu-toolchain-r-test
     packages:
-      - g++-4.8
+    - g++-4.8

@@ -2,5 +2,8 @@ node_modules
 npm-debug.log
 
 .idea/
-doc/
-coverage/
+doc/*
+!doc/.gitkeep
+coverage/*
+!coverage/.gitkeep
+
