@@ -25,6 +25,7 @@ module.exports = function (grunt) {
         }
       }
     },
+
     jsdoc2md: {
       separateOutputFilePerInput: {
         files: files.map((file) => {
@@ -34,6 +35,13 @@ module.exports = function (grunt) {
           path[path.length-1] = last;
           return {src: file, dest: "doc/" + _.drop(path).join("/")};
         })
+      }
+    },
+
+    mochaTest: {
+      run: {
+        options: {reporter: "spec", checkLeaks: true},
+        src: ["test/**/*.js"]
       }
     }
   });
@@ -46,4 +54,8 @@ module.exports = function (grunt) {
   
   grunt.loadNpmTasks("grunt-contrib-jshint");
   grunt.loadNpmTasks("grunt-mocha-test");
+
+  grunt.registerTask("test", ["mochaTest:run"]);
+
+  grunt.registerTask("default", ["test"]);
 };

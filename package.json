@@ -3,7 +3,9 @@
   "version": "0.0.1",
   "description": "Distributed systems library for gossip protocols, consistent hash rings, and vector clocks.",
   "main": "index.js",
-  "scripts": {},
+  "scripts": {
+    "test": "grunt"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/azuqua/clusterluck.git"
