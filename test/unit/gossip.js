@@ -689,12 +689,13 @@ module.exports = function (mocks, lib) {
           assert.deepEqual(ring, gossip.ring());
           assert.deepEqual(clock, gossip.vclock());
         });
+        var conn = gossip.kernel().connection(node2);
+        conn.once("idle", done);
         gossip.remove(node2);
         assert.equal(gossip.ring().size(), 3);
         assert.ok(gossip._actor);
         assert.ok(gossip.vclock().has(gossip._actor));
         assert.notOk(gossip.kernel().isConnected(node2));
-        done();
       });
 
       it("should remove a node from the gossip ring, waiting for 'idle' state", function (done) {
@@ -955,18 +956,18 @@ module.exports = function (mocks, lib) {
         assert.notOk(gossip.streams().has(stream.stream));
         gossip._parse(data, stream, {});
         assert.ok(gossip.streams().has(stream.stream));
-        assert.equal(Buffer.compare(data, gossip.streams().get(stream.stream)), 0);
+        assert.equal(Buffer.compare(data, gossip.streams().get(stream.stream).data), 0);
       });
 
       it("Should parse incoming job streams, with existing stream data", function () {
         var data = Buffer.from(JSON.stringify(chash.toJSON(true)));
         var stream = {stream: uuid.v4(), done: false};
         var init = Buffer.from("foo");
-        gossip.streams().set(stream.stream, init);
+        gossip.streams().set(stream.stream, {data: init});
         gossip._parse(data, stream, {});
         assert.ok(gossip.streams().has(stream.stream));
         var exp = Buffer.concat([init, data], init.length + data.length);
-        assert.equal(Buffer.compare(exp, gossip.streams().get(stream.stream)), 0);
+        assert.equal(Buffer.compare(exp, gossip.streams().get(stream.stream).data), 0);
       });
 
       it("Should skip parsing full job if stream errors", function () {
@@ -974,7 +975,7 @@ module.exports = function (mocks, lib) {
         var data = Buffer.from(JSON.stringify(chash.toJSON(true)));
         var stream = {stream: uuid.v4(), error: {foo: "bar"}, done: true};
         var init = Buffer.from("foo");
-        gossip.streams().set(stream.stream, init);
+        gossip.streams().set(stream.stream, {data: init});
         gossip._parse(data, stream, {});
         assert.notOk(gossip.streams().has(stream.stream));
         assert.notOk(gossip.decodeJob.called);

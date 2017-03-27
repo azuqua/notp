@@ -43,7 +43,7 @@ class MockIPC {
       server.emit(event, data, socket);
     });
     async.nextTick(() => {
-      this.of[id].emit("connect");
+      conn.emit("connect");
       if (typeof cb === "function") return cb();
     });
   }
