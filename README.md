@@ -133,7 +133,7 @@ The `GenServer` class is used to create actors that send messages around and rec
 They're the basic unit of logic handling in clusterluck, and heavily derived off of Erlang's gen_server's, but incorporated into node.js' EventEmitter model.
 To start a `GenServer` with no event handling, we can use the following code:
 
-```
+```javascript
 let serve = cl.createGenServer(cluster);
 serve.start("name_to_listen_for");
 ```
@@ -143,7 +143,7 @@ Names for `GenServer`s on the same node have a uniqueness property, so trying to
 
 To add some event handling to our `GenServer`, we can modify the above code as such:
 
-```
+```javascript
 let serve = cl.createGenServer(cluster);
 serve.on("hello", (data, from) => {
   serve.reply(from, "world");
@@ -156,7 +156,7 @@ This includes messages sent from the local node, as well from other nodes in the
 
 Once we've declared our `GenServer` and added event handling logic, we can start sending and receiving messages to/from other nodes in the cluster.
 
-```
+```javascript
 // serve is a GenServer instance, kernel is serve's network kernel
 // synchronous requests
 // this makes a call to a GenServer listening on "server_name" locally
@@ -191,7 +191,7 @@ Any message routed to our node, both internal and external, with id set to `name
 Each stream has a stream ID `stream` and a boolean flag `done` which indicates whether the stream has finished sending data.
 This stream ID is used as an index for stream memoization between concurrent requests.
 
-```
+```javascript
 // 'data' is the input data for this part of the stream
 if (!this._streams.has(stream.stream)) {
   this._streams.set(stream.stream, {data: Buffer.from(""), ...});
