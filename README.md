@@ -222,7 +222,7 @@ The following options specify which node to communicate with and how:
   - `-p, --port`: Server port of the node being connected to.
   - `-a, --key`: Distributed cookie to use for signing requests to the connecting node.
 
-Once run, a CLI session is created that provides the following commands. For any given command, help documentation can be printed to the console by typing `help <coomand_name>`.
+Once run, a CLI session is created that provides the following commands. For any given command, help documentation can be printed to the console by typing `help <command_name>`.
 
 ##### inspect
 
