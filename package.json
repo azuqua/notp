@@ -19,7 +19,18 @@
   "bugs": {
     "url": "https://github.com/azuqua/clusterluck/issues"
   },
-  "keywords": [],
+  "keywords": [
+    "consistent hashing",
+    "vector clocks",
+    "gossip protocol",
+    "distributed",
+    "decentralized",
+    "communication",
+    "IPC",
+    "cluster",
+    "full-mesh topology",
+    "actor model"
+  ],
   "bin": {
     "ncl": "./bin/cli.js"
   },

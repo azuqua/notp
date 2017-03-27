@@ -462,6 +462,8 @@ From here, you can reference the documentation found on the github pages for the
   - Add timeouts on GenServer request streams.
   - Emit stream error on closed socket connection.
   - Additional documentation.
+- Dawn of time (unversioned up to 1.0.0):
+  - Check the commit history for details (about code changes, dawn of time undocumented)
 
 ### <a name="TODO"></a>TODO
 
