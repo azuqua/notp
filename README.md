@@ -47,6 +47,7 @@ $ npm install --global istanbul
 - [Usage](#Usage)
   - [Creating Clusters](#CreatingClusters)
   - [Manipulating Clusters](#ManipulatingClusters)
+  - [Example Cluster](#ExampleCluster)
   - [Writing GenServers](#WritingGenServers)
   - [Using the CLI](#UsingTheCLI)
     - [`inspect`](#inspect)
@@ -127,6 +128,41 @@ gossip.join("another_ring_id");
 
 For documentation on available methods/inputs for cluster manipulation, visit the documentation for the `GossipRing` class.
 
+#### <a name="ExampleCluster"></a>Example Cluster
+
+In an example.js file, insert the following:
+
+```javascript
+const cl = require("clusterluck"),
+      os = require("os");
+
+let id = process.argv[2],
+    port = parseInt(process.argv[3]);
+
+let node = cl.createCluster(id, os.hostname(), port);
+node.start("cookie", "ring", () => {
+  console.log("Listening on port %s!", port);
+});
+```
+
+Then, in one terminal, run:
+```
+$ node example.js foo 7022
+```
+
+And in another terminal, run:
+```
+$ node example.js bar 7023
+```
+
+Now, if we spin up the CLI and connect to `foo`, we can then run:
+```
+// whatever os.hostname() resolves to, replace localhost with that
+$ meet bar localhost 7023
+```
+
+If we then go to inspect the ring on each node, we should see both node `foo` and node `bar` in the ring.
+
 #### <a name="WritingGenServers"></a>Writing GenServers
 
 The `GenServer` class is used to create actors that send messages around and receive messages from the rest of the cluster.
@@ -182,36 +218,6 @@ As an implementation note, `GenServer`s should not be used as a replacement for 
 Generally speaking, serialization costs place an undue cost when we can just pass native JS objects around.
 Instead, making other `GenServer`s part of the constructor of other `GenServer`s is preferred (using OOP principles to enforce actor relations), similar to how the `CommandServer` class works.
 In fact, both the `GossipRing` and `CommandServer` classes, built into every node in the cluster, are `GenServer`s themselves!
-
-##### GenServer message passing
-
-Let's continue with our setup above.
-
-Any message routed to our node, both internal and external, with id set to `name_goes_here` will be gathered by `serve` into a map of streams.
-Each stream has a stream ID `stream` and a boolean flag `done` which indicates whether the stream has finished sending data.
-This stream ID is used as an index for stream memoization between concurrent requests.
-
-```javascript
-// 'data' is the input data for this part of the stream
-if (!this._streams.has(stream.stream)) {
-  this._streams.set(stream.stream, {data: Buffer.from(""), ...});
-}
-let inner = this._streams.get(stream.stream);
-inner.data = Buffer.concat([inner.data, data], ...);
-```
-
-Once sending has finished, the job is parsed using `decodeJob` into an event and message, under `event` and `data` respectively.
-From here, the server emits an event just like an EventEmitter with `event` and `data`.
-
-```javascript
-// similar to this
-if (stream.done === true) {
-  let job = this.decodeJob(memo);
-  serve.emit(job.event, job.data, from);
-}
-```
-
-This is where our event handling logic for event "hello" comes into play.
 
 #### <a name="UsingTheCLI"></a>Using the CLI
 
@@ -469,5 +475,6 @@ From here, you can reference the documentation found on the github pages for the
 
 In addition to what currently exists in this library, here's a list of features to possibly add:
   - Provide listener for permanent close on connection between two nodes (`maxRetries` option on kernel creation).
+  - Add a GenStream class similar to GenServer, but strictly uses streams for communication instead of JS natives (will also require a protocol definition for indicating stream start, etc)
   - Discuss making disconnects between nodes on a node departure forceful or not (it's forceful right now)
   - A distributed lock manager, most likely using the [Redlock algorithm](https://redis.io/topics/distlock), given how well it fits into the current architecture of clusterluck.

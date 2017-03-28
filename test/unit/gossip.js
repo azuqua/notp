@@ -220,6 +220,26 @@ module.exports = function (mocks, lib) {
         });
       });
 
+      it("Should skip loading state from disk if call results in ENOENT error", function (done) {
+        gossip._flushPath = "/foo/bar";
+        sinon.stub(fs, "readFile", (path, cb) => {
+          async.nextTick(() => {
+            return cb(_.extend(new Error("error"), {
+              code: "ENOENT"
+            }));
+          });
+        });
+        gossip.load((err) => {
+          assert.notOk(err);
+          assert.deepEqual(gossip.ring(), chash);
+          assert.deepEqual(gossip.vclock(), vclock);
+          assert.notOk(gossip._actor);
+          assert.notOk(gossip._ringID);
+          fs.readFile.restore();
+          done();
+        });
+      });
+
       it("Should fail to load state from disk if call results in error", function (done) {
         sinon.stub(fs, "readFile", (path, cb) => {
           async.nextTick(() => {
