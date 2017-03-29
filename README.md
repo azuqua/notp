@@ -286,8 +286,7 @@ This command will attempt to join a cluster if it doesn't already belong to a cl
 ```
 // assuming 'foo' isn't a part of a ring
 > join ring
-{ ok: true,
-  data: true }
+{ ok: true }
 
 // if it's in a ring
 > join ring
@@ -306,8 +305,7 @@ For example, given the previous setup:
 
 ```
 > meet bar
-{ ok: true,
-  data: true }
+{ ok: true }
 
 // wait some time...
 > get bar
@@ -320,8 +318,7 @@ This command will tell the targeted node by this session to leave its current cl
 
 ```
 > leave
-{ ok: true,
-  data: true }
+{ ok: true }
 // immediately following this command...
 > has bar
 { ok: true,
@@ -329,8 +326,7 @@ This command will tell the targeted node by this session to leave its current cl
 
 // leave is done forcefully
 > leave --force
-{ ok: true,
-  data: true }
+{ ok: true }
 ```
 
 For documentation on how the `--force` option works for this command, just run `help leave`.
@@ -344,16 +340,14 @@ For example:
 
 ```
 > insert bar localhost 7023
-{ ok: true,
-  data: true }
+{ ok: true }
 > get bar
 { ok: true,
   data: { id: 'bar', host: 'localhost", port: 7023 } }
 
 // insert is done forcefully
 > insert --force bar localhost 7023
-{ ok: true,
-  data: true }
+{ ok: true }
 > get bar
 { ok: true,
   data: { id: 'bar', host: 'localhost', port: 7023 } }
@@ -369,8 +363,7 @@ For example:
 
 ```
 > minsert bar localhost 7023 baz localhost 7024
-{ ok: true,
-  data: true }
+{ ok: true }
 > get bar
 { ok: true,
   data: { id: 'bar', host: 'localhost", port: 7023 } }
@@ -380,8 +373,7 @@ For example:
 
 // minsert is done forcefully
 > minsert --force bar localhost 7023 baz localhost 7024
-{ ok: true,
-  data: true}
+{ ok: true }
 > get bar
 { ok: true,
   data: { id: 'bar', host: 'localhost", port: 7023 } }
@@ -400,16 +392,14 @@ For example:
 
 ```
 > remove bar localhost 7023
-{ ok: true,
-  data: true }
+{ ok: true }
 > has bar
 { ok: true,
   data: false }
 
 // remove is done forcefully
 > remove --force bar localhost 7023
-{ ok: true,
-  data: true }
+{ ok: true }
 > has bar
 { ok: true,
   data: false }
@@ -425,8 +415,7 @@ For example:
 
 ```
 > mremove bar localhost 7023 baz localhost 7024
-{ ok: true,
-  data: true }
+{ ok: true }
 > has bar
 { ok: true,
   data: false }
@@ -436,8 +425,7 @@ For example:
 
 // mremove is done forcefully
 > mremove --force bar localhost 7023 baz localhost 7024
-{ ok: true,
-  data: true}
+{ ok: true }
 > has bar
 { ok: true,
   data: false }
