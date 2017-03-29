@@ -106,12 +106,12 @@ assert.ok(gossip.ring().has(nNode));
 // inserting nodes
 gossip.insert(nNode);
 assert.ok(gossip.ring().has(nNode));
-// after some time, node "bar" should have "foo" in it's ring...
+// after some time, node "bar" should have "foo" in its ring...
 
 // removing nodes
 gossip.remove(nNode);
 assert.notOk(gossip.ring().has(nNode));
-// after some time, ndoe "bar" should remove "foo" from it's ring...
+// after some time, ndoe "bar" should remove "foo" from its ring...
 
 // leaving a cluster
 gossip.leave();
@@ -286,8 +286,7 @@ This command will attempt to join a cluster if it doesn't already belong to a cl
 ```
 // assuming 'foo' isn't a part of a ring
 > join ring
-{ ok: true,
-  data: true }
+{ ok: true }
 
 // if it's in a ring
 > join ring
@@ -306,8 +305,7 @@ For example, given the previous setup:
 
 ```
 > meet bar
-{ ok: true,
-  data: true }
+{ ok: true }
 
 // wait some time...
 > get bar
@@ -316,12 +314,11 @@ For example, given the previous setup:
 
 ##### leave
 
-This command will tell the targeted node by this session to leave it's current cluster (if it belongs to one). For example:
+This command will tell the targeted node by this session to leave its current cluster (if it belongs to one). For example:
 
 ```
 > leave
-{ ok: true,
-  data: true }
+{ ok: true }
 // immediately following this command...
 > has bar
 { ok: true,
@@ -329,98 +326,96 @@ This command will tell the targeted node by this session to leave it's current c
 
 // leave is done forcefully
 > leave --force
-{ ok: true,
-  data: true }
+{ ok: true }
 ```
 
 For documentation on how the `--force` option works for this command, just run `help leave`.
 
 ##### insert
 
-This command will tell the targeted node by this session to insert a node into it's cluster (as it currently views it).
+This command will tell the targeted node by this session to insert a node into its cluster (as it currently views it).
 Subsequently, this information will be gossiped around the cluster, eventually resulting in every node thinking the input node no longer belongs in the cluster.
 This differs from `meet` in that insertions are not transitive between nodes; it's a new event on the ring state, and therefore overriding when state conflicts occur between nodes sharing ring history.
 For example:
 
 ```
 > insert bar localhost 7023
-{ ok: true,
-  data: true }
+{ ok: true }
 > get bar
 { ok: true,
-  data: { id: 'bar', host: 'localhost", port: 7023 } }
+  data: { id: 'bar', host: 'localhost', port: 7023 } }
 
 // insert is done forcefully
 > insert --force bar localhost 7023
+{ ok: true }
+> get bar
 { ok: true,
-  data: { id: 'bar', host: 'localhost", port: 7023 } }
+  data: { id: 'bar', host: 'localhost', port: 7023 } }
 ```
 
 For documentation on how the `--force` option works for this command, or any other option, just run `help insert`.
 
 ##### minsert
 
-This command will tell the targeted node by this session to insert multiple nodes into it's cluster (as it currently views it).
+This command will tell the targeted node by this session to insert multiple nodes into its cluster (as it currently views it).
 Similar to how `insert` works, only it allows batch insertion.
 For example:
 
 ```
 > minsert bar localhost 7023 baz localhost 7024
-{ ok: true,
-  data: true }
+{ ok: true }
 > get bar
 { ok: true,
-  data: { id: 'bar', host: 'localhost", port: 7023 } }
+  data: { id: 'bar', host: 'localhost', port: 7023 } }
 > get baz
 { ok: true,
-  data: { id: 'baz', host: 'localhost", port: 7024 } }
+  data: { id: 'baz', host: 'localhost', port: 7024 } }
 
 // minsert is done forcefully
 > minsert --force bar localhost 7023 baz localhost 7024
-{ ok: true,
-  data: true}
+{ ok: true }
 > get bar
 { ok: true,
-  data: { id: 'bar', host: 'localhost", port: 7023 } }
+  data: { id: 'bar', host: 'localhost', port: 7023 } }
 > get baz
 { ok: true,
-  data: { id: 'baz', host: 'localhost", port: 7024 } }
+  data: { id: 'baz', host: 'localhost', port: 7024 } }
 ```
 
 For documentation on how the `--force` option works for this command, or any other option, just run `help minsert`.
 
 ##### remove
 
-This command will tell the targeted node by this session to remove a node from it's cluster (as it currently views it).
+This command will tell the targeted node by this session to remove a node from its cluster (as it currently views it).
 Subsequently, this information will be gossiped around the cluster, eventually resulting in every node thinking the input node no longer belongs in the cluster.
 For example:
 
 ```
 > remove bar localhost 7023
+{ ok: true }
+> has bar
 { ok: true,
-  data: true }
-> get bar
-{ ok: true,
-  data: { id: 'bar', host: 'localhost", port: 7023 } }
+  data: false }
 
-// insert is done forcefully
-> insert --force bar localhost 7023
+// remove is done forcefully
+> remove --force bar localhost 7023
+{ ok: true }
+> has bar
 { ok: true,
-  data: { id: 'bar', host: 'localhost", port: 7023 } }
+  data: false }
 ```
 
 For documentation on how the `--force` option works for this command, or any other option, just run `help remove`.
 
 ##### mremove
 
-This command will tell the targeted node by this session to remove multiple nodes from it's cluster (as it currently views it).
+This command will tell the targeted node by this session to remove multiple nodes from its cluster (as it currently views it).
 Similar to how `remove` works, only it allows batch removal.
 For example:
 
 ```
 > mremove bar localhost 7023 baz localhost 7024
-{ ok: true,
-  data: true }
+{ ok: true }
 > has bar
 { ok: true,
   data: false }
@@ -430,8 +425,7 @@ For example:
 
 // mremove is done forcefully
 > mremove --force bar localhost 7023 baz localhost 7024
-{ ok: true,
-  data: true}
+{ ok: true }
 > has bar
 { ok: true,
   data: false }
@@ -464,6 +458,8 @@ From here, you can reference the documentation found on the github pages for the
 
 ### <a name="ChangeLog"></a>ChangeLog
 
+- 1.1.1:
+  - Grammatical fixes to README
 - 1.1.0:
   - Add timeouts on GenServer request streams.
   - Emit stream error on closed socket connection.
