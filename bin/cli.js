@@ -16,13 +16,13 @@ const argv = require("yargs")
   .usage("Usage: $0 -h localhost -p 7021 -a '' -I foo")
   .demand([])
   .help("help")
-  .describe("I", "Unique instance identifier")
+  .describe("I", "Unique instance identifier of the node being connected to.")
   .alias("I", "instance")
-  .describe("H", "Server hostname.")
+  .describe("H", "Server hostname of the node being connected to.")
   .alias("H", "hostname")
-  .describe("p", "Server port.")
+  .describe("p", "Server port of the node being connected to.")
   .alias("p", "port")
-  .describe("a", "Distributed cookie to use for signing requests.")
+  .describe("a", "Distributed cookie to use for signing requests against the connecting node.")
   .alias("a", "key")
   .default({
     I: os.hostname(),
@@ -128,7 +128,7 @@ function parseNodeList(nodeList) {
 
 vorpal
   .command("inspect")
-  .description("Inspects the ring of this node.")
+  .description("Prints the ring of this node to the console.")
   .action(function (args, cb) {
     client.send("inspect", null, cb);
   });
@@ -165,7 +165,7 @@ vorpal
 
 vorpal
   .command("meet <id> <host> <port>")
-  .description("Meets a node in this node's cluster.")
+  .description("Meets a node in this node's cluster. This is the only way to do transitive additions to the cluster.")
   .types({
     string: ["id", "host", "port"],
   })

@@ -4,6 +4,7 @@ var _ = require("lodash"),
     stream = require("stream"),
     crypto = require("crypto"),
     sinon = require("sinon"),
+    stream = require("stream"),
     assert = require("chai").assert;
 
 module.exports = function (mocks, lib) {
@@ -899,7 +900,7 @@ module.exports = function (mocks, lib) {
         var job = uuid.v4();
         var buf = Buffer.from("foo");
         var tag = "tag";
-        var stream = {stream: uuid.v4(), done: false};
+        var istream = {stream: uuid.v4(), done: false};
         var called = 0;
         var conn = kernel.connection(node);
         conn.once("send", (event, data) => {
@@ -908,7 +909,7 @@ module.exports = function (mocks, lib) {
             id: job,
             tag: tag,
             from: kernel.self().toJSON(true),
-            stream: stream,
+            stream: istream,
             data: buf.toJSON()
           });
           conn._streams = new Map();
@@ -916,7 +917,7 @@ module.exports = function (mocks, lib) {
           if (called === 2) return done(); 
         });
         nKernel.once(job, (data, rstream, from) => {
-          assert.deepEqual(stream, rstream);
+          assert.deepEqual(istream, rstream);
           assert.deepEqual(_.pick(from, ["node", "tag"]), {
             tag: tag,
             node: kernel.self()
@@ -925,14 +926,34 @@ module.exports = function (mocks, lib) {
           called++;
           if (called === 2) return done();
         });
-        kernel._sendData(conn, job, tag, stream, buf);
+        kernel._sendData(new stream.PassThrough(), conn, job, tag, istream, buf);
+      });
+
+      it("Should send data externally, but fail with 'error'", function (done) {
+        var node = nKernel.self();
+        var job = uuid.v4();
+        var buf = Buffer.from("foo");
+        var tag = "tag";
+        var istream = {stream: uuid.v4(), done: false};
+        var called = 0;
+        var conn = kernel.connection(node);
+        var pstream = new stream.PassThrough();
+        pstream.once("error", (error) => {
+          assert.ok(error);
+          done();
+        });
+        sinon.stub(conn, "send", () => {
+          conn.send.restore();
+          return new Error("error");
+        });
+        kernel._sendData(pstream, conn, job, tag, istream, buf);
       });
 
       it("Should send end externally", function (done) {
         var node = nKernel.self();
         var job = uuid.v4();
         var tag = "tag";
-        var stream = {stream: uuid.v4(), done: false};
+        var istream = {stream: uuid.v4(), done: false};
         var called = 0;
         var conn = kernel.connection(node);
         conn.once("send", (event, data) => {
@@ -941,7 +962,7 @@ module.exports = function (mocks, lib) {
             id: job,
             tag: tag,
             from: kernel.self().toJSON(true),
-            stream: stream,
+            stream: istream,
             data: null
           });
           conn._streams = new Map();
@@ -949,7 +970,7 @@ module.exports = function (mocks, lib) {
           if (called === 2) return done(); 
         });
         nKernel.once(job, (data, rstream, from) => {
-          assert.deepEqual(stream, rstream);
+          assert.deepEqual(istream, rstream);
           assert.deepEqual(_.pick(from, ["node", "tag"]), {
             tag: tag,
             node: kernel.self()
@@ -958,7 +979,7 @@ module.exports = function (mocks, lib) {
           called++;
           if (called === 2) return done();
         });
-        kernel._finishData(conn, job, tag, stream);
+        kernel._finishData(new stream.PassThrough(), conn, job, tag, istream);
       });
 
       it("Should skip end sending if 'error' already emitted", function () {
@@ -966,7 +987,7 @@ module.exports = function (mocks, lib) {
         var job = uuid.v4();
         var tag = "tag";
         var pstream = {stream: uuid.v4(), done: true};
-        kernel._finishData(kernel.connection(node), job, tag, pstream);
+        kernel._finishData(new stream.PassThrough(), kernel.connection(node), job, tag, pstream);
       });
 
       it("Should send error externally", function (done) {
@@ -1006,7 +1027,7 @@ module.exports = function (mocks, lib) {
           called++;
           if (called === 2) return done();
         });
-        kernel._sendError(kernel.connection(node), job, tag, pstream, err);
+        kernel._sendError(new stream.PassThrough(), kernel.connection(node), job, tag, pstream, err);
       });
 
       it("Should skip error sending if 'done' already emitted", function () {
@@ -1015,7 +1036,7 @@ module.exports = function (mocks, lib) {
         var err = new Error("foo");
         var tag = "tag";
         var pstream = {stream: uuid.v4(), done: true};
-        kernel._sendError(kernel.connection(node), job, tag, pstream, err);
+        kernel._sendError(new stream.PassThrough(), kernel.connection(node), job, tag, pstream, err);
       });
 
       it("Should skip message", function (done) {
