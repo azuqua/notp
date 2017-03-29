@@ -343,7 +343,7 @@ For example:
 { ok: true }
 > get bar
 { ok: true,
-  data: { id: 'bar', host: 'localhost", port: 7023 } }
+  data: { id: 'bar', host: 'localhost', port: 7023 } }
 
 // insert is done forcefully
 > insert --force bar localhost 7023
@@ -366,20 +366,20 @@ For example:
 { ok: true }
 > get bar
 { ok: true,
-  data: { id: 'bar', host: 'localhost", port: 7023 } }
+  data: { id: 'bar', host: 'localhost', port: 7023 } }
 > get baz
 { ok: true,
-  data: { id: 'baz', host: 'localhost", port: 7024 } }
+  data: { id: 'baz', host: 'localhost', port: 7024 } }
 
 // minsert is done forcefully
 > minsert --force bar localhost 7023 baz localhost 7024
 { ok: true }
 > get bar
 { ok: true,
-  data: { id: 'bar', host: 'localhost", port: 7023 } }
+  data: { id: 'bar', host: 'localhost', port: 7023 } }
 > get baz
 { ok: true,
-  data: { id: 'baz', host: 'localhost", port: 7024 } }
+  data: { id: 'baz', host: 'localhost', port: 7024 } }
 ```
 
 For documentation on how the `--force` option works for this command, or any other option, just run `help minsert`.
