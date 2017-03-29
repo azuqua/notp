@@ -3,6 +3,7 @@ var path = require("path"),
 
 module.exports = function (grunt) {
   var files = [
+    "index.js",
     "lib/chash.js",
     "lib/cluster_node.js",
     "lib/conn.js",

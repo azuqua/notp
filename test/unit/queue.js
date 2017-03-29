@@ -54,7 +54,10 @@ module.exports = function (mocks, lib) {
 
     it("Should return first entry when peeking", function () {
       queue.enqueue("foo");
+      queue.enqueue("bar");
       assert.equal(queue.peek(), "foo");
+      queue.dequeue();
+      assert.equal(queue.peek(), "bar");
       queue.dequeue();
       assert.equal(queue.peek(), undefined);
     });

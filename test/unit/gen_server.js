@@ -34,6 +34,10 @@ module.exports = function (mocks, lib) {
         assert.deepEqual(server._kernel, kernel);
         assert(server._streams instanceof Map);
         assert.equal(server._streams.size, 0);
+        assert.equal(server._streamTimeout, 30000);
+
+        server = new GenServer(kernel, {streamTimeout: 5000});
+        assert.equal(server._streamTimeout, 5000);
       });
 
       it("Should grab id of generic server", function () {
@@ -186,18 +190,18 @@ module.exports = function (mocks, lib) {
         assert.notOk(server.streams().has(stream.stream));
         server._parse(data, stream, {});
         assert.ok(server.streams().has(stream.stream));
-        assert.equal(Buffer.compare(data, server.streams().get(stream.stream)), 0);
+        assert.equal(Buffer.compare(data, server.streams().get(stream.stream).data), 0);
       });
 
       it("Should parse incoming job streams, with existing stream data", function () {
         var data = Buffer.from(JSON.stringify({ok: true}));
         var stream = {stream: uuid.v4(), done: false};
         var init = Buffer.from("foo");
-        server.streams().set(stream.stream, init);
+        server.streams().set(stream.stream, {data: init});
         server._parse(data, stream, {});
         assert.ok(server.streams().has(stream.stream));
         var exp = Buffer.concat([init, data], init.length + data.length);
-        assert.equal(Buffer.compare(exp, server.streams().get(stream.stream)), 0);
+        assert.equal(Buffer.compare(exp, server.streams().get(stream.stream).data), 0);
       });
 
       it("Should skip parsing full job if stream errors", function () {
@@ -205,7 +209,7 @@ module.exports = function (mocks, lib) {
         var data = Buffer.from(JSON.stringify({ok: true}));
         var stream = {stream: uuid.v4(), error: {foo: "bar"}, done: true};
         var init = Buffer.from("foo");
-        server.streams().set(stream.stream, init);
+        server.streams().set(stream.stream, {data: init});
         server._parse(data, stream, {});
         assert.notOk(server.streams().has(stream.stream));
         assert.notOk(server.decodeJob.called);
@@ -340,6 +344,87 @@ module.exports = function (mocks, lib) {
           if (count === 2) done();
         });
         server.abcast([kernel.self(), nKernel.self()], "bar", "msg", Buffer.from("hello"));
+      });
+
+      it("Should safely reply to a request", function () {
+        var out = server._safeReply({}, new stream.PassThrough());
+        assert.equal(out, false);
+
+        sinon.stub(server._kernel, "reply");
+        out = server._safeReply({tag: "foo", node: server._kernel.self()});
+        assert.equal(out, true);
+        server._kernel.reply.restore();
+      });
+
+      it("Should register timeout, but stream doesn't exist later", function (done) {
+        server._streamTimeout = 0;
+        sinon.spy(server, "_safeReply");
+        server._registerTimeout({stream: "foo"}, {});
+        async.nextTick(() => {
+          assert.notOk(server._streams.has("foo"));
+          assert.notOk(server._safeReply.called);
+          server._safeReply.restore();
+          server._streamTimeout = 30000;
+          done();
+        });
+      });
+
+      it("Shopuld register timeout, but not reply to async msg", function (done) {
+        var called = false;
+        server._streamTimeout = 0;
+        sinon.stub(server, "_safeReply", (from, istream) => {
+          istream.once("error", () => {called = true;});
+          return false;
+        });
+        server._streams.set("foo", "bar");
+        server._registerTimeout({stream: "foo"}, {});
+        setTimeout(() => {
+          assert.notOk(server._streams.has("foo"));
+          assert.equal(called, false);
+          server._safeReply.restore();
+          server._streamTimeout = 30000;
+          done();
+        }, 0);
+      });
+
+      it("Should register timeout, reply and clear stream", function (done) {
+        var called = false;
+        server._streamTimeout = 0;
+        sinon.stub(server, "_safeReply", (from, istream) => {
+          istream.once("error", () => {called = true;});
+          return true;
+        });
+        server._streams.set("foo", "bar");
+        server._registerTimeout({stream: "foo"}, {tag: "baz"});
+        setTimeout(() => {
+          assert.notOk(server._streams.has("foo"));
+          assert.equal(called, true);
+          server._safeReply.restore();
+          server._streamTimeout = 30000;
+          done();
+        }, 0);
+      });
+
+      it("Should register timeout, reply and clear stream, not emit 'idle'", function (done) {
+        var called = false;
+        var idle = false;
+        server._streamTimeout = 0;
+        sinon.stub(server, "_safeReply", (from, istream) => {
+          istream.once("error", () => {called = true;});
+          return true;
+        });
+        server._streams.set("foo", "bar");
+        server._streams.set("a", "b");
+        server._registerTimeout({stream: "foo"}, {tag: "baz"});
+        server.once("idle", () => {idle = true;});
+        setTimeout(() => {
+          assert.notOk(server._streams.has("foo"));
+          assert.equal(called, true);
+          assert.equal(idle, false);
+          server._safeReply.restore();
+          server._streamTimeout = 30000;
+          done();
+        }, 0);
       });
     });
   });
