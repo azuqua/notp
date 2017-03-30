@@ -84,7 +84,7 @@ class Client extends EventEmitter {
       });
       return this;
     }
-    cb(new Error("TODO"));
+    cb(new Error("Disconnected from server."));
     return this;
   }
 
@@ -103,7 +103,7 @@ class Client extends EventEmitter {
     }
     this._connected = false;
     this._rcv.flush().forEach((el) => {
-      el.cb(new Error("TODO"));
+      el.cb(new Error("Disconnected from server."));
     });
     this.emit("disconnect");
     return this;
