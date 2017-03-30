@@ -458,6 +458,8 @@ From here, you can reference the documentation found on the github pages for the
 
 ### <a name="ChangeLog"></a>ChangeLog
 
+- 1.1.2:
+  - Remove TODOs from bin/cli
 - 1.1.1:
   - Grammatical fixes to README
 - 1.1.0:
