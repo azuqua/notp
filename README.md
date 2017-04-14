@@ -300,11 +300,11 @@ This command will attempt to join a cluster if it doesn't already belong to a cl
 
 This command will tell the targeted node by this session to meet another node in the cluster. Currently, this is the only way to make ring insertions transitive.
 Subsequently, if as a result two nodes are meeting for the first time, a ring merge will occur.
-The resulting state will be gossiped around the cluster, eventually resulting in every node thinking the input node no longer belongs in the cluster.
+The resulting state will be gossiped around the cluster, eventually resulting in every node thinking the input node belongs in the cluster.
 For example, given the previous setup:
 
 ```
-> meet bar
+> meet bar localhost 7023
 { ok: true }
 
 // wait some time...
@@ -334,7 +334,7 @@ For documentation on how the `--force` option works for this command, just run `
 ##### insert
 
 This command will tell the targeted node by this session to insert a node into its cluster (as it currently views it).
-Subsequently, this information will be gossiped around the cluster, eventually resulting in every node thinking the input node no longer belongs in the cluster.
+Subsequently, this information will be gossiped around the cluster, eventually resulting in every node thinking the input node belongs in the cluster.
 This differs from `meet` in that insertions are not transitive between nodes; it's a new event on the ring state, and therefore overriding when state conflicts occur between nodes sharing ring history.
 For example:
 
