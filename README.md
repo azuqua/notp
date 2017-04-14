@@ -458,21 +458,23 @@ From here, you can reference the documentation found on the github pages for the
 
 ### <a name="ChangeLog"></a>ChangeLog
 
+- 1.1.3:
+  - README fixes for command descriptions.
 - 1.1.2:
-  - Remove TODOs from bin/cli
+  - Remove TODOs from bin/cli.
 - 1.1.1:
-  - Grammatical fixes to README
+  - Grammatical fixes to README.
 - 1.1.0:
   - Add timeouts on GenServer request streams.
   - Emit stream error on closed socket connection.
   - Additional documentation.
 - Dawn of time (unversioned up to 1.0.0):
-  - Check the commit history for details (about code changes, dawn of time undocumented)
+  - Check the commit history for details (about code changes, dawn of time undocumented).
 
 ### <a name="TODO"></a>TODO
 
 In addition to what currently exists in this library, here's a list of features to possibly add:
   - Provide listener for permanent close on connection between two nodes (`maxRetries` option on kernel creation).
-  - Add a GenStream class similar to GenServer, but strictly uses streams for communication instead of JS natives (will also require a protocol definition for indicating stream start, etc)
-  - Discuss making disconnects between nodes on a node departure forceful or not (it's forceful right now)
+  - Add a GenStream class similar to GenServer, but strictly uses streams for communication instead of JS natives (will also require a protocol definition for indicating stream start, etc).
+  - Discuss making disconnects between nodes on a node departure forceful or not (it's forceful right now).
   - A distributed lock manager, most likely using the [Redlock algorithm](https://redis.io/topics/distlock), given how well it fits into the current architecture of clusterluck.
