@@ -8,21 +8,6 @@ var _ = require("lodash"),
     EventEmitter = require("events").EventEmitter,
     assert = require("chai").assert;
 
-class MockTable extends EventEmitter {
-  constructor(id) {
-    super();
-    this._id = id;
-  }
-
-  id() {
-    return "foo";
-  }
-
-  stop() {
-    return this;
-  }
-}
-
 module.exports = function (mocks, lib) {
   describe("Gossip unit tests", function () {
     var VectorClock = lib.vclock,
@@ -90,6 +75,15 @@ module.exports = function (mocks, lib) {
         var clock = new VectorClock(new Node("id2", "localhost", 8001), 1);
         gossip.vclock(clock);
         assert.deepEqual(gossip._vclock, clock);
+      });
+
+      it("Should grab ring ID of gossip ring", function () {
+        assert.equal(gossip.ringID(), undefined);
+      });
+
+      it("Should set ring ID of gossip ring", function () {
+        gossip.ringID("foo");
+        assert.equal(gossip._ringID, "foo");
       });
 
       it("Should grab kernel of gossip ring", function () {
