@@ -5,6 +5,7 @@ var _ = require("lodash"),
     debug = require("debug")("clusterluck:examples:dlm");
 
 var GenServer = cl.GenServer;
+const mcsToMs = 1000;
 
 class Lock {
   constructor(type, id, holder, timeout) {
@@ -136,7 +137,7 @@ class DLMServer extends GenServer {
       timeout: timeout
     }, (err, data) => {
       if (err) return cb(err);
-      var delta = microtime.now()-time;
+      var delta = (microtime.now()-time)/mcsToMs;
       var nData = DLMServer.findLockPasses(nodes, data);
       if (nData.length/data.length >= this._rquorum && delta < timeout) {
         return cb(null, nData);
@@ -169,7 +170,7 @@ class DLMServer extends GenServer {
       timeout: timeout
     }, (err, data) => {
       if (err) return cb(err);
-      var delta = microtime.now()-time;
+      var delta = (microtime.now()-time)/mcsToMs;
       var nData = DLMServer.findLockPasses(nodes, data);
       if (nData.length/data.length >= this._wquorum && delta < timeout) {
         return cb(null, nData);
@@ -304,6 +305,8 @@ class DLMServer extends GenServer {
     var lock = this._locks.get(data.id);
     if (lock && lock.type() === "write") {
       return this.reply(from, DLMServer.encodeResp({ok: false}));
+    } else if (lock && lock.holder().has(data.holder)) {
+      return this.reply(from, DLMServer.encodeResp({ok: true}));
     }
     var timeout = setTimeout(() => {
       var lock = this._locks.get(data.id);
