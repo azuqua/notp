@@ -345,7 +345,7 @@ class DLMServer extends GenServer {
     }
     var timeout = setTimeout(() => {
       var lock = this._locks.get(data.id);
-      if (!lock || lock.holder() !== data.holder()) {
+      if (!lock || lock.holder() !== data.holder) {
         return;
       }
       this._locks.delete(data.id);
