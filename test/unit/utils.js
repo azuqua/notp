@@ -132,5 +132,29 @@ module.exports = function (mocks, lib) {
       var out = utils.parseNodeList({nodes: ""});
       assert.ok(out instanceof Error);
     });
+
+    it("Should transform map to object", function () {
+      var list = [["key", "val"], ["key2", "val2"]];
+      var map = new Map(list);
+      var out = utils.mapToObject(map);
+      assert.deepEqual(out, {
+        key: "val",
+        key2: "val2"
+      });
+    });
+
+    it("Should transform set to list", function () {
+      var list = ["val", "val2"];
+      var set = new Set(list);
+      var out = utils.setToList(set);
+      assert.deepEqual(out, list);
+    });
+
+    it("Should transform map to list", function () {
+      var list = [["key", "val"], ["key2", "val2"]];
+      var map = new Map(list);
+      var out = utils.mapToList(map);
+      assert.deepEqual(out, list);
+    });
   });
 };
