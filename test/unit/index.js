@@ -11,5 +11,6 @@ module.exports = function (mocks, lib) {
     require("./command_server")(mocks, lib);
     require("./utils")(mocks, lib);
     require("./cluster_node")(mocks, lib);
+    require("./dtable")(mocks, lib);
   });
 };
