@@ -12,6 +12,7 @@ module.exports = function (grunt) {
     "lib/kernel.js",
     "lib/node.js",
     "lib/vclock.js",
+    "lib/dtable.js"
   ];
 
   grunt.initConfig({
