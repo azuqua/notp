@@ -209,6 +209,36 @@ function createGenServer(cluster, opts) {
   return new lib.gen_server(cluster.kernel(), opts);
 }
 
+/**
+ *
+ * Constructs a dtable instance, an in-memory key/value storage that persists to disk periodically.
+ *
+ * @method createDTable
+ * @memberof Clusterluck
+ *
+ * @param {Object} opts - Options object for creating dtable.
+ * @param {String} opts.path - Directory store table snapshot and log files under.
+ * @param {Number} [opts.writeThreshold] - Number of write operations to the log file before triggering a snapshot flush to disk. Defaults to 100 writes.
+ * @param {Number} [opts.autoSave] - Number of milliseconds this table will wait in an idle state before triggering a snapshot flush to disk. Defaults to 180000 milliseconds.
+ * @param {Number} [opts.fsyncInterval] - Internval in milliseconds to fsync the log file. Defaults to 1000 milliseconds.
+ *
+ * @return {Clusterluck.DTable} A new dtable instance.
+ *
+ * @example
+ * let table = clusterluck.createDTable({
+ *   path: "/path/to/dir",
+ *   writeThreshold: 100,
+ *   autoSave: 180000,
+ *   fsyncInterval: 1000
+ * });
+ * table.start("foo");
+ *
+ */
+function createDTable(opts) {
+  opts = utils.isPlainObject(opts) ? _.cloneDeep(opts) : {};
+  return new lib.dtable(opts);
+}
+
 module.exports = {
   CHash: lib.chash,
   ClusterNode: lib.cluster_node,
@@ -219,11 +249,13 @@ module.exports = {
   StateTable: lib.table,
   TableTerm: lib.table_term,
   VectorClock: lib.vclock,
+  DTable: lib.dtable,
   createCHash: createCHash,
   createVClock: createVClock,
   createGossip: createGossip,
   createCluster: createCluster,
   createKernel: createKernel,
   createGenServer: createGenServer,
+  createDTable: createDTable,
   consts: consts
 };
