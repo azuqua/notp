@@ -20,7 +20,7 @@ module.exports = function (mocks, lib) {
       assert.equal(dtable._autoSave, consts.dtableOpts.autoSave);
       assert.equal(dtable._writeCount, 0);
       assert.equal(dtable._writeThreshold, consts.dtableOpts.writeThreshold);
-      assert.deepEqual(dtable._table, new Map());
+      assert.ok(_.isEqual(dtable._table, new Map()));
       assert.equal(dtable._idleTicks, 0);
       assert.equal(dtable._idleTickMax, consts.dtableOpts.autoSave/1000);
       assert.equal(dtable._fsyncInterval, consts.dtableOpts.fsyncInterval);
@@ -324,6 +324,7 @@ module.exports = function (mocks, lib) {
 
     it("Should flush snapshot of table to disk", function (done) {
       var out = new Map();
+      dtable.set("foo", "bar");
       sinon.stub(fs, "createWriteStream", () => {
         var pstream = new stream.PassThrough();
         pstream.on("data", (data) => {
@@ -339,7 +340,7 @@ module.exports = function (mocks, lib) {
         foo: "bar"
       }, (err) => {
         assert.notOk(err);
-        assert.deepEqual(out, dtable._table);
+        assert.ok(_.isEqual(out, dtable._table));
         fs.createWriteStream.restore();
         async.nextTick(done);
       });
@@ -425,7 +426,7 @@ module.exports = function (mocks, lib) {
       });
       dtable._loadState((err) => {
         assert.notOk(err);
-        assert.deepEqual(dtable._table, new Map([["key", "val"]]));
+        assert.ok(_.isEqual(dtable._table, new Map([["key", "val"]])));
         fs.stat.restore();
         fs.createReadStream.restore();
         done();
@@ -493,7 +494,7 @@ module.exports = function (mocks, lib) {
       });
       dtable._loadAOF(dtable._aofPath, (err) => {
         assert.notOk(err);
-        assert.deepEqual(dtable._table, new Map([["key", "val"]]));
+        assert.ok(_.isEqual(dtable._table, new Map([["key", "val"]])));
         fs.stat.restore();
         fs.createReadStream.restore();
         done();
