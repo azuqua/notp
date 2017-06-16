@@ -495,6 +495,7 @@ module.exports = function (mocks, lib) {
       dtable._loadAOF(dtable._aofPath, (err) => {
         assert.notOk(err);
         assert.ok(_.isEqual(dtable._table, new Map([["key", "val"]])));
+        assert.equal(dtable._queue.size(), 0);
         fs.stat.restore();
         fs.createReadStream.restore();
         done();
