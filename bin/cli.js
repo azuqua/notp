@@ -63,6 +63,11 @@ class Client extends EventEmitter {
     this._ipc.of[this._id].on("disconnect", _.partial(this._handleDisconnect).bind(this));
   }
 
+  stop() {
+    this._ipc.disconnect(this._id);
+    return this;
+  }
+
   send(comm, message, cb) {
     const data = Buffer.from(JSON.stringify({event: comm, data: message}));
     const msg = {
@@ -260,8 +265,19 @@ ipc.connectToNet(argv.I, argv.H, argv.p, () => {
   client = new Client(ipc, argv.I, argv.H, argv.p, argv.a);
   client.start();
   client.once("connect", () => {
-    vorpal
-      .delimiter("> ")
-      .show();
+    if (argv._.length === 0) {
+      vorpal
+        .delimiter("> ")
+        .show();
+    } else {
+      vorpal.exec(argv._, function (err, res) {
+        client.stop();
+        if (err) {
+          process.exit(1);
+        } else {
+          process.exit(0);
+        }
+      });
+    }
   });
 });
