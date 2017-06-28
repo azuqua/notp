@@ -13,7 +13,7 @@ const path = require("path"),
 
 const vorpal = require("vorpal")();
 const argv = require("yargs")
-  .usage("Usage: $0 -h localhost -p 7021 -a '' -I foo")
+  .usage("Usage: $0 [OPTIONS] [cmd [arg [arg ...]]]")
   .demand([])
   .help("help")
   .describe("I", "Unique instance identifier of the node being connected to.")
