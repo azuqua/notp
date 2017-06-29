@@ -62,7 +62,6 @@ $ npm install --global istanbul
     - [`mremove`](#mremove)
   - [Consistent Hash Ring](#ConsistentHashRing)
   - [Vector Clocks](#VectorClocks)
-- [ChangeLog](#ChangeLog)
 - [TODO](#TODO)
 
 ### <a name="Usage"></a>Usage
@@ -455,21 +454,6 @@ Some helpful resources for learning about vector clocks:
   - [Riak Documentation](http://docs.basho.com/riak/kv/2.2.1/learn/concepts/causal-context/)
 
 From here, you can reference the documentation found on the github pages for the VectorClock class.
-
-### <a name="ChangeLog"></a>ChangeLog
-
-- 1.1.3:
-  - README fixes for command descriptions.
-- 1.1.2:
-  - Remove TODOs from bin/cli.
-- 1.1.1:
-  - Grammatical fixes to README.
-- 1.1.0:
-  - Add timeouts on GenServer request streams.
-  - Emit stream error on closed socket connection.
-  - Additional documentation.
-- Dawn of time (unversioned up to 1.0.0):
-  - Check the commit history for details (about code changes, dawn of time undocumented).
 
 ### <a name="TODO"></a>TODO
 
