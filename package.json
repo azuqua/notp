@@ -1,6 +1,6 @@
 {
   "name": "clusterluck",
-  "version": "1.2.4",
+  "version": "1.2.3",
   "description": "Distributed systems library for gossip protocols, consistent hash rings, and vector clocks.",
   "main": "index.js",
   "scripts": {
