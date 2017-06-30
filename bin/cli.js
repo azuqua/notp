@@ -13,7 +13,7 @@ const path = require("path"),
 
 const vorpal = require("vorpal")();
 const argv = require("yargs")
-  .usage("Usage: $0 -h localhost -p 7021 -a '' -I foo")
+  .usage("Usage: $0 [OPTIONS] [cmd [arg [arg ...]]]")
   .demand([])
   .help("help")
   .describe("I", "Unique instance identifier of the node being connected to.")
@@ -61,6 +61,11 @@ class Client extends EventEmitter {
     });
     this._ipc.of[this._id].on("connect", _.partial(this._handleConnect).bind(this));
     this._ipc.of[this._id].on("disconnect", _.partial(this._handleDisconnect).bind(this));
+  }
+
+  stop() {
+    this._ipc.disconnect(this._id);
+    return this;
   }
 
   send(comm, message, cb) {
@@ -260,8 +265,19 @@ ipc.connectToNet(argv.I, argv.H, argv.p, () => {
   client = new Client(ipc, argv.I, argv.H, argv.p, argv.a);
   client.start();
   client.once("connect", () => {
-    vorpal
-      .delimiter("> ")
-      .show();
+    if (argv._.length === 0) {
+      vorpal
+        .delimiter("> ")
+        .show();
+    } else {
+      vorpal.exec(argv._, function (err, res) {
+        client.stop();
+        if (err) {
+          process.exit(1);
+        } else {
+          process.exit(0);
+        }
+      });
+    }
   });
 });
