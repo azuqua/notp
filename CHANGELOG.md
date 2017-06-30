@@ -1,5 +1,13 @@
 # Change Log
 
+## [v1.2.3](https://github.com/azuqua/clusterluck/tree/v1.2.3) (2017-06-29)
+[Full Changelog](https://github.com/azuqua/clusterluck/compare/v1.2.2...v1.2.3)
+
+**Merged pull requests:**
+
+- Add sessionless command execution on CLI, CHANGELOG.md file generated [\#35](https://github.com/azuqua/clusterluck/pull/35) ([kevinwilson541](https://github.com/kevinwilson541))
+- Kevin/develop [\#33](https://github.com/azuqua/clusterluck/pull/33) ([kevinwilson541](https://github.com/kevinwilson541))
+
 ## [v1.2.2](https://github.com/azuqua/clusterluck/tree/v1.2.2) (2017-06-16)
 [Full Changelog](https://github.com/azuqua/clusterluck/compare/v1.2.1...v1.2.2)
 
