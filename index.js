@@ -239,6 +239,57 @@ function createDTable(opts) {
   return new lib.dtable(opts);
 }
 
+/**
+ *
+ * Constructs a mtable instance, an in-memory key/value storage.
+ *
+ * @method createMTable
+ * @memberof Clusterluck
+ *
+ * @return {Clusterluck.MTable} A new mtable instance.
+ *
+ * @example
+ * let table = clusterluck.createMTable();
+ * table.start("foo");
+ *
+ */
+function createMTable() {
+  return new lib.mtable();
+}
+
+/**
+ *
+ * Constructs a DLM server instance. Handles creating read locks, write locks, as well as removing such locks across a cluster of nodes. See documentation of the DlmServer class for how locks are routed and partitioned across the cluster.
+ *
+ * @method createDLM
+ * @memberof Clusterluck
+ *
+ * @param {Clusterluck.ClusterNode} cluster - Cluster for this generic server to bind to.
+ * @param {Object} [opts] - Options object for creating DLM server.
+ * @param {Number} [opts.rquorum] - Quorum for read lock requests.
+ * @param {Number} [opts.wquorum] - Quorum for write lock requests.
+ * @param {Number} [opts.minWaitTimeout] - Minimum amount of time in milliseconds to wait for a retry on a locking request.
+ * @param {Number} [opts.maxWaitTimeout] - Maximum amount of time in milliseconds to wait for a retry on a locking request.
+ * @param {Boolean} [opts.disk] - Whether to persist lock state to disk. If `true` is passed, the following options will be read.
+ * @param {String} [opts.path] - Path for underlying DTable instance to flush state to.
+ * @param {Number} [opts.writeThreshold] - Write threshold of underlying DTable instance.
+ * @param {Number} [opts.autoSave] - Autosave interval of underlying DTable instance.
+ * @param {Number} [opts.fsyncInterval] - Fsync interval of underlying DTable instance.
+ *
+ * @return {Clusterluck.DLMServer} A new generic server instance.
+ *
+ * @example
+ * let server = clusterluck.createDLM(cluster, {disk: true, path: "/path/to/dir"});
+ * server.load((err) => {
+ *   server.start("foo");
+ * });
+ *
+ */
+function createDLM(cluster, opts) {
+  opts = utils.isPlainObject(opts) ? _.cloneDeep(opts) : {};
+  return new lib.dlm.DLMServer(cluster.gossip(), cluster.kernel(), opts);
+}
+
 module.exports = {
   CHash: lib.chash,
   ClusterNode: lib.cluster_node,
@@ -250,6 +301,10 @@ module.exports = {
   TableTerm: lib.table_term,
   VectorClock: lib.vclock,
   DTable: lib.dtable,
+  MTable: lib.mtable,
+  DLMServer: lib.dlm.DLMServer,
+  Lock: lib.dlm.Lock,
+  Semaphore: lib.dsem.Semaphore,
   createCHash: createCHash,
   createVClock: createVClock,
   createGossip: createGossip,
@@ -257,5 +312,7 @@ module.exports = {
   createKernel: createKernel,
   createGenServer: createGenServer,
   createDTable: createDTable,
+  createMTable: createMTable,
+  createDLM: createDLM,
   consts: consts
 };

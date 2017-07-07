@@ -12,5 +12,8 @@ module.exports = function (mocks, lib) {
     require("./utils")(mocks, lib);
     require("./cluster_node")(mocks, lib);
     require("./dtable")(mocks, lib);
+    require("./mtable")(mocks, lib);
+    require("./dlm")(mocks, lib);
+    require("./dsem")(mocks, lib);
   });
 };

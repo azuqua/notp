@@ -175,6 +175,14 @@ module.exports = function (mocks, lib) {
       assert.throws(_.partial(dtable.hdel, "key", "hkey").bind(dtable));
     });
 
+    it("Should clear values of table", function () {
+      dtable.set("foo", "bar");
+      var prevCount = dtable._writeCount;
+      dtable.clear();
+      assert.equal(dtable._writeCount, prevCount+1);
+      assert.equal(dtable._table.size, 0);
+    });
+
     it("Should run an async forEach over table", function (done) {
       dtable.set("key", "val");
       dtable.set("key2", "val2");
