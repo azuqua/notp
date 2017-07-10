@@ -95,7 +95,8 @@ module.exports = function (mocks, lib) {
         server.emit("idle");
       });
 
-      it("Should return whether handler is idle or not", function () {
+      it("Should return whether handler is idle or not", function (done) {
+        server.start("foo");
         assert.equal(server.idle(), true);
         server._streams.set("foo", "bar");
         assert.equal(server.idle(), false);
@@ -103,6 +104,16 @@ module.exports = function (mocks, lib) {
         sinon.stub(server._table, "idle", () => {return false;});
         assert.equal(server.idle(), false);
         server._table.idle.restore();
+
+        server._streams.set("foo", "bar");
+        server._table.emit("idle");
+        assert.equal(server.idle(), false);
+        server._streams.delete("foo");
+        server._table.emit("idle");
+        assert.equal(server.idle(), true);
+
+        server.stop();
+        server.once("stop", done);
       });
 
       it("Should fail to load state", function (done) {
