@@ -259,7 +259,7 @@ function createMTable() {
 
 /**
  *
- * Constructs a DLM server instance. Handles creating read locks, write locks, as well as removing such locks across a cluster of nodes. See documentation of the DlmServer class for how locks are routed and partitioned across the cluster.
+ * Constructs a DLM server instance. Handles creating read locks, write locks, as well as removing such locks across a cluster of nodes. See documentation of the DLMServer class for how locks are routed and partitioned across the cluster.
  *
  * @method createDLM
  * @memberof Clusterluck
@@ -290,6 +290,37 @@ function createDLM(cluster, opts) {
   return new lib.dlm.DLMServer(cluster.gossip(), cluster.kernel(), opts);
 }
 
+/**
+ *
+ * Constructs a DSM server instance. Handles creating/reading/destroying semaphores, as well as posting and closing semaphores with requesters/actors. See documentation of the DSMServer class for how semaphores are routed and partitioned across the cluster.
+ *
+ * @method createDSM
+ * @memberof Clusterluck
+ *
+ * @param {Clusterluck.ClusterNode} cluster - Cluster for this generic server to bind to.
+ * @param {Object} [opts] - Options object for creating DSM server.
+ * @param {Number} [opts.minWaitTimeout] - Minimum amount of time in milliseconds to wait for a retry on a post request.
+ * @param {Number} [opts.maxWaitTimeout] - Maximum amount of time in milliseconds to wait for a retry on a post request.
+ * @param {Boolean} [opts.disk] - Whether to persist semaphore state to disk. If `true` is passed, the following options will be read.
+ * @param {String} [opts.path] - Path for underlying DTable instance to flush state to.
+ * @param {Number} [opts.writeThreshold] - Write threshold of underlying DTable instance.
+ * @param {Number} [opts.autoSave] - Autosave interval of underlying DTable instance.
+ * @param {Number} [opts.fsyncInterval] - Fsync interval of underlying DTable instance.
+ *
+ * @return {Clusterluck.DSMServer} A new generic server instance.
+ *
+ * @example
+ * let server = clusterluck.createDSM(cluster, {disk: true, path: "/path/to/dir"});
+ * server.load((err) => {
+ *   server.start("foo");
+ * });
+ *
+ */
+function createDSM(cluster, opts) {
+  opts = utils.isPlainObject(opts) ? _.cloneDeep(opts) : {};
+  return new lib.dsem.DSMServer(cluster.gossip(), cluster.kernel(), opts);
+}
+
 module.exports = {
   CHash: lib.chash,
   ClusterNode: lib.cluster_node,
@@ -303,6 +334,7 @@ module.exports = {
   DTable: lib.dtable,
   MTable: lib.mtable,
   DLMServer: lib.dlm.DLMServer,
+  DSMServer: lib.dsem.DSMServer,
   Lock: lib.dlm.Lock,
   Semaphore: lib.dsem.Semaphore,
   createCHash: createCHash,
@@ -314,5 +346,6 @@ module.exports = {
   createDTable: createDTable,
   createMTable: createMTable,
   createDLM: createDLM,
+  createDSM: createDSM,
   consts: consts
 };
