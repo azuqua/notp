@@ -461,4 +461,3 @@ In addition to what currently exists in this library, here's a list of features 
   - Provide listener for permanent close on connection between two nodes (`maxRetries` option on kernel creation).
   - Add a GenStream class similar to GenServer, but strictly uses streams for communication instead of JS natives (will also require a protocol definition for indicating stream start, etc).
   - Discuss making disconnects between nodes on a node departure forceful or not (it's forceful right now).
-  - A distributed lock manager, most likely using the [Redlock algorithm](https://redis.io/topics/distlock), given how well it fits into the current architecture of clusterluck.
