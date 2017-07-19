@@ -8,8 +8,8 @@ notifications:
 sudo: true
 branches:
   only:
-    - master
-    - develop
+  - master
+  - develop
 node_js:
 - '7'
 - '6'
@@ -32,8 +32,8 @@ after_script:
   echo "Finished building docs for GH pages."
 env:
   global:
-    - CXX=g++-4.8
-    - secure: "lQ8RjCelcoFiDrtW82GczFV0h87g/ROgvl5/jS78ZAiVOyGkh9odvx+u4QZvT+vTGLpV0JJgffPNOBH/69oiP1Lirc1rkLnoc6S67ZAUmcW+KfBndEfpQQUOXYgHgab43rnB5e67YivDFE/w+oN8IKeDh+nV5mJl6+kFqabtmHKtX12AsC9gdIrz+4ZHeK6K3iUp3+XJs7NkGDIWZw5+/yTGGLRO0a3d+f25W4MfkrZaC5PhIe/lt1dEhjzaRREXM9U/HxPrGuLF79jWAsnTbdG32ob/mtUeJ5qvtSVIjQhmUufsbSdciLE0vacXElGbMaIC7dwQA+3pvdDk1kD7Z/1yaQgV/aYPAI3uaNRa1U+I6J23t63WXwSvpCGgPpzsi4yUAE1YbgWhpU5oHt4ZxFa0JkWOlqPHNdkh8feA/p918NGNYc9wjV2bSGJ9NSfugo2x69LeKsupdj9X3v2O2Kl+1j8VfZq50NNCojWYLGUTGlI+zRuibsdCU9TMmOZHC+8cK26Mk5MgaO+r6/5syil8GnzMkvyGnEuR/naUmSn5IEvqMvNqxWL8RKONMOs/qmy/gzBUjkxc/GndMxKKoSpLWauxM2F1tsF46Lp/vWw0oCFD2EvHlqrhRIGsorwOhe7IA7pHjuhMf9aV43QxPYoTsJf7pd0lkGpoh1yGPgg="
+  - CXX=g++-4.8
+  - secure: S2ogBC/CkkTZ3bvYxRPq1cNdZfg045OERatJDSW4U6yUoHnRxU9Mau5meeCovRvquGrH37mWahO/h3++iDyn9Mefb8oUDXCAlCjyzkks8wpF4dTDPo6J2AcCNHspK8X4jFVa0azIoF1k44gbqX5FG42F5meeL70FEPurO4mHT19lFHzwp/FdJ8D/uLc3nnQZ0ifjlltv16Olbth4rw3lHvxK5V2Q8pU8fzZfAgfI5zfjfwVt94G1uhsnc9BcojENyLfjmpfXYicTnA48PbpYtzIe8O206xuTgdxKTy89GrL1zVUw47Tor1Lb0wae1JQWYy+ZWipE1/PKoTqoJ9vO5RxwuG/TngkLLGSRsiMuQZRa7kPxfjKux5HCIeRXwdVa99y5XBVdUkFEHWJ9Bc762cIuqQE/7yJz29tyLakUrj/Ok7ELu+kgX6Nh9ukbGOVhbyXRIj60psOSrCqBdLH/unwweJvk1pqObPQqBfy+ffym0mHtdfBt8eUbRNQ1ahzoJ94RW8VUmM3c1YUvZZB2RiMvMKgsIo49uePl4fesfs/XadAEv3To5P+C1IooYVmLjz1eKp1PuVGb4S06WXtAbjnY4AeH/brGlR03oAkRCOSNB6/TwHTBdRAPgwQjG7zhebujbtTJDgXnQ2cOHSLaTHChV/BjB+hib7vEE9cmke8=
 addons:
   apt:
     sources:
