@@ -66,6 +66,16 @@ module.exports = function (mocks, lib) {
         assert.equal(kernel._self.port(), 8001);
       });
 
+      it("Should grab IPC object of netkernel", function () {
+        const ipcRef = kernel._ipc;
+        assert.deepEqual(ipcRef, kernel.ipc());
+      });
+
+      it("Should set IPC object of netkernel", function () {
+        kernel.ipc("foo");
+        assert.equal(kernel.ipc(), "foo");
+      });
+
       it("Should grab self-referential node of netkernel", function () {
         var node = kernel.self();
         assert.equal(node.id(), id);
@@ -410,16 +420,10 @@ module.exports = function (mocks, lib) {
 
       it("Should make async call to internal node with buffer", function (done) {
         var data = Buffer.from("hello");
-        var acc = Buffer.from("");
         var job = uuid.v4();
-        kernel.on(job, (data, stream, from) => {
-          if (!stream.done) {
-            acc = Buffer.concat([acc, data], acc.length + data.length);
-          }
-          else {
-            assert.equal(Buffer.compare(acc, Buffer.from("hello")), 0);
-            done();
-          }
+        kernel.on(job, (out, stream, from) => {
+          assert.equal(Buffer.compare(out, Buffer.from("hello")), 0);
+          done();
         });
         kernel.cast(kernel.self(), job, data);
       });
@@ -446,16 +450,10 @@ module.exports = function (mocks, lib) {
 
       it("Should make async call to external node with buffer", function (done) {
         var data = Buffer.from("hello");
-        var acc = Buffer.from("");
         var job = uuid.v4();
-        nKernel.on(job, (data, stream, from) => {
-          if (!stream.done) {
-            acc = Buffer.concat([acc, data], acc.length + data.length);
-          }
-          else {
-            assert.equal(Buffer.compare(acc, Buffer.from("hello")), 0);
-            done();
-          }
+        nKernel.on(job, (out, stream, from) => {
+          assert.equal(Buffer.compare(out, Buffer.from("hello")), 0);
+          done();
         });
         kernel.cast(nKernel.self(), job, data);
       });
@@ -510,16 +508,15 @@ module.exports = function (mocks, lib) {
       it("Should make sync call to external node with input buffer, return callback", function (done) {
         var data = Buffer.from("hello");
         var exp = Buffer.from("world");
-        var acc = Buffer.from("");
         var job = uuid.v4();
-        nKernel.on(job, (data, stream, from) => {
-          if (!stream.done) {
-            acc = Buffer.concat([acc, data], acc.length + data.length);
-          }
-          else {
-            assert.equal(Buffer.compare(acc, Buffer.from("hello")), 0);
-            nKernel.cast(from.node, from.tag, exp);
-          }
+        nKernel.on(job, (out, strm, from) => {
+          assert.equal(Buffer.compare(out, Buffer.from("hello")), 0);
+          const pstream = new stream.PassThrough();
+          async.nextTick(() => {
+            pstream.write(exp);
+            pstream.end();
+          });
+          nKernel.cast(from.node, from.tag, pstream);
         });
         kernel.call(nKernel.self(), job, data, (err, out) => {
           assert.notOk(err);
@@ -531,16 +528,15 @@ module.exports = function (mocks, lib) {
       it("Should make sync call to external node with input buffer, return stream", function (done) {
         var data = Buffer.from("hello");
         var exp = Buffer.from("world");
-        var acc = Buffer.from("");
         var job = uuid.v4();
-        nKernel.on(job, (data, stream, from) => {
-          if (!stream.done) {
-            acc = Buffer.concat([acc, data], acc.length + data.length);
-          }
-          else {
-            assert.equal(Buffer.compare(acc, Buffer.from("hello")), 0);
-            nKernel.cast(from.node, from.tag, exp);
-          }
+        nKernel.on(job, (out, strm, from) => {
+          assert.equal(Buffer.compare(out, Buffer.from("hello")), 0);
+          const pstream = new stream.PassThrough();
+          async.nextTick(() => {
+            pstream.write(exp);
+            pstream.end();
+          });
+          nKernel.cast(from.node, from.tag, pstream);
         });
         var rstream = kernel.call(nKernel.self(), job, data);
         var retAcc = Buffer.from("");
@@ -610,21 +606,15 @@ module.exports = function (mocks, lib) {
 
       it("Should return an error if return stream errors", function (done) {
         var data = Buffer.from("hello");
-        var acc = Buffer.from("");
         var job = uuid.v4();
-        nKernel.on(job, (data, rcvStream, from) => {
-          if (!rcvStream.done) {
-            acc = Buffer.concat([acc, data], acc.length + data.length);
-          }
-          else {
-            assert.equal(Buffer.compare(acc, Buffer.from("hello")), 0);
-            var rstream = new stream.PassThrough();
-            async.nextTick(() => {
-              rstream.emit("error", new Error("foo"));
-              rstream.end();
-            });
-            nKernel.cast(from.node, from.tag, rstream);
-          }
+        nKernel.on(job, (out, rcvStream, from) => {
+          assert.equal(Buffer.compare(out, Buffer.from("hello")), 0);
+          var rstream = new stream.PassThrough();
+          async.nextTick(() => {
+            rstream.emit("error", new Error("foo"));
+            rstream.end();
+          });
+          nKernel.cast(from.node, from.tag, rstream);
         });
         kernel.call(nKernel.self(), job, data, (err, out) => {
           assert.ok(err);
@@ -635,23 +625,18 @@ module.exports = function (mocks, lib) {
       it("Should fail to reply to sync call on external node with no tag", function (done) {
         var data = Buffer.from("hello");
         var exp = Buffer.from("world");
-        var acc = Buffer.from("");
         var job = uuid.v4();
-        nKernel.on(job, (data, stream, from) => {
-          if (!stream.done) {
-            acc = Buffer.concat([acc, data], acc.length + data.length);
+        nKernel.on(job, (out, stream, from) => {
+          assert.equal(Buffer.compare(out, Buffer.from("hello")), 0);
+          try {
+            out = nKernel.reply({node: from.node, tag: null}, exp);
+          } catch (e) {
+            out = e;
           }
-          else {
-            assert.equal(Buffer.compare(acc, Buffer.from("hello")), 0);
-            var out;
-            try {
-              out = nKernel.reply({node: from.node, tag: null}, exp);
-            } catch (e) {
-              out = e;
-            }
-            assert(out instanceof Error);
+          assert(out instanceof Error);
+          async.nextTick(() => {
             nKernel.reply(from, exp);
-          }
+          });
         });
         kernel.call(nKernel.self(), job, data, (err, out) => {
           assert.notOk(err);
@@ -663,16 +648,12 @@ module.exports = function (mocks, lib) {
       it("Should reply to sync call on external node", function (done) {
         var data = Buffer.from("hello");
         var exp = Buffer.from("world");
-        var acc = Buffer.from("");
         var job = uuid.v4();
-        nKernel.on(job, (data, stream, from) => {
-          if (!stream.done) {
-            acc = Buffer.concat([acc, data], acc.length + data.length);
-          }
-          else {
-            assert.equal(Buffer.compare(acc, Buffer.from("hello")), 0);
+        nKernel.on(job, (out, stream, from) => {
+          assert.equal(Buffer.compare(out, Buffer.from("hello")), 0);
+          async.nextTick(() => {
             nKernel.reply(from, exp);
-          }
+          });
         });
         kernel.call(nKernel.self(), job, data, (err, out) => {
           assert.notOk(err);
@@ -684,22 +665,12 @@ module.exports = function (mocks, lib) {
       it("Should make sync call to multiple external nodes with buffer", function (done) {
         var data = Buffer.from("hello");
         var exp = Buffer.from("world");
-        var acc = Buffer.from("");
         var job = uuid.v4();
-        var streams = new Map();
-        nKernel.on(job, (data, stream, from) => {
-          if (!streams.has(stream.stream)) {
-            streams.set(stream.stream, Buffer.from(""));
-          }
-          var inner = streams.get(stream.stream);
-          if (!stream.done) {
-            inner = Buffer.concat([inner, data], inner.length + data.length);
-            streams.set(stream.stream, inner);
-          }
-          else {
-            assert.equal(Buffer.compare(inner, Buffer.from("hello")), 0);
+        nKernel.on(job, (out, stream, from) => {
+          assert.equal(Buffer.compare(out, Buffer.from("hello")), 0);
+          async.nextTick(() => {
             nKernel.reply(from, exp);
-          }
+          });
         });
         kernel.multicall([nKernel.self(), nKernel.self()], job, data, (err, out) => {
           assert.notOk(err);
@@ -949,6 +920,21 @@ module.exports = function (mocks, lib) {
         kernel._sendData(pstream, conn, job, tag, istream, buf);
       });
 
+      it("Should send data externally w/o stream, but fail with 'error'", function () {
+        var node = nKernel.self();
+        var job = uuid.v4();
+        var buf = Buffer.from("foo");
+        var tag = "tag";
+        var istream = {stream: uuid.v4(), done: true};
+        var conn = kernel.connection(node);
+        sinon.stub(conn, "send", () => {
+          conn.send.restore();
+          return new Error("error");
+        });
+        var out = kernel._sendData(null, conn, job, tag, istream, buf);
+        assert.ok(out instanceof Error);
+      });
+
       it("Should send end externally", function (done) {
         var node = nKernel.self();
         var job = uuid.v4();
@@ -1151,6 +1137,64 @@ module.exports = function (mocks, lib) {
           done();
         });
         kernel._rcvData(node, tag, rstream, data, pstream, from);
+      });
+
+      it("Should handle setting up singleton reply", function (done) {
+        var node = kernel.self();
+        var tag = uuid.v4();
+        var from = {
+          tag: null,
+          node: node
+        };
+        kernel._setupSingletonReply(node, tag, Infinity, (err, res) => {
+          assert.notOk(err);
+          assert.equal(res, "bar");
+          assert.equal(kernel.listeners(tag), 0);
+          done();
+        });
+        async.nextTick(() => {
+          kernel.emit(tag, "bar", {}, from);
+        });
+      });
+
+      it("Should handle triggering timeout on singleton reply", function (done) {
+        var node = kernel.self();
+        var tag = uuid.v4();
+        kernel._setupSingletonReply(node, tag, 0, (err, res) => {
+          assert.ok(err);
+          assert.equal(kernel.listeners(tag), 0);
+          async.nextTick(done);
+        });
+      });
+
+      it("Should handle returning mismatched node error on singleton reply", function (done) {
+        var node = kernel.self();
+        var tag = uuid.v4();
+        var from = {
+          tag: null,
+          node: new Node("not_same", "localhost", 0)
+        };
+        kernel._setupSingletonReply(node, tag, Infinity, (err, res) => {
+          assert.ok(err);
+          assert.equal(kernel.listeners(tag), 0);
+          async.nextTick(done);
+        });
+        kernel.emit(tag, "bar", {}, from);
+      });
+
+      it("Should handle stream error return on singleton reply", function (done) {
+        var node = kernel.self();
+        var tag = uuid.v4();
+        var from = {
+          tag: null,
+          node: node
+        };
+        kernel._setupSingletonReply(node, tag, Infinity, (err, res) => {
+          assert.ok(err);
+          assert.equal(kernel.listeners(tag), 0);
+          async.nextTick(done);
+        });
+        kernel.emit(tag, null, {error: {}}, from);
       });
     });
 

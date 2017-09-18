@@ -155,6 +155,18 @@ module.exports = function (mocks, lib) {
         assert.ok(out instanceof Error);
       });
 
+      it("Should decode singleton", function () {
+        var job = {event: "inspect"};
+        var out = server.decodeSingleton(job);
+        assert.deepEqual(out, {event: "inspect", data: undefined});
+
+        out = server.decodeSingleton({event: "get"});
+        assert.ok(out instanceof Error);
+
+        out = server.decodeSingleton({event: "not defined"});
+        assert.ok(out instanceof Error);
+      });
+
       it("Should skip parsing stream if command comes from cluster node", function () {
         var data = Buffer.from(JSON.stringify({ok: true}));
         var stream = {stream: uuid.v4(), done: false};

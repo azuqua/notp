@@ -618,7 +618,7 @@ module.exports = function (mocks, lib) {
           node: kernel.self()
         };
         sinon.stub(server, "reply", (from, out) => {
-          assert.deepEqual(JSON.parse(out), {ok: true});
+          assert.deepEqual(out, {ok: true});
         });
         server._doCreate({
           id: "foo",
@@ -633,7 +633,7 @@ module.exports = function (mocks, lib) {
           node: kernel.self()
         };
         sinon.stub(server, "reply", (from, out) => {
-          assert.deepEqual(JSON.parse(out), {ok: true});
+          assert.deepEqual(out, {ok: true});
         });
         server._doCreate({
           id: "foo",
@@ -664,7 +664,7 @@ module.exports = function (mocks, lib) {
           node: kernel.self()
         };
         sinon.stub(server, "reply", (from, out) => {
-          assert.deepEqual(JSON.parse(out), {ok: true, data: {n: 3, active: 0}});
+          assert.deepEqual(out, {ok: true, data: {n: 3, active: 0}});
         });
         server._doRead({
           id: "foo"
@@ -678,7 +678,7 @@ module.exports = function (mocks, lib) {
           node: kernel.self()
         };
         sinon.stub(server, "reply", (from, out) => {
-          assert.deepEqual(JSON.parse(out), {ok: true});
+          assert.deepEqual(out, {ok: true});
         });
         server._doDestroy({
           id: "foo"
@@ -693,7 +693,7 @@ module.exports = function (mocks, lib) {
           node: kernel.self()
         };
         sinon.stub(server, "reply", (from, out) => {
-          assert.deepEqual(JSON.parse(out), {ok: true});
+          assert.deepEqual(out, {ok: true});
         });
         server._doDestroy({
           id: "foo"
@@ -724,7 +724,7 @@ module.exports = function (mocks, lib) {
           node: kernel.self()
         };
         sinon.stub(server, "reply", (from, out) => {
-          assert.deepEqual(JSON.parse(out), {ok: false});
+          assert.deepEqual(out, {ok: false});
         });
         server._doPost({
           id: "foo",
@@ -740,7 +740,7 @@ module.exports = function (mocks, lib) {
           node: kernel.self()
         };
         sinon.stub(server, "reply", (from, out) => {
-          assert.deepEqual(JSON.parse(out), {ok: true});
+          assert.deepEqual(out, {ok: true});
         });
         server._doPost({
           id: "foo",
@@ -756,7 +756,7 @@ module.exports = function (mocks, lib) {
           node: kernel.self()
         };
         sinon.stub(server, "reply", (from, out) => {
-          assert.deepEqual(JSON.parse(out), {ok: true});
+          assert.deepEqual(out, {ok: true});
         });
         server._doPost({
           id: "foo",
@@ -789,7 +789,7 @@ module.exports = function (mocks, lib) {
           node: kernel.self()
         };
         sinon.stub(server, "_safeReply", (from, out) => {
-          assert.deepEqual(JSON.parse(out), {ok: false});
+          assert.deepEqual(out, {ok: false});
         });
         server._doClose({
           id: "foo",
@@ -805,7 +805,7 @@ module.exports = function (mocks, lib) {
           node: kernel.self()
         };
         sinon.stub(server, "_safeReply", (from, out) => {
-          assert.deepEqual(JSON.parse(out), {ok: true});
+          assert.deepEqual(out, {ok: true});
         });
         server._doClose({
           id: "foo",
@@ -878,11 +878,6 @@ module.exports = function (mocks, lib) {
           holder: "bar"
         };
         assert.deepEqual(DSMServer.parseJob(obj, "close"), obj);
-      });
-
-      it("Should encode a response over the network kernel", function () {
-        var out = DSMServer.encodeResp({foo: "bar"});
-        assert.equal(out, JSON.stringify({foo: "bar"}));
       });
 
       it("Should calculate wait time for a retry", function () {
