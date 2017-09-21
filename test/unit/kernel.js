@@ -170,6 +170,15 @@ module.exports = function (mocks, lib) {
         });
       });
 
+      it("Should initialize ipc server without ops", function (done) {
+        kernel.start();
+        kernel.on("_ready", () => {
+          assert.equal(kernel._cookie, null);
+          kernel._ipc.network().delete(kernel.self().id());
+          done();
+        });
+      });
+
       it("Should stop ipc server", function (done) {
         var opts = {retry: 500, maxRetries: false};
         kernel.start(opts);
@@ -313,6 +322,11 @@ module.exports = function (mocks, lib) {
           assert.equal(kernel.sinks().size, 0);
           done();
         });
+      });
+
+      it("Should skip connecting to node if node is self, no callback", function () {
+        kernel.connect(kernel.self());
+        assert.equal(kernel.sinks().size, 0);
       });
 
       it("Should skip connecting to node if already connected", function (done) {
@@ -505,6 +519,47 @@ module.exports = function (mocks, lib) {
         });
       });
 
+      it("Should make sycn call to internal node with input buffer, return callback", function (done) {
+        var data = Buffer.from("hello");
+        var exp = Buffer.from("world");
+        var job = uuid.v4();
+        kernel.on(job, (out, strm, from) => {
+          assert.equal(Buffer.compare(out, Buffer.from("hello")), 0);
+          const pstream = new stream.PassThrough();
+          async.nextTick(() => {
+            pstream.write(exp);
+            pstream.end();
+          });
+          kernel.cast(from.node, from.tag, pstream);
+        });
+        kernel.call(kernel.self(), job, data, (err, out) => {
+          assert.notOk(err);
+          assert.equal(Buffer.compare(out, exp), 0);
+          done();
+        });
+      });
+
+      it("Should fail to make sync call to unknown node", function (done) {
+        var data = Buffer.from("hello");
+        var job = uuid.v4();
+        kernel.call(new Node("id_unknown", "localhost", 0), job, data, (err, out) => {
+          assert.ok(err);
+          done();
+        });
+      });
+
+      it("Should fail to make sync call to external node if connection shutdown", function (done) {
+        var data = Buffer.from("hello");
+        var job = uuid.v4();
+        var conn = kernel.connection(nKernel.self());
+        conn._active = false;
+        kernel.call(nKernel.self(), job, data, (err, out) => {
+          assert.ok(err);
+          conn._active = true;
+          done();
+        });
+      });
+
       it("Should make sync call to external node with input buffer, return callback", function (done) {
         var data = Buffer.from("hello");
         var exp = Buffer.from("world");
@@ -604,6 +659,57 @@ module.exports = function (mocks, lib) {
         });
       });
 
+      it("Should make sycn callSingleton to internal node with input buffer", function (done) {
+        var data = Buffer.from("hello");
+        var exp = Buffer.from("world");
+        var job = uuid.v4();
+        kernel.on(job, (out, strm, from) => {
+          assert.equal(Buffer.compare(out, Buffer.from("hello")), 0);
+          kernel.cast(from.node, from.tag, exp);
+        });
+        kernel.callSingleton(kernel.self(), job, data, (err, out) => {
+          assert.notOk(err);
+          assert.equal(Buffer.compare(out, exp), 0);
+          done();
+        });
+      });
+
+      it("Should fail to make sync callSingleton to unknown node", function (done) {
+        var data = Buffer.from("hello");
+        var job = uuid.v4();
+        kernel.callSingleton(new Node("id_unknown", "localhost", 0), job, data, (err, out) => {
+          assert.ok(err);
+          done();
+        });
+      });
+
+      it("Should fail to make sync callSingleton to external node if connection shutdown", function (done) {
+        var data = Buffer.from("hello");
+        var job = uuid.v4();
+        var conn = kernel.connection(nKernel.self());
+        conn._active = false;
+        kernel.callSingleton(nKernel.self(), job, data, (err, out) => {
+          assert.ok(err);
+          conn._active = true;
+          done();
+        });
+      });
+
+      it("Should make sync callSingleton to external node with input buffer", function (done) {
+        var data = Buffer.from("hello");
+        var exp = Buffer.from("world");
+        var job = uuid.v4();
+        nKernel.on(job, (out, strm, from) => {
+          assert.equal(Buffer.compare(out, Buffer.from("hello")), 0);
+          nKernel.cast(from.node, from.tag, exp);
+        });
+        kernel.callSingleton(nKernel.self(), job, data, (err, out) => {
+          assert.notOk(err);
+          assert.equal(Buffer.compare(out, exp), 0);
+          done();
+        });
+      });
+
       it("Should return an error if return stream errors", function (done) {
         var data = Buffer.from("hello");
         var job = uuid.v4();
@@ -662,7 +768,7 @@ module.exports = function (mocks, lib) {
         });
       });
 
-      it("Should make sync call to multiple external nodes with buffer", function (done) {
+      it("Should make sync call to multiple external nodes with buffer, with callbacks", function (done) {
         var data = Buffer.from("hello");
         var exp = Buffer.from("world");
         var job = uuid.v4();
@@ -679,6 +785,32 @@ module.exports = function (mocks, lib) {
             assert.equal(Buffer.compare(val, exp), 0);
           });
           done();
+        });
+      });
+
+      it("Should make sync call to multiple external nodes with buffer, with array of streams", function (done) {
+        var data = Buffer.from("hello");
+        var exp = Buffer.from("world");
+        var job = uuid.v4();
+        nKernel.on(job, (out, stream, from) => {
+          assert.equal(Buffer.compare(out, Buffer.from("hello")), 0);
+          async.nextTick(() => {
+            nKernel.reply(from, exp);
+          });
+        });
+        var rStreams = kernel.multicall([nKernel.self(), nKernel.self()], job, data);
+        assert.lengthOf(rStreams, 2);
+        let count = rStreams.length;
+        rStreams.forEach((rstream) => {
+          let acc = Buffer.from("");
+          rstream.on("data", (data) => {
+            acc = Buffer.concat([acc, data]);
+          });
+          rstream.on("end", () => {
+            count--;
+            assert.equal(Buffer.compare(acc, exp), 0);
+            if (count === 0) done();
+          });
         });
       });
 
