@@ -383,7 +383,7 @@ module.exports = function (mocks, lib) {
       var node = new Node("id", "localhost", 8000);
       chash.insert(node);
       out = chash.toJSON(true);
-      var name = CHash._nodeName(node, 1);
+      var name = chash._nodeName(node, 1);
       assert.deepEqual(out, {
         rfactor: rfactor,
         pfactor: pfactor,
@@ -398,7 +398,7 @@ module.exports = function (mocks, lib) {
 
     it("Should properly parse JSON", function () {
       var node = new Node("id", "localhost", 8000);
-      var name = CHash._nodeName(node, 1);
+      var name = chash._nodeName(node, 1);
       var ent = {
         rfactor: 1,
         pfactor: 1,
