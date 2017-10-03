@@ -450,6 +450,22 @@ module.exports = function (mocks, lib) {
         assert.deepEqual(out.data, kernel.self().toJSON(true));
         done();
       });
+
+      it("Should return list of nodes in ring", function (done) {
+        var data = {};
+        var out = server.nodes(data, from);
+        assert.equal(out.ok, true);
+        assert.deepEqual(out.data, gossip.ring().nodes());
+        done();
+      });
+
+      it("Should return status of residing node on ping", function (done) {
+        var data = {};
+        var out = server.ping(data, from);
+        assert.equal(out.ok, true);
+        assert.equal(out.data, "pong");
+        done();
+      });
     });
   });
 };

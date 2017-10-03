@@ -202,6 +202,15 @@ module.exports = function (mocks, lib) {
         });
         kernel._ipc.server.start();
       });
+
+      it("Should reset token", function () {
+        kernel._index = 0;
+        kernel._baseToken = "foo";
+        kernel._resetToken();
+        assert.equal(kernel._index, 0);
+        assert.isString(kernel._baseToken);
+        assert.notEqual(kernel._baseToken, "foo");
+      });
     });
 
     describe("NetKernel routing tests", function () {
@@ -432,6 +441,68 @@ module.exports = function (mocks, lib) {
         nKernel.stop();
       });
 
+      it("Should send ping command to another node", function (done) {
+        nKernel._ipc.server.on("ping", (data, socket) => {
+          assert.deepEqual(data.from, kernel.self().toJSON(true));
+        });
+        kernel.ping(nKernel.self(), (err, out) => {
+          assert.notOk(err);
+          assert.equal(out, "pong");
+          done();
+        });
+      });
+
+      it("Should immeidately return if pinging local node", function (done) {
+        sinon.spy(kernel, "_generateToken");
+        kernel.ping(kernel.self(), (err, out) => {
+          assert.notOk(err);
+          assert.equal(out, "pong");
+          assert.equal(kernel._generateToken.called, false);
+          kernel._generateToken.restore();
+          done();
+        });
+      });
+
+      it("Should fail to ping if no node connection found", function (done) {
+        kernel.ping(new Node("not_known"), (err) => {
+          assert.ok(err);
+          done();
+        });
+      });
+
+      it("Should fail to make ping to external node if connection shutdown", function (done) {
+        var conn = kernel.connection(nKernel.self());
+        conn._active = false;
+        kernel.ping(nKernel.self(), (err, out) => {
+          assert.ok(err);
+          conn._active = true;
+          done();
+        });
+      });
+
+      it("Should fail to make ping if cookies mismatch", function () {
+        sinon.spy(kernel, "_skipMsg");
+        kernel.cookie("foo");
+        kernel._ipc.server.emit("ping", {
+          tag: "bar",
+          from: {},
+          checkSum: "foo"
+        });
+        assert.equal(kernel._skipMsg.called, true);
+        kernel._skipMsg.restore();
+        kernel._cookie = null;
+      });
+
+      it("Should fail to make ping if unknown node", function () {
+        sinon.spy(kernel, "_sendData");
+        kernel._ipc.server.emit("ping", {
+          tag: "bar",
+          from: {id: "unknown"}
+        });
+        assert.equal(kernel._sendData.called, false);
+        kernel._sendData.restore();
+      });
+
       it("Should make async call to internal node with buffer", function (done) {
         var data = Buffer.from("hello");
         var job = uuid.v4();
@@ -519,7 +590,7 @@ module.exports = function (mocks, lib) {
         });
       });
 
-      it("Should make sycn call to internal node with input buffer, return callback", function (done) {
+      it("Should make sync call to internal node with input buffer, return callback", function (done) {
         var data = Buffer.from("hello");
         var exp = Buffer.from("world");
         var job = uuid.v4();
