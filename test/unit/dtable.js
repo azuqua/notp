@@ -17,6 +17,10 @@ module.exports = function (mocks, lib) {
       async.nextTick(done);
     });
 
+    after(function (done) {
+      fs.unlink("./data/foo_LATEST.LOG", done);
+    });
+
     it("Should construct a DTable", function () {
       assert.equal(dtable._autoSave, consts.dtableOpts.autoSave);
       assert.equal(dtable._writeCount, 0);
@@ -359,41 +363,57 @@ module.exports = function (mocks, lib) {
     it("Should flush snapshot of table to disk", function (done) {
       var out = new Map();
       dtable.set("foo", "bar");
-      sinon.stub(fs, "createWriteStream", () => {
-        var pstream = new stream.PassThrough();
-        pstream.on("data", (data) => {
-          data = JSON.parse(data);
-          out.set(data.key, DTable.decodeValue(data.value));
+      dtable.start("foo");
+      dtable.once("open", () => {
+        sinon.stub(fs, "createWriteStream", () => {
+          var pstream = new stream.PassThrough();
+          pstream.on("data", (data) => {
+            data = JSON.parse(data);
+            out.set(data.key, DTable.decodeValue(data.value));
+          });
+          pstream.once("end", () => {
+            pstream.emit("close");
+          });
+          return pstream;
         });
-        pstream.once("end", () => {
-          pstream.emit("close");
+        sinon.stub(fs, "rename", (oldPath, newPath, cb) => {
+          cb();
         });
-        return pstream;
-      });
-      dtable._flushTable({
-        foo: "bar"
-      }, (err) => {
-        assert.notOk(err);
-        assert.ok(_.isEqual(out, dtable._table));
-        fs.createWriteStream.restore();
-        async.nextTick(done);
+        dtable._flushTable({
+          foo: "bar"
+        }, (err) => {
+          assert.notOk(err);
+          assert.ok(_.isEqual(out, dtable._table));
+          fs.createWriteStream.restore();
+          assert.ok(fs.rename.called);
+          fs.rename.restore();
+          dtable.stop(done);
+        });
       });
     });
 
     it("Should fail flushing snapshot of table to disk", function (done) {
-      sinon.stub(fs, "createWriteStream", () => {
-        var pstream = new stream.PassThrough();
-        async.nextTick(() => {
-          pstream.emit("error", new Error("foo"));
+      dtable.start("foo");
+      dtable.once("open", () => {
+        sinon.stub(fs, "createWriteStream", () => {
+          var pstream = new stream.PassThrough();
+          async.nextTick(() => {
+            pstream.emit("error", new Error("foo"));
+          });
+          return pstream;
         });
-        return pstream;
-      });
-      dtable._flushTable({
-        foo: "bar"
-      }, (err) => {
-        assert.ok(err);
-        fs.createWriteStream.restore();
-        async.nextTick(done);
+        sinon.stub(fs, "unlink", (rmPath, cb) => {
+          cb();
+        });
+        dtable._flushTable({
+          foo: "bar"
+        }, (err) => {
+          assert.ok(err);
+          fs.createWriteStream.restore();
+          assert.ok(fs.unlink.called);
+          fs.unlink.restore();
+          dtable.stop(done);
+        });
       });
     });
 
@@ -424,7 +444,7 @@ module.exports = function (mocks, lib) {
           cb(new Error("foo"));
         });
       });
-      dtable._loadState((err) => {
+      dtable._loadState("path", (err) => {
         assert.ok(err);
         fs.stat.restore();
         done();
@@ -435,7 +455,7 @@ module.exports = function (mocks, lib) {
       sinon.stub(fs, "stat", (path, cb) => {
         async.nextTick(_.partial(cb, _.extend(new Error("foo"), {code: "ENOENT"})));
       });
-      dtable._loadState((err) => {
+      dtable._loadState("path", (err) => {
         assert.notOk(err);
         assert.equal(dtable._table.size, 0);
         fs.stat.restore();
@@ -458,7 +478,7 @@ module.exports = function (mocks, lib) {
         });
         return pstream;
       });
-      dtable._loadState((err) => {
+      dtable._loadState("path", (err) => {
         assert.notOk(err);
         assert.ok(_.isEqual(dtable._table, new Map([["key", "val"]])));
         fs.stat.restore();
@@ -478,7 +498,7 @@ module.exports = function (mocks, lib) {
         });
         return pstream;
       });
-      dtable._loadState((err) => {
+      dtable._loadState("path", (err) => {
         assert.ok(err);
         fs.stat.restore();
         fs.createReadStream.restore();

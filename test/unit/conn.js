@@ -139,6 +139,23 @@ module.exports = function (mocks, lib) {
       assert.equal(conn.idle(), false);
     });
 
+    it("Should return max queue length", function () {
+      assert.equal(conn.maxLen(), 1024);
+    });
+
+    it("Should set new max queue length", function () {
+      conn.maxLen(1023);
+      assert.equal(conn.maxLen(), 1023);
+      conn.maxLen(-1);
+      assert.equal(conn.maxLen(), 1023);
+
+      conn._queue.enqueue("foo");
+      conn._queue.enqueue("bar");
+      conn.maxLen(1);
+      assert.equal(conn.maxLen(), 1);
+      assert.equal(conn._queue.size(), 1);
+    });
+
     it("Should throw if connection inactive and data is sent", function () {
       var data = {
         data: "bar",

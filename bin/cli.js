@@ -139,6 +139,13 @@ vorpal
   });
 
 vorpal
+  .command("nodes")
+  .description("Prints the nodes of the ring of this node to the console.")
+  .action(function (args, cb) {
+    client.send("nodes", null, cb);
+  });
+
+vorpal
   .command("get <id>")
   .description("Returns information about a node's hostname and port in this node's cluster.")
   .types({
@@ -256,6 +263,13 @@ vorpal
       force: args.options.force,
       nodes: nodes
     }, cb);
+  });
+
+vorpal
+  .command("ping")
+  .description("Ping a node in the cluster.")
+  .action(function (args, cb) {
+    client.send("ping", null, cb);
   });
 
 console.log("Connecting to IPC server on node: %s, host: %s, port: %s", argv.I, argv.H, argv.p);
