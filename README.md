@@ -214,7 +214,8 @@ Here, we see the true power of `GenServer`s as a unified interface for distribut
 
 
 As an implementation note, `GenServer`s should not be used as a replacement for EventEmitters when orchestrating state local to a node.
-Generally speaking, serialization costs place an undue cost when we can just pass native JS objects around.
+Generally speaking, there is little overhead in using this over a raw EventEmitter, but there are conditional branches and extra V8 constructions
+that may be unneeded for your implementation.
 Instead, making other `GenServer`s part of the constructor of other `GenServer`s is preferred (using OOP principles to enforce actor relations), similar to how the `CommandServer` class works.
 In fact, both the `GossipRing` and `CommandServer` classes, built into every node in the cluster, are `GenServer`s themselves!
 
