@@ -51,6 +51,8 @@ $ npm install --global istanbul
   - [Writing GenServers](#WritingGenServers)
   - [Using the CLI](#UsingTheCLI)
     - [`inspect`](#inspect)
+    - [`nodes`](#nodes)
+    - [`ping`](#ping)
     - [`get`](#get)
     - [`has`](#has)
     - [`join`](#join)
@@ -247,6 +249,25 @@ In the CLI session, type `inspect`. This command will print the cluster at a nod
           value: { id: 'foo', host: 'localhost', port: 7022 } },
         { key: 'kzMt7C+SJZbxNQmrL3vhpfJ+a0RgPiGlRhrxwS57RWI=',
           value: { id: 'foo', host: 'localhost', port: 7022 } } ] } }
+```
+
+##### nodes
+
+In the CLI session, type `nodes`. This command will print the nodes of the cluster on the console. For example, if we've just started a new node with id `foo` at hostname `localhost` with port `7022`, we'd see the following output:
+
+```
+> nodes
+{ ok: true,
+  data: [ { id: 'foo', host: 'baconstation', port: 7021 } ] }
+```
+
+##### ping
+
+In the CLI session, type `ping`. This command will ping the node this session is targetting. For example, we'd see the following output:
+
+```
+> ping
+{ ok: true, data: 'pong' }
 ```
 
 ##### get
