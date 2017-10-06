@@ -405,7 +405,7 @@ module.exports = function (mocks, lib) {
         var node2 = new Node("id2", host, port+1);
         gossip.ring().insert(node2);
         var before = gossip.ring().size();
-        gossip.insert(node2);
+        gossip.insert(node2, 1);
         assert.deepEqual(gossip.ring().size(), before);
         gossip.ring().remove(node2);
       });
@@ -421,7 +421,7 @@ module.exports = function (mocks, lib) {
           assert.deepEqual(msg, gossip.ring().toJSON(true));
           assert.deepEqual(clock, gossip.vclock());
         });
-        gossip.insert(node2);
+        gossip.insert(node2, 3);
         assert.equal(gossip.ring().size(), 6);
         assert.ok(gossip._actor);
         assert.ok(gossip.vclock().has(gossip._actor));
@@ -440,7 +440,7 @@ module.exports = function (mocks, lib) {
       it("Should insert a node into gossip ring, waiting for idle state", function (done) {
         var node2 = new Node("id2", host, port+1);
         gossip.streams(new Map([["key", "value"]]));
-        gossip.insert(node2);
+        gossip.insert(node2, 3);
         gossip.once("process", (ring) => {
           assert.ok(gossip.ring().isDefined(node2));
           assert.equal(gossip.ring().size(), 6);
@@ -478,7 +478,7 @@ module.exports = function (mocks, lib) {
           assert.deepEqual(msg, gossip.ring().toJSON(true));
           assert.deepEqual(clock, gossip.vclock());
         });
-        gossip.insert(node2, true);
+        gossip.insert(node2, 3, true);
         assert.equal(gossip.ring().size(), 6);
         assert.ok(gossip._actor);
         assert.ok(gossip.vclock().has(gossip._actor));
@@ -498,7 +498,7 @@ module.exports = function (mocks, lib) {
         var node2 = new Node("id2", host, port+1);
         gossip.ring().insert(node2);
         var before = gossip.ring().size();
-        gossip.minsert([node2]);
+        gossip.minsert([node2], 3);
         assert.equal(gossip.ring().size(), before);
         gossip.ring().remove(node2);
       });
@@ -514,7 +514,7 @@ module.exports = function (mocks, lib) {
           assert.deepEqual(msg, gossip.ring().toJSON(true));
           assert.deepEqual(clock, gossip.vclock());
         });
-        gossip.minsert([node2]);
+        gossip.minsert([node2], 3);
         assert.equal(gossip.ring().size(), 6);
         assert.ok(gossip._actor);
         assert.ok(gossip.vclock().has(gossip._actor));
@@ -533,7 +533,7 @@ module.exports = function (mocks, lib) {
       it("Should minsert nodes into gossip ring, waiting for idle state", function (done) {
         var node2 = new Node("id2", host, port+1);
         gossip.streams(new Map([["key", "value"]]));
-        gossip.minsert([node2]);
+        gossip.minsert([node2], 3);
         gossip.once("process", (ring) => {
           assert.ok(gossip.ring().isDefined(node2));
           assert.equal(gossip.ring().size(), 6);
@@ -571,7 +571,7 @@ module.exports = function (mocks, lib) {
           assert.deepEqual(msg, gossip.ring().toJSON(true));
           assert.deepEqual(clock, gossip.vclock());
         });
-        gossip.minsert([node2], true);
+        gossip.minsert([node2], 3, true);
         assert.equal(gossip.ring().size(), 6);
         assert.ok(gossip._actor);
         assert.ok(gossip.vclock().has(gossip._actor));
@@ -600,7 +600,7 @@ module.exports = function (mocks, lib) {
         var ringID = gossip._ringID;
         var oldRing = gossip.ring();
         var oldClock = gossip.vclock();
-        gossip.insert(node2);
+        gossip.insert(node2, 3);
         gossip.once("send", (clock, event, msg) => {
           Object.keys(clock._vector).forEach((key) => {
             assert(oldClock.has(key));
@@ -627,7 +627,7 @@ module.exports = function (mocks, lib) {
         var ringID = gossip._ringID;
         var oldRing = gossip.ring();
         var oldClock = gossip.vclock();
-        gossip.insert(node2);
+        gossip.insert(node2, 3);
         gossip.once("send", (clock, event, msg) => {
           Object.keys(clock._vector).forEach((key) => {
             assert(oldClock.has(key));
@@ -657,7 +657,7 @@ module.exports = function (mocks, lib) {
         var ringID = gossip._ringID;
         var oldRing = gossip.ring();
         var oldClock = gossip.vclock();
-        gossip.insert(node2);
+        gossip.insert(node2, 3);
         gossip.once("send", (clock, event, msg) => {
           Object.keys(clock._vector).forEach((key) => {
             assert(oldClock.has(key));
@@ -689,7 +689,7 @@ module.exports = function (mocks, lib) {
 
       it("Should remove a node from the gossip ring if already idle", function (done) {
         var node2 = new Node("id2", host, port+1);
-        gossip.insert(node2);
+        gossip.insert(node2, 3);
         gossip.once("process", (ring) => {
           assert.equal(gossip.ring().size(), 3);
           assert.notOk(gossip.ring().isDefined(node2));
@@ -708,7 +708,7 @@ module.exports = function (mocks, lib) {
 
       it("should remove a node from the gossip ring, waiting for 'idle' state", function (done) {
         var node2 = new Node("id2", host, port+1);
-        gossip.insert(node2);
+        gossip.insert(node2, 3);
         gossip.once("process", (ring) => {
           assert.equal(gossip.ring().size(), 3);
           assert.notOk(gossip.ring().isDefined(node2));
@@ -729,7 +729,7 @@ module.exports = function (mocks, lib) {
 
       it("Should remove a node from the gossip ring if forced", function (done) {
         var node2 = new Node("id2", host, port+1);
-        gossip.insert(node2);
+        gossip.insert(node2, 3);
         gossip.once("process", (ring) => {
           assert.equal(gossip.ring().size(), 3);
           assert.notOk(gossip.ring().isDefined(node2));
@@ -755,7 +755,7 @@ module.exports = function (mocks, lib) {
 
       it("Should mremove nodes from gossip ring when already idle", function (done) {
         var node2 = new Node("id2", host, port+1);
-        gossip.insert(node2);
+        gossip.insert(node2, 3);
         gossip.once("process", (ring) => {
           assert.equal(gossip.ring().size(), 3);
           assert.notOk(gossip.ring().isDefined(node2));
@@ -774,7 +774,7 @@ module.exports = function (mocks, lib) {
 
       it("Should mremove nodes from gossip ring, waiting for idle state", function (done) {
         var node2 = new Node("id2", host, port+1);
-        gossip.insert(node2);
+        gossip.insert(node2, 3);
         gossip.once("process", (ring) => {
           assert.equal(gossip.ring().size(), 3);
           assert.notOk(gossip.ring().isDefined(node2));
@@ -795,7 +795,7 @@ module.exports = function (mocks, lib) {
 
       it("Should forcefully mremove nodes from gossip ring", function (done) {
         var node2 = new Node("id2", host, port+1);
-        gossip.insert(node2);
+        gossip.insert(node2, 3);
         gossip.once("process", (ring) => {
           assert.equal(gossip.ring().size(), 3);
           assert.notOk(gossip.ring().isDefined(node2));
@@ -816,6 +816,17 @@ module.exports = function (mocks, lib) {
         var nodes = gossip.find(Buffer.from("foo"));
         assert.lengthOf(nodes, 1);
         assert.deepEqual(nodes[0], gossip.ring().nodes()[0]);
+      });
+
+      it("Should grab range of nodes in ring", function () {
+        var nodes = gossip.range(Buffer.from("foo"));
+        assert.lengthOf(nodes, 1);
+        assert.deepEqual(nodes[0], gossip.ring().nodes()[0]);
+
+        var node = new Node("foo", "bar", 8001);
+        gossip.ring().insert(node);
+        nodes = gossip.range(Buffer.from("foo"), 1);
+        assert.lengthOf(nodes, 1);
       });
 
       it("Should skip polling ring if no actor exists", function () {
@@ -880,7 +891,7 @@ module.exports = function (mocks, lib) {
 
       it("Should send the ring externally", function (done) {
         var node2 = new Node("id2", host, port+1);
-        gossip.insert(node2, true);
+        gossip.insert(node2, 3, true);
         gossip.once("send", (clock, event, msg) => {
           var ring = (new CHash()).fromJSON(msg);
           assert(ring.equals(gossip.ring()));
@@ -1223,7 +1234,7 @@ module.exports = function (mocks, lib) {
       it("Should impose external ring onto this ring", function () {
         var chash2 = new CHash(chash.rfactor(), chash.pfactor());
         var node2 = new Node("id2", host, port+1);
-        chash2.insert(node2);
+        chash2.insert(node2, 3);
         var vclock2 = new VectorClock(uuid.v4(), 1);
         var data = gossip.decodeJob(Buffer.from(JSON.stringify({
           event: "ring",
