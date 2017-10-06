@@ -399,6 +399,52 @@ module.exports = function (mocks, lib) {
         done();
       });
 
+      it("Should insert a node into a ring, default force", function (done) {
+        var data = {node: new Node("foo", "localhost", 8000)};
+        sinon.stub(gossip, "update", (node, weight, force) => {
+          assert.ok(node.equals(data.node));
+          assert.equal(weight, gossip.ring().rfactor());
+          assert.equal(force, false);
+        });
+        var out = server.update(data, from);
+        assert.equal(out.ok, true);
+        gossip.update.restore();
+
+        data = {node: new Node("foo", "localhost", 8000), weight: -1};
+        sinon.stub(gossip, "update", (node, weight, force) => {
+          assert.ok(node.equals(data.node));
+          assert.equal(weight, gossip.ring().rfactor());
+          assert.equal(force, false);
+        });
+        out = server.update(data, from);
+        assert.equal(out.ok, true);
+        gossip.update.restore();
+
+        data = {node: new Node("foo", "localhost", 8000), weight: 1};
+        sinon.stub(gossip, "update", (node, weight, force) => {
+          assert.ok(node.equals(data.node));
+          assert.equal(weight, 1);
+          assert.equal(force, false);
+        });
+        out = server.update(data, from);
+        assert.equal(out.ok, true);
+        gossip.update.restore();
+        done();
+      });
+
+      it("Should insert a node into a ring, set force", function (done) {
+        var data = {node: new Node("foo", "localhost", 8000), force: true};
+        sinon.stub(gossip, "update", (node, weight, force) => {
+          assert.ok(node.equals(data.node));
+          assert.equal(weight, gossip.ring().rfactor());
+          assert.equal(force, true);
+        });
+        var out = server.update(data, from);
+        assert.equal(out.ok, true);
+        gossip.update.restore();
+        done();
+      });
+
       it("Should remove a node from a ring, default force", function (done) {
         var data = {node: new Node("foo", "localhost", 8000)};
         sinon.stub(gossip, "remove", (node, force) => {

@@ -494,6 +494,119 @@ module.exports = function (mocks, lib) {
         });
       });
 
+      it("Should update a node in gossip ring when already idle, node doesn't exist", function (done) {
+        var node2 = new Node("id2", host, port+1);
+        gossip.once("process", (ring) => {
+          assert.equal(gossip.ring().size(), 7);
+          assert.ok(gossip.ring().isDefined(node2));
+        });
+        gossip.once("send", (clock, event, msg) => {
+          assert.equal(event, "ring");
+          assert.deepEqual(msg, gossip.ring().toJSON(true));
+          assert.deepEqual(clock, gossip.vclock());
+        });
+        gossip.update(node2, 4);
+        assert.equal(gossip.ring().size(), 7);
+        assert.ok(gossip._actor);
+        assert.ok(gossip.vclock().has(gossip._actor));
+        assert.ok(gossip.kernel().isConnected(node2));
+        gossip.kernel().connection(node2).once("send", (msg, data) => {
+          var job = data.data.data;
+          assert.equal(job.type, "update");
+          assert.equal(job.actor, gossip._actor);
+          assert.deepEqual(job.data, gossip.ring().toJSON(true));
+          assert.deepEqual(job.vclock, gossip.vclock().toJSON(true));
+          assert.equal(job.round, GossipRing.maxMsgRound(gossip.ring())-1);
+          done();
+        });
+      });
+
+      it("Should update a node in gossip ring when already idle, node already exists", function (done) {
+        var node2 = new Node("id2", host, port+1);
+        gossip.ring().insert(node2);
+        assert.equal(gossip.ring().size(), 6);
+        gossip.once("process", (ring) => {
+          assert.equal(gossip.ring().size(), 7);
+          assert.ok(gossip.ring().isDefined(node2));
+        });
+        gossip.once("send", (clock, event, msg) => {
+          assert.equal(event, "ring");
+          assert.deepEqual(msg, gossip.ring().toJSON(true));
+          assert.deepEqual(clock, gossip.vclock());
+        });
+        gossip.update(node2, 4);
+        assert.equal(gossip.ring().size(), 7);
+        assert.ok(gossip._actor);
+        assert.ok(gossip.vclock().has(gossip._actor));
+        assert.ok(gossip.kernel().isConnected(node2));
+        gossip.kernel().connection(node2).once("send", (msg, data) => {
+          var job = data.data.data;
+          assert.equal(job.type, "update");
+          assert.equal(job.actor, gossip._actor);
+          assert.deepEqual(job.data, gossip.ring().toJSON(true));
+          assert.deepEqual(job.vclock, gossip.vclock().toJSON(true));
+          assert.equal(job.round, GossipRing.maxMsgRound(gossip.ring())-1);
+          done();
+        });
+      });
+
+      it("Should update a node in gossip ring, waiting for idle state", function (done) {
+        var node2 = new Node("id2", host, port+1);
+        gossip.streams(new Map([["key", "value"]]));
+        gossip.update(node2, 4);
+        gossip.once("process", (ring) => {
+          assert.ok(gossip.ring().isDefined(node2));
+          assert.equal(gossip.ring().size(), 7);
+          assert.ok(gossip._actor);
+          assert.ok(gossip.vclock().has(gossip._actor));
+          assert.ok(gossip.kernel().isConnected(node2));
+          gossip.kernel().connection(node2).once("send", (msg, data) => {
+            var job = data.data.data;
+            assert.equal(job.type, "update");
+            assert.equal(job.actor, gossip._actor);
+            assert.deepEqual(job.data, gossip.ring().toJSON(true));
+            assert.deepEqual(job.vclock, gossip.vclock().toJSON(true));
+            assert.equal(job.round, GossipRing.maxMsgRound(gossip.ring())-1);
+            done();
+          });
+        });
+        gossip.once("send", (clock, event, msg) => {
+          assert.equal(event, "ring");
+          assert.deepEqual(msg, gossip.ring().toJSON(true));
+          assert.deepEqual(clock, gossip.vclock());
+        });
+        gossip.streams(new Map());
+        // trigger test
+        gossip.emit("idle");
+      });
+      
+      it("Should forcefully update a node in gossip ring", function (done) {
+        var node2 = new Node("id2", host, port+1);
+        gossip.once("process", (ring) => {
+          assert.equal(gossip.ring().size(), 7);
+          assert.ok(gossip.ring().isDefined(node2));
+        });
+        gossip.once("send", (clock, event, msg) => {
+          assert.equal(event, "ring");
+          assert.deepEqual(msg, gossip.ring().toJSON(true));
+          assert.deepEqual(clock, gossip.vclock());
+        });
+        gossip.insert(node2, 4, true);
+        assert.equal(gossip.ring().size(), 7);
+        assert.ok(gossip._actor);
+        assert.ok(gossip.vclock().has(gossip._actor));
+        assert.ok(gossip.kernel().isConnected(node2));
+        gossip.kernel().connection(node2).once("send", (msg, data) => {
+          var job = data.data.data;
+          assert.equal(job.type, "update");
+          assert.equal(job.actor, gossip._actor);
+          assert.deepEqual(job.data, gossip.ring().toJSON(true));
+          assert.deepEqual(job.vclock, gossip.vclock().toJSON(true));
+          assert.equal(job.round, GossipRing.maxMsgRound(gossip.ring())-1);
+          done();
+        });
+      });
+
       it("Should ignore an minsert request into the gossip ring", function () {
         var node2 = new Node("id2", host, port+1);
         gossip.ring().insert(node2);
@@ -861,17 +974,42 @@ module.exports = function (mocks, lib) {
         fs.writeFile.restore();
       });
 
-      it("Should flush state to disk", function () {
-        sinon.stub(fs, "writeFile", (path, data) => {
+      it("Should do nothing if failed to flush state to disk", function (done) {
+        sinon.stub(fs, "writeFile", (path, data, cb) => {
           data = JSON.parse(data);
           assert.equal(data.actor, "foo");
           assert.deepEqual(data.chash, gossip.ring().toJSON(true));
           assert.deepEqual(data.vclock, gossip.vclock().toJSON(true));
+          fs.writeFile.restore();
+          cb(new Error("foo"));
+          assert.notOk(fs.rename.called);
+          fs.rename.restore();
+          done();
+        });
+        sinon.spy(fs, "rename");
+        gossip._actor = "foo";
+        gossip.flush();
+      });
+
+      it("Should flush state to disk", function (done) {
+        sinon.stub(fs, "writeFile", (path, data, cb) => {
+          data = JSON.parse(data);
+          assert.equal(data.actor, "foo");
+          assert.deepEqual(data.chash, gossip.ring().toJSON(true));
+          assert.deepEqual(data.vclock, gossip.vclock().toJSON(true));
+          cb();
+        });
+        sinon.stub(fs, "rename", (oldName, newName, cb) => {
+          assert.equal(oldName, gossip._flushPath + ".tmp");
+          assert.equal(newName, gossip._flushPath);
+          assert.ok(fs.writeFile.called);
+          fs.writeFile.restore();
+          fs.rename.restore();
+          cb();
+          done();
         });
         gossip._actor = "foo";
         gossip.flush();
-        assert.ok(fs.writeFile.called);
-        fs.writeFile.restore();
       });
 
       it("Should skip sending ring externally if n=0", function () {

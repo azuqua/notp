@@ -208,12 +208,14 @@ vorpal
       "won't wait for current message streams to be processed " +
       "before executing this command.")
   .option("-f, --force", forceStr)
+  .option("-w, --weight <weight>", "Number of virtual nodes to assign to the node being inserted. Defaults to the `rfactor` of the session node.")
   .types({
-    string: ["id", "host", "port"]
+    string: ["id", "host", "port", "weight"]
   })
   .action(function (args, cb) {
     client.send("insert", {
       force: args.options.force,
+      weight: parseInt(args.options.weight),
       node: {id: args.id, host: args.host, port: parseInt(args.port)}
     }, cb);
   });
@@ -225,11 +227,31 @@ vorpal
       "won't wait for current message streams to be processed " +
       "before executing this command.")
   .option("-f, --force", forceStr)
+  .option("-w, --weight <w>", "Number of virtual nodes to assign to the nodes being inserted. Defaults to the `rfactor` of the session node.")
   .action(function (args, cb) {
     const nodes = parseNodeList(args.nodes);
     client.send("minsert", {
       force: args.options.force,
+      weight: parseInt(args.options.weight),
       nodes: nodes
+    }, cb);
+  });
+
+vorpal
+  .command("update <id> <host> <port> [weight]")
+  .description("Inserts a node into this node's cluster. " +
+      "If force is passed, the gossip processor on this node " +
+      "won't wait for current message streams to be processed " +
+      "before executing this command.")
+  .option("-f, --force", forceStr)
+  .types({
+    string: ["id", "host", "port", "weight"]
+  })
+  .action(function (args, cb) {
+    client.send("update", {
+      force: args.options.force,
+      weight: parseInt(args.weight),
+      node: {id: args.id, host: args.host, port: parseInt(args.port)}
     }, cb);
   });
 
