@@ -296,20 +296,42 @@ module.exports = function (mocks, lib) {
 
       it("Should insert a node into a ring, default force", function (done) {
         var data = {node: new Node("foo", "localhost", 8000)};
-        sinon.stub(gossip, "insert", (node, force) => {
+        sinon.stub(gossip, "insert", (node, weight, force) => {
           assert.ok(node.equals(data.node));
+          assert.equal(weight, gossip.ring().rfactor());
           assert.equal(force, false);
         });
         var out = server.insert(data, from);
         assert.equal(out.ok, true);
         gossip.insert.restore();
+
+        data = {node: new Node("foo", "localhost", 8000), weight: -1};
+        sinon.stub(gossip, "insert", (node, weight, force) => {
+          assert.ok(node.equals(data.node));
+          assert.equal(weight, gossip.ring().rfactor());
+          assert.equal(force, false);
+        });
+        out = server.insert(data, from);
+        assert.equal(out.ok, true);
+        gossip.insert.restore();
+
+        data = {node: new Node("foo", "localhost", 8000), weight: 1};
+        sinon.stub(gossip, "insert", (node, weight, force) => {
+          assert.ok(node.equals(data.node));
+          assert.equal(weight, 1);
+          assert.equal(force, false);
+        });
+        out = server.insert(data, from);
+        assert.equal(out.ok, true);
+        gossip.insert.restore();
         done();
       });
 
-      it("Should insert a node into a ring, default force", function (done) {
+      it("Should insert a node into a ring, set force", function (done) {
         var data = {node: new Node("foo", "localhost", 8000), force: true};
-        sinon.stub(gossip, "insert", (node, force) => {
+        sinon.stub(gossip, "insert", (node, weight, force) => {
           assert.ok(node.equals(data.node));
+          assert.equal(weight, gossip.ring().rfactor());
           assert.equal(force, true);
         });
         var out = server.insert(data, from);
@@ -320,11 +342,32 @@ module.exports = function (mocks, lib) {
 
       it("Should minsert nodes into a ring, default force", function (done) {
         var data = {nodes: [new Node("foo", "localhost", 8000)]};
-        sinon.stub(gossip, "minsert", (nodes, force) => {
+        sinon.stub(gossip, "minsert", (nodes, weight, force) => {
           assert.lengthOf(nodes, 1);
+          assert.equal(weight, gossip.ring().rfactor());
           assert.equal(force, false);
         });
         var out = server.minsert(data, from);
+        assert.equal(out.ok, true);
+        gossip.minsert.restore();
+
+        data = {nodes: [new Node("foo", "localhost", 8000)], weight: -1};
+        sinon.stub(gossip, "minsert", (nodes, weight, force) => {
+          assert.lengthOf(nodes, 1);
+          assert.equal(weight, gossip.ring().rfactor());
+          assert.equal(force, false);
+        });
+        out = server.minsert(data, from);
+        assert.equal(out.ok, true);
+        gossip.minsert.restore();
+
+        data = {nodes: [new Node("foo", "localhost", 8000)], weight: 1};
+        sinon.stub(gossip, "minsert", (nodes, weight, force) => {
+          assert.lengthOf(nodes, 1);
+          assert.equal(weight, 1);
+          assert.equal(force, false);
+        });
+        out = server.minsert(data, from);
         assert.equal(out.ok, true);
         gossip.minsert.restore();
         done();
@@ -332,8 +375,9 @@ module.exports = function (mocks, lib) {
 
       it("Should minsert nodes into a ring, force is true", function (done) {
         var data = {nodes: [new Node("foo", "localhost", 8000)], force: true};
-        sinon.stub(gossip, "minsert", (nodes, force) => {
+        sinon.stub(gossip, "minsert", (nodes, weight, force) => {
           assert.lengthOf(nodes, 1);
+          assert.equal(weight, gossip.ring().rfactor());
           assert.equal(force, true);
         });
         var out = server.minsert(data, from);
@@ -344,13 +388,60 @@ module.exports = function (mocks, lib) {
 
       it("Should minsert nodes into a ring, filter out this node", function (done) {
         var data = {nodes: [kernel.self()]};
-        sinon.stub(gossip, "minsert", (nodes, force) => {
+        sinon.stub(gossip, "minsert", (nodes, weight, force) => {
           assert.lengthOf(nodes, 0);
+          assert.equal(weight, gossip.ring().rfactor());
           assert.equal(force, false);
         });
         var out = server.minsert(data, from);
         assert.equal(out.ok, true);
         gossip.minsert.restore();
+        done();
+      });
+
+      it("Should insert a node into a ring, default force", function (done) {
+        var data = {node: new Node("foo", "localhost", 8000)};
+        sinon.stub(gossip, "update", (node, weight, force) => {
+          assert.ok(node.equals(data.node));
+          assert.equal(weight, gossip.ring().rfactor());
+          assert.equal(force, false);
+        });
+        var out = server.update(data, from);
+        assert.equal(out.ok, true);
+        gossip.update.restore();
+
+        data = {node: new Node("foo", "localhost", 8000), weight: -1};
+        sinon.stub(gossip, "update", (node, weight, force) => {
+          assert.ok(node.equals(data.node));
+          assert.equal(weight, gossip.ring().rfactor());
+          assert.equal(force, false);
+        });
+        out = server.update(data, from);
+        assert.equal(out.ok, true);
+        gossip.update.restore();
+
+        data = {node: new Node("foo", "localhost", 8000), weight: 1};
+        sinon.stub(gossip, "update", (node, weight, force) => {
+          assert.ok(node.equals(data.node));
+          assert.equal(weight, 1);
+          assert.equal(force, false);
+        });
+        out = server.update(data, from);
+        assert.equal(out.ok, true);
+        gossip.update.restore();
+        done();
+      });
+
+      it("Should insert a node into a ring, set force", function (done) {
+        var data = {node: new Node("foo", "localhost", 8000), force: true};
+        sinon.stub(gossip, "update", (node, weight, force) => {
+          assert.ok(node.equals(data.node));
+          assert.equal(weight, gossip.ring().rfactor());
+          assert.equal(force, true);
+        });
+        var out = server.update(data, from);
+        assert.equal(out.ok, true);
+        gossip.update.restore();
         done();
       });
 
