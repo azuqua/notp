@@ -80,16 +80,12 @@ module.exports = function (mocks, lib) {
       assert.equal(out, "here");
     });
 
-    it("Should update state at node", function () {
+    it("Should update weight at node", function () {
       var node = new Node("id", "localhost", 8000);
-      chash.update(node, node);
+      chash.insert(node);
       assert.equal(chash.size(), rfactor);
 
-      chash.update(node, node, rfactor+1);
-      assert.deepEqual(chash.get(node), node);
-      assert.equal(chash.size(), rfactor+1);
-
-      chash.update(node, node);
+      chash.update(node, rfactor+1);
       assert.deepEqual(chash.get(node), node);
       assert.equal(chash.size(), rfactor+1);
       assert.equal(chash._weights.get(node.id()), rfactor+1);
