@@ -37,6 +37,12 @@ const argv = require("yargs")
   })
   .argv;
 
+var singular = argv._.length === 0;
+
+function log(...args) {
+  if (singular) console.log.apply(null, args);
+}
+
 const from = {id: argv.I + "_" + process.pid};
 let client;
 
@@ -83,7 +89,7 @@ class Client extends EventEmitter {
         tag: msg.tag,
         cb: (data) => {
           data = _.omit(NetKernel._decodeMsg(this._cookie, data), "tag");
-          console.log(util.inspect(data, {depth: null}));
+          console.log(JSON.stringify(data, null, 2));
           cb();
         }
       });
@@ -94,7 +100,9 @@ class Client extends EventEmitter {
   }
 
   _handleConnect() {
-    console.log("Connected to %s", this._id);
+    if (singular) {
+      log("Connected to %s", this._id);
+    }
     this._connected = true;
     this._disLog = false;
     this.emit("connect");
@@ -104,7 +112,7 @@ class Client extends EventEmitter {
   _handleDisconnect() {
     if (!this._disLog) {
       this._disLog = true;
-      console.log("Disconnected from %s", this._id);
+      log("Disconnected from %s", this._id);
     }
     this._connected = false;
     this._rcv.flush().forEach((el) => {
@@ -185,6 +193,23 @@ vorpal
     client.send("meet", {
       node: {id: args.id, host: args.host, port: parseInt(args.port)}
     }, cb);
+  });
+
+vorpal
+  .command("weight <id>")
+  .types({
+    string: ["id"]
+  })
+  .action(function (args, cb) {
+    client.send("weight", {
+      id: args.id
+    }, cb);
+  });
+
+vorpal
+  .command("weights")
+  .action(function (args, cb) {
+    client.send("weights", null, cb);
   });
 
 vorpal
@@ -294,19 +319,21 @@ vorpal
     client.send("ping", null, cb);
   });
 
-console.log("Connecting to IPC server on node: %s, host: %s, port: %s", argv.I, argv.H, argv.p);
+if (singular) {
+  log("Connecting to IPC server on node: %s, host: %s, port: %s", argv.I, argv.H, argv.p);
+}
 ipc.config.silent = true;
 ipc.config.sync = true;
 ipc.connectToNet(argv.I, argv.H, argv.p, () => {
   client = new Client(ipc, argv.I, argv.H, argv.p, argv.a);
   client.start();
   client.once("connect", () => {
-    if (argv._.length === 0) {
+    if (singular) {
       vorpal
         .delimiter("> ")
         .show();
     } else {
-      vorpal.exec(argv._, function (err, res) {
+      vorpal.exec(argv._.join(" "), function (err, res) {
         client.stop();
         if (err) {
           process.exit(1);
