@@ -342,27 +342,6 @@ module.exports = function (mocks, lib) {
         });
       });
 
-      it("Should fail to perform read command, response invalid JSON", function (done) {
-        sinon.stub(server, "call", (node, event, msg, cb, timeout) => {
-          assert.deepEqual(node, {
-            node: gossip.ring().find("id"),
-            id: server._id
-          });
-          assert.equal(event, "read");
-          assert.deepEqual(msg, {
-            id: "id"
-          });
-          async.nextTick(() => {
-            return cb(null, "{");
-          });
-        });
-        server.read("id", (err, res) => {
-          assert.ok(err);
-          server.call.restore();
-          done();
-        });
-      });
-
       it("Should perform read command", function (done) {
         sinon.stub(server, "call", (node, event, msg, cb, timeout) => {
           assert.deepEqual(node, {
@@ -373,7 +352,7 @@ module.exports = function (mocks, lib) {
           assert.deepEqual(msg, {
             id: "id"
           });
-          return cb(null, JSON.stringify({ok: true, data: {n: 3, active: 0}}));
+          return cb(null, {ok: true, data: {n: 3, active: 0}});
         });
         server.read("id", (err, res) => {
           assert.notOk(err);
@@ -499,9 +478,9 @@ module.exports = function (mocks, lib) {
               holder: "holder",
               timeout: 1000
             });
-            return cb(null, JSON.stringify({ok: true}));
+            return cb(null, {ok: true});
           });
-          return cb(null, JSON.stringify({ok: false}));
+          return cb(null, {ok: false});
         });
         sinon.stub(server, "cast");
         server.post("id", "holder", 1000, (err, res) => {
@@ -526,7 +505,7 @@ module.exports = function (mocks, lib) {
             holder: "holder",
             timeout: 1000
           });
-          return cb(null, JSON.stringify({ok: true}));
+          return cb(null, {ok: true});
         });
         server.post("id", "holder", 1000, (err) => {
           assert.notOk(err);
