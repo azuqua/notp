@@ -1,5 +1,28 @@
 # Change Log
 
+## [v2.0.0](https://github.com/azuqua/clusterluck/tree/v2.0.0) (2017-10-08)
+[Full Changelog](https://github.com/azuqua/clusterluck/compare/v1.3.0...v2.0.0)
+
+**Implemented enhancements:**
+
+- Add ability to explicitly set rfactor on node insertion/update, grab explicit range length of nodes [\#45](https://github.com/azuqua/clusterluck/issues/45)
+- Documentation or interface goodies for setting configurations on external IPC connections [\#42](https://github.com/azuqua/clusterluck/issues/42)
+- Add convenience commands to CLI tool for reading nodes from a ring, pinging external nodes [\#41](https://github.com/azuqua/clusterluck/issues/41)
+
+**Merged pull requests:**
+
+- Develop [\#51](https://github.com/azuqua/clusterluck/pull/51) ([kevinwilson541](https://github.com/kevinwilson541))
+- update missing documentation for parameters on insert/minsert/range f… [\#50](https://github.com/azuqua/clusterluck/pull/50) ([kevinwilson541](https://github.com/kevinwilson541))
+- 2.0.0 alpha [\#49](https://github.com/azuqua/clusterluck/pull/49) ([kevinwilson541](https://github.com/kevinwilson541))
+- update CLI output format to be parseable by jq and other JSON parsing… [\#48](https://github.com/azuqua/clusterluck/pull/48) ([kevinwilson541](https://github.com/kevinwilson541))
+- integration tests for dlm/dsm/gen\_server [\#47](https://github.com/azuqua/clusterluck/pull/47) ([kevinwilson541](https://github.com/kevinwilson541))
+- Kevin/experiment [\#46](https://github.com/azuqua/clusterluck/pull/46) ([kevinwilson541](https://github.com/kevinwilson541))
+- update README with new CLI commands \(nodes, ping\) [\#44](https://github.com/azuqua/clusterluck/pull/44) ([kevinwilson541](https://github.com/kevinwilson541))
+- Kevin/experiment [\#43](https://github.com/azuqua/clusterluck/pull/43) ([kevinwilson541](https://github.com/kevinwilson541))
+- Kevin/experiment [\#40](https://github.com/azuqua/clusterluck/pull/40) ([kevinwilson541](https://github.com/kevinwilson541))
+- Develop [\#39](https://github.com/azuqua/clusterluck/pull/39) ([kevinwilson541](https://github.com/kevinwilson541))
+- updated .travis.yml file [\#38](https://github.com/azuqua/clusterluck/pull/38) ([kevinwilson541](https://github.com/kevinwilson541))
+
 ## [v1.3.0](https://github.com/azuqua/clusterluck/tree/v1.3.0) (2017-07-12)
 [Full Changelog](https://github.com/azuqua/clusterluck/compare/v1.2.3...v1.3.0)
 
