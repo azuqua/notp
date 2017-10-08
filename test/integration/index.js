@@ -1,9 +1,7 @@
-var _ = require("lodash"),
-    async = require("async"),
-    assert = require("chai").assert;
-
-module.exports = function (app, deps, mocks) {
+module.exports = function (mocks, lib) {
   describe("Integration tests", function () {
-    
+    require("./gen_server")(mocks, lib);
+    require("./dlm")(mocks, lib);
+    require("./dsm")(mocks, lib);
   });
 };
