@@ -3,6 +3,7 @@ var _ = require("lodash"),
     sinon = require("sinon"),
     stream = require("stream"),
     fs = require("fs"),
+    zlib = require("zlib"),
     assert = require("chai").assert;
 
 module.exports = function (mocks, lib) {
@@ -16,7 +17,11 @@ module.exports = function (mocks, lib) {
       async.nextTick(done);
     });
 
-    it("Should construct a DTabel", function () {
+    after(function (done) {
+      fs.unlink("./data/foo_LATEST.LOG", done);
+    });
+
+    it("Should construct a DTable", function () {
       assert.equal(dtable._autoSave, consts.dtableOpts.autoSave);
       assert.equal(dtable._writeCount, 0);
       assert.equal(dtable._writeThreshold, consts.dtableOpts.writeThreshold);
@@ -25,6 +30,18 @@ module.exports = function (mocks, lib) {
       assert.equal(dtable._idleTickMax, consts.dtableOpts.autoSave/1000);
       assert.equal(dtable._fsyncInterval, consts.dtableOpts.fsyncInterval);
       assert.equal(dtable._queue.size(), 0);
+
+      assert.deepEqual(dtable._encodeFn, DTable.encodeValue);
+      assert.deepEqual(dtable._decodeFn, DTable.decodeValue);
+
+      dtable = new DTable({
+        path: "./data",
+        encodeFn: _.identity,
+        decodeFn: _.identity
+      });
+
+      assert.deepEqual(dtable._encodeFn, _.identity);
+      assert.deepEqual(dtable._decodeFn, _.identity);
 
       var out;
       try {
@@ -88,9 +105,12 @@ module.exports = function (mocks, lib) {
     });
 
     it("Should load dtable instance", function (done) {
-      dtable.load((err) => {
-        assert.notOk(err);
-        done();
+      dtable.start("foo");
+      dtable.once("open", () => {
+        dtable.load((err) => {
+          assert.notOk(err);
+          dtable.stop(done);
+        });
       });
     });
 
@@ -99,6 +119,12 @@ module.exports = function (mocks, lib) {
       dtable._flushing = true;
       assert.equal(dtable.idle(), false);
       dtable._flushing = false;
+    });
+
+    it("Should return if dtable has compression enabled or not", function () {
+      assert.equal(dtable.compress(), false);
+      dtable.compress(true);
+      assert.equal(dtable.compress(), true);
     });
 
     it("Should get value in table", function () {
@@ -278,7 +304,7 @@ module.exports = function (mocks, lib) {
     });
 
     it("Should flush state to disk", function (done) {
-      dtable._setupAOFSyncInterval();
+      dtable.start("foo");
       sinon.stub(dtable, "_setupAOFSyncInterval");
 
       dtable._flush();
@@ -303,6 +329,8 @@ module.exports = function (mocks, lib) {
     });
 
     it("Should flush AOF files to disk", function (done) {
+      dtable._aofPath = "./data/LATEST.LOG";
+      dtable._tmpAOFPath = "./data/PREV.LOG";
       fs.writeFile(dtable._aofPath, "", (err) => {
         assert.notOk(err);
         dtable._flushAOF((err) => {
@@ -313,6 +341,8 @@ module.exports = function (mocks, lib) {
     });
 
     it("Should fail flushing AOF files to disk", function (done) {
+      dtable._aofPath = "./data/LATEST.LOG";
+      dtable._tmpAOFPath = "./data/PREV.LOG";
       fs.writeFile(dtable._aofPath, "", (err) => {
         assert.notOk(err);
         sinon.stub(fs, "createWriteStream", () => {
@@ -333,41 +363,57 @@ module.exports = function (mocks, lib) {
     it("Should flush snapshot of table to disk", function (done) {
       var out = new Map();
       dtable.set("foo", "bar");
-      sinon.stub(fs, "createWriteStream", () => {
-        var pstream = new stream.PassThrough();
-        pstream.on("data", (data) => {
-          data = JSON.parse(data);
-          out.set(data.key, DTable.decodeValue(data.value));
+      dtable.start("foo");
+      dtable.once("open", () => {
+        sinon.stub(fs, "createWriteStream", () => {
+          var pstream = new stream.PassThrough();
+          pstream.on("data", (data) => {
+            data = JSON.parse(data);
+            out.set(data.key, DTable.decodeValue(data.value));
+          });
+          pstream.once("end", () => {
+            pstream.emit("close");
+          });
+          return pstream;
         });
-        pstream.once("end", () => {
-          pstream.emit("close");
+        sinon.stub(fs, "rename", (oldPath, newPath, cb) => {
+          cb();
         });
-        return pstream;
-      });
-      dtable._flushTable({
-        foo: "bar"
-      }, (err) => {
-        assert.notOk(err);
-        assert.ok(_.isEqual(out, dtable._table));
-        fs.createWriteStream.restore();
-        async.nextTick(done);
+        dtable._flushTable({
+          foo: "bar"
+        }, (err) => {
+          assert.notOk(err);
+          assert.ok(_.isEqual(out, dtable._table));
+          fs.createWriteStream.restore();
+          assert.ok(fs.rename.called);
+          fs.rename.restore();
+          dtable.stop(done);
+        });
       });
     });
 
     it("Should fail flushing snapshot of table to disk", function (done) {
-      sinon.stub(fs, "createWriteStream", () => {
-        var pstream = new stream.PassThrough();
-        async.nextTick(() => {
-          pstream.emit("error", new Error("foo"));
+      dtable.start("foo");
+      dtable.once("open", () => {
+        sinon.stub(fs, "createWriteStream", () => {
+          var pstream = new stream.PassThrough();
+          async.nextTick(() => {
+            pstream.emit("error", new Error("foo"));
+          });
+          return pstream;
         });
-        return pstream;
-      });
-      dtable._flushTable({
-        foo: "bar"
-      }, (err) => {
-        assert.ok(err);
-        fs.createWriteStream.restore();
-        async.nextTick(done);
+        sinon.stub(fs, "unlink", (rmPath, cb) => {
+          cb();
+        });
+        dtable._flushTable({
+          foo: "bar"
+        }, (err) => {
+          assert.ok(err);
+          fs.createWriteStream.restore();
+          assert.ok(fs.unlink.called);
+          fs.unlink.restore();
+          dtable.stop(done);
+        });
       });
     });
 
@@ -398,7 +444,7 @@ module.exports = function (mocks, lib) {
           cb(new Error("foo"));
         });
       });
-      dtable._loadState((err) => {
+      dtable._loadState("path", (err) => {
         assert.ok(err);
         fs.stat.restore();
         done();
@@ -409,7 +455,7 @@ module.exports = function (mocks, lib) {
       sinon.stub(fs, "stat", (path, cb) => {
         async.nextTick(_.partial(cb, _.extend(new Error("foo"), {code: "ENOENT"})));
       });
-      dtable._loadState((err) => {
+      dtable._loadState("path", (err) => {
         assert.notOk(err);
         assert.equal(dtable._table.size, 0);
         fs.stat.restore();
@@ -432,7 +478,7 @@ module.exports = function (mocks, lib) {
         });
         return pstream;
       });
-      dtable._loadState((err) => {
+      dtable._loadState("path", (err) => {
         assert.notOk(err);
         assert.ok(_.isEqual(dtable._table, new Map([["key", "val"]])));
         fs.stat.restore();
@@ -452,7 +498,7 @@ module.exports = function (mocks, lib) {
         });
         return pstream;
       });
-      dtable._loadState((err) => {
+      dtable._loadState("path", (err) => {
         assert.ok(err);
         fs.stat.restore();
         fs.createReadStream.restore();
@@ -525,6 +571,50 @@ module.exports = function (mocks, lib) {
         assert.ok(err);
         fs.stat.restore();
         fs.createReadStream.restore();
+        done();
+      });
+    });
+
+    it("Should create flush streams with compression", function (done) {
+      let acc = Buffer.from("");
+      dtable._path = "./data/DATA.SNAP";
+      dtable.compress(true);
+      sinon.stub(fs, "createWriteStream", () => {
+        var pstream = new stream.PassThrough();
+        pstream.on("data", (data) => {
+          acc = Buffer.concat([acc, data], acc.length+data.length);
+        });
+        return pstream;
+      });
+      const {fstream, wstream} = dtable._createFlushStreams();
+      fstream.on("end", () => {
+        const comp = zlib.gzipSync(Buffer.from("foobar"));
+        assert.equal(Buffer.compare(acc, comp), 0);
+        done();
+      });
+      wstream.write(Buffer.from("foobar"));
+      wstream.end();
+    });
+
+    it("Should create load streams with compression", function (done) {
+      let acc = Buffer.from("");
+      dtable._path = "./data/DATA.SNAP";
+      dtable.compress(true);
+      sinon.stub(fs, "createReadStream", () => {
+        var pstream = new stream.PassThrough();
+        async.nextTick(() => {
+          pstream.write(zlib.gzipSync("foobar"));
+          pstream.end();
+        });
+        return pstream;
+      });
+      const {rstream} = dtable._createLoadStreams();
+      rstream.on("data", (data) => {
+        acc = Buffer.concat([acc, data], acc.length+data.length);
+      });
+      rstream.on("end", () => {
+        const comp = Buffer.from("foobar");
+        assert.equal(Buffer.compare(acc, comp), 0);
         done();
       });
     });

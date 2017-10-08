@@ -37,6 +37,12 @@ const argv = require("yargs")
   })
   .argv;
 
+var singular = argv._.length === 0;
+
+function log(...args) {
+  if (singular) console.log.apply(null, args);
+}
+
 const from = {id: argv.I + "_" + process.pid};
 let client;
 
@@ -83,7 +89,7 @@ class Client extends EventEmitter {
         tag: msg.tag,
         cb: (data) => {
           data = _.omit(NetKernel._decodeMsg(this._cookie, data), "tag");
-          console.log(util.inspect(data, {depth: null}));
+          console.log(JSON.stringify(data, null, 2));
           cb();
         }
       });
@@ -94,7 +100,9 @@ class Client extends EventEmitter {
   }
 
   _handleConnect() {
-    console.log("Connected to %s", this._id);
+    if (singular) {
+      log("Connected to %s", this._id);
+    }
     this._connected = true;
     this._disLog = false;
     this.emit("connect");
@@ -104,7 +112,7 @@ class Client extends EventEmitter {
   _handleDisconnect() {
     if (!this._disLog) {
       this._disLog = true;
-      console.log("Disconnected from %s", this._id);
+      log("Disconnected from %s", this._id);
     }
     this._connected = false;
     this._rcv.flush().forEach((el) => {
@@ -136,6 +144,13 @@ vorpal
   .description("Prints the ring of this node to the console.")
   .action(function (args, cb) {
     client.send("inspect", null, cb);
+  });
+
+vorpal
+  .command("nodes")
+  .description("Prints the nodes of the ring of this node to the console.")
+  .action(function (args, cb) {
+    client.send("nodes", null, cb);
   });
 
 vorpal
@@ -181,6 +196,23 @@ vorpal
   });
 
 vorpal
+  .command("weight <id>")
+  .types({
+    string: ["id"]
+  })
+  .action(function (args, cb) {
+    client.send("weight", {
+      id: args.id
+    }, cb);
+  });
+
+vorpal
+  .command("weights")
+  .action(function (args, cb) {
+    client.send("weights", null, cb);
+  });
+
+vorpal
   .command("leave")
   .description("Leaves the cluster this node is a part of. " + 
       "If force is passed, the gossip processor on this node " + 
@@ -201,12 +233,14 @@ vorpal
       "won't wait for current message streams to be processed " +
       "before executing this command.")
   .option("-f, --force", forceStr)
+  .option("-w, --weight <weight>", "Number of virtual nodes to assign to the node being inserted. Defaults to the `rfactor` of the session node.")
   .types({
-    string: ["id", "host", "port"]
+    string: ["id", "host", "port", "weight"]
   })
   .action(function (args, cb) {
     client.send("insert", {
       force: args.options.force,
+      weight: parseInt(args.options.weight),
       node: {id: args.id, host: args.host, port: parseInt(args.port)}
     }, cb);
   });
@@ -218,11 +252,31 @@ vorpal
       "won't wait for current message streams to be processed " +
       "before executing this command.")
   .option("-f, --force", forceStr)
+  .option("-w, --weight <w>", "Number of virtual nodes to assign to the nodes being inserted. Defaults to the `rfactor` of the session node.")
   .action(function (args, cb) {
     const nodes = parseNodeList(args.nodes);
     client.send("minsert", {
       force: args.options.force,
+      weight: parseInt(args.options.weight),
       nodes: nodes
+    }, cb);
+  });
+
+vorpal
+  .command("update <id> <host> <port> [weight]")
+  .description("Inserts a node into this node's cluster. " +
+      "If force is passed, the gossip processor on this node " +
+      "won't wait for current message streams to be processed " +
+      "before executing this command.")
+  .option("-f, --force", forceStr)
+  .types({
+    string: ["id", "host", "port", "weight"]
+  })
+  .action(function (args, cb) {
+    client.send("update", {
+      force: args.options.force,
+      weight: parseInt(args.weight),
+      node: {id: args.id, host: args.host, port: parseInt(args.port)}
     }, cb);
   });
 
@@ -258,19 +312,28 @@ vorpal
     }, cb);
   });
 
-console.log("Connecting to IPC server on node: %s, host: %s, port: %s", argv.I, argv.H, argv.p);
+vorpal
+  .command("ping")
+  .description("Ping a node in the cluster.")
+  .action(function (args, cb) {
+    client.send("ping", null, cb);
+  });
+
+if (singular) {
+  log("Connecting to IPC server on node: %s, host: %s, port: %s", argv.I, argv.H, argv.p);
+}
 ipc.config.silent = true;
 ipc.config.sync = true;
 ipc.connectToNet(argv.I, argv.H, argv.p, () => {
   client = new Client(ipc, argv.I, argv.H, argv.p, argv.a);
   client.start();
   client.once("connect", () => {
-    if (argv._.length === 0) {
+    if (singular) {
       vorpal
         .delimiter("> ")
         .show();
     } else {
-      vorpal.exec(argv._, function (err, res) {
+      vorpal.exec(argv._.join(" "), function (err, res) {
         client.stop();
         if (err) {
           process.exit(1);

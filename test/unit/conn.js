@@ -139,17 +139,29 @@ module.exports = function (mocks, lib) {
       assert.equal(conn.idle(), false);
     });
 
+    it("Should return max queue length", function () {
+      assert.equal(conn.maxLen(), 1024);
+    });
+
+    it("Should set new max queue length", function () {
+      conn.maxLen(1023);
+      assert.equal(conn.maxLen(), 1023);
+      conn.maxLen(-1);
+      assert.equal(conn.maxLen(), 1023);
+
+      conn._queue.enqueue("foo");
+      conn._queue.enqueue("bar");
+      conn.maxLen(1);
+      assert.equal(conn.maxLen(), 1);
+      assert.equal(conn._queue.size(), 1);
+    });
+
     it("Should throw if connection inactive and data is sent", function () {
-      var out;
       var data = {
         data: "bar",
         stream: {stream: uuid.v4(), done: false}
       };
-      try {
-        out = conn.send("foo", data);
-      } catch (e) {
-        out = e;
-      }
+      var out = conn.send("foo", data);
       assert(out instanceof Error);
     });
 
@@ -162,6 +174,24 @@ module.exports = function (mocks, lib) {
       };
       conn.send("foo", data);
       assert.equal(conn.queue().size(), 1);
+      assert.deepEqual(conn.queue().dequeue(), {
+        event: "foo",
+        data: data
+      });
+    });
+
+    it("Should queue data and drop data if queue has reached max size", function () {
+      conn._active = true;
+      conn._connecting = true;
+      conn._maxLen = 1;
+      conn._queue.enqueue("data");
+      var data = {
+        data: "bar",
+        stream: {stream: uuid.v4(), done: false}
+      };
+      conn.send("foo", data);
+      assert.equal(conn.queue().size(), 1);
+      assert.notEqual(conn._queue.peek(), "data");
       assert.deepEqual(conn.queue().dequeue(), {
         event: "foo",
         data: data

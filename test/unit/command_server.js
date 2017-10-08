@@ -12,6 +12,7 @@ module.exports = function (mocks, lib) {
         GossipRing = lib.gossip,
         CHash = lib.chash,
         VectorClock = lib.vclock,
+        utils = lib.utils,
         Node = lib.node,
         MockIPC = mocks.ipc;
 
@@ -155,6 +156,18 @@ module.exports = function (mocks, lib) {
         assert.ok(out instanceof Error);
       });
 
+      it("Should decode singleton", function () {
+        var job = {event: "inspect"};
+        var out = server.decodeSingleton(job);
+        assert.deepEqual(out, {event: "inspect", data: undefined});
+
+        out = server.decodeSingleton({event: "get"});
+        assert.ok(out instanceof Error);
+
+        out = server.decodeSingleton({event: "not defined"});
+        assert.ok(out instanceof Error);
+      });
+
       it("Should skip parsing stream if command comes from cluster node", function () {
         var data = Buffer.from(JSON.stringify({ok: true}));
         var stream = {stream: uuid.v4(), done: false};
@@ -284,20 +297,42 @@ module.exports = function (mocks, lib) {
 
       it("Should insert a node into a ring, default force", function (done) {
         var data = {node: new Node("foo", "localhost", 8000)};
-        sinon.stub(gossip, "insert", (node, force) => {
+        sinon.stub(gossip, "insert", (node, weight, force) => {
           assert.ok(node.equals(data.node));
+          assert.equal(weight, gossip.ring().rfactor());
           assert.equal(force, false);
         });
         var out = server.insert(data, from);
         assert.equal(out.ok, true);
         gossip.insert.restore();
+
+        data = {node: new Node("foo", "localhost", 8000), weight: -1};
+        sinon.stub(gossip, "insert", (node, weight, force) => {
+          assert.ok(node.equals(data.node));
+          assert.equal(weight, gossip.ring().rfactor());
+          assert.equal(force, false);
+        });
+        out = server.insert(data, from);
+        assert.equal(out.ok, true);
+        gossip.insert.restore();
+
+        data = {node: new Node("foo", "localhost", 8000), weight: 1};
+        sinon.stub(gossip, "insert", (node, weight, force) => {
+          assert.ok(node.equals(data.node));
+          assert.equal(weight, 1);
+          assert.equal(force, false);
+        });
+        out = server.insert(data, from);
+        assert.equal(out.ok, true);
+        gossip.insert.restore();
         done();
       });
 
-      it("Should insert a node into a ring, default force", function (done) {
+      it("Should insert a node into a ring, set force", function (done) {
         var data = {node: new Node("foo", "localhost", 8000), force: true};
-        sinon.stub(gossip, "insert", (node, force) => {
+        sinon.stub(gossip, "insert", (node, weight, force) => {
           assert.ok(node.equals(data.node));
+          assert.equal(weight, gossip.ring().rfactor());
           assert.equal(force, true);
         });
         var out = server.insert(data, from);
@@ -308,11 +343,32 @@ module.exports = function (mocks, lib) {
 
       it("Should minsert nodes into a ring, default force", function (done) {
         var data = {nodes: [new Node("foo", "localhost", 8000)]};
-        sinon.stub(gossip, "minsert", (nodes, force) => {
+        sinon.stub(gossip, "minsert", (nodes, weight, force) => {
           assert.lengthOf(nodes, 1);
+          assert.equal(weight, gossip.ring().rfactor());
           assert.equal(force, false);
         });
         var out = server.minsert(data, from);
+        assert.equal(out.ok, true);
+        gossip.minsert.restore();
+
+        data = {nodes: [new Node("foo", "localhost", 8000)], weight: -1};
+        sinon.stub(gossip, "minsert", (nodes, weight, force) => {
+          assert.lengthOf(nodes, 1);
+          assert.equal(weight, gossip.ring().rfactor());
+          assert.equal(force, false);
+        });
+        out = server.minsert(data, from);
+        assert.equal(out.ok, true);
+        gossip.minsert.restore();
+
+        data = {nodes: [new Node("foo", "localhost", 8000)], weight: 1};
+        sinon.stub(gossip, "minsert", (nodes, weight, force) => {
+          assert.lengthOf(nodes, 1);
+          assert.equal(weight, 1);
+          assert.equal(force, false);
+        });
+        out = server.minsert(data, from);
         assert.equal(out.ok, true);
         gossip.minsert.restore();
         done();
@@ -320,8 +376,9 @@ module.exports = function (mocks, lib) {
 
       it("Should minsert nodes into a ring, force is true", function (done) {
         var data = {nodes: [new Node("foo", "localhost", 8000)], force: true};
-        sinon.stub(gossip, "minsert", (nodes, force) => {
+        sinon.stub(gossip, "minsert", (nodes, weight, force) => {
           assert.lengthOf(nodes, 1);
+          assert.equal(weight, gossip.ring().rfactor());
           assert.equal(force, true);
         });
         var out = server.minsert(data, from);
@@ -332,13 +389,60 @@ module.exports = function (mocks, lib) {
 
       it("Should minsert nodes into a ring, filter out this node", function (done) {
         var data = {nodes: [kernel.self()]};
-        sinon.stub(gossip, "minsert", (nodes, force) => {
+        sinon.stub(gossip, "minsert", (nodes, weight, force) => {
           assert.lengthOf(nodes, 0);
+          assert.equal(weight, gossip.ring().rfactor());
           assert.equal(force, false);
         });
         var out = server.minsert(data, from);
         assert.equal(out.ok, true);
         gossip.minsert.restore();
+        done();
+      });
+
+      it("Should insert a node into a ring, default force", function (done) {
+        var data = {node: new Node("foo", "localhost", 8000)};
+        sinon.stub(gossip, "update", (node, weight, force) => {
+          assert.ok(node.equals(data.node));
+          assert.equal(weight, gossip.ring().rfactor());
+          assert.equal(force, false);
+        });
+        var out = server.update(data, from);
+        assert.equal(out.ok, true);
+        gossip.update.restore();
+
+        data = {node: new Node("foo", "localhost", 8000), weight: -1};
+        sinon.stub(gossip, "update", (node, weight, force) => {
+          assert.ok(node.equals(data.node));
+          assert.equal(weight, gossip.ring().rfactor());
+          assert.equal(force, false);
+        });
+        out = server.update(data, from);
+        assert.equal(out.ok, true);
+        gossip.update.restore();
+
+        data = {node: new Node("foo", "localhost", 8000), weight: 1};
+        sinon.stub(gossip, "update", (node, weight, force) => {
+          assert.ok(node.equals(data.node));
+          assert.equal(weight, 1);
+          assert.equal(force, false);
+        });
+        out = server.update(data, from);
+        assert.equal(out.ok, true);
+        gossip.update.restore();
+        done();
+      });
+
+      it("Should insert a node into a ring, set force", function (done) {
+        var data = {node: new Node("foo", "localhost", 8000), force: true};
+        sinon.stub(gossip, "update", (node, weight, force) => {
+          assert.ok(node.equals(data.node));
+          assert.equal(weight, gossip.ring().rfactor());
+          assert.equal(force, true);
+        });
+        var out = server.update(data, from);
+        assert.equal(out.ok, true);
+        gossip.update.restore();
         done();
       });
 
@@ -436,6 +540,46 @@ module.exports = function (mocks, lib) {
         var out = server.get(data, from);
         assert.equal(out.ok, true);
         assert.deepEqual(out.data, kernel.self().toJSON(true));
+        done();
+      });
+      
+      it("Should return weight of node in ring", function (done) {
+        var data = {id: id};
+        var out = server.weight(data, from);
+        assert.equal(out.ok, true);
+        assert.equal(out.data, gossip.ring().weights().get(kernel.self().id()));
+        done();
+      });
+
+      it("Should return error if checking weight of node that doesn't exist", function (done) {
+        var data = {id: id + "1"};
+        var out = server.weight(data, from);
+        assert.equal(out.ok, false);
+        assert.isObject(out.error);
+        done();
+      });
+
+      it("Should return weights of all nodes in ring", function (done) {
+        var data = null;
+        var out = server.weights(data, from);
+        assert.equal(out.ok, true);
+        assert.deepEqual(out.data, utils.mapToObject(gossip.ring().weights()));
+        done();
+      });
+
+      it("Should return list of nodes in ring", function (done) {
+        var data = {};
+        var out = server.nodes(data, from);
+        assert.equal(out.ok, true);
+        assert.deepEqual(out.data, gossip.ring().nodes());
+        done();
+      });
+
+      it("Should return status of residing node on ping", function (done) {
+        var data = {};
+        var out = server.ping(data, from);
+        assert.equal(out.ok, true);
+        assert.equal(out.data, "pong");
         done();
       });
     });
