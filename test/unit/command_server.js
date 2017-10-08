@@ -12,6 +12,7 @@ module.exports = function (mocks, lib) {
         GossipRing = lib.gossip,
         CHash = lib.chash,
         VectorClock = lib.vclock,
+        utils = lib.utils,
         Node = lib.node,
         MockIPC = mocks.ipc;
 
@@ -539,6 +540,30 @@ module.exports = function (mocks, lib) {
         var out = server.get(data, from);
         assert.equal(out.ok, true);
         assert.deepEqual(out.data, kernel.self().toJSON(true));
+        done();
+      });
+      
+      it("Should return weight of node in ring", function (done) {
+        var data = {id: id};
+        var out = server.weight(data, from);
+        assert.equal(out.ok, true);
+        assert.equal(out.data, gossip.ring().weights().get(kernel.self().id()));
+        done();
+      });
+
+      it("Should return error if checking weight of node that doesn't exist", function (done) {
+        var data = {id: id + "1"};
+        var out = server.weight(data, from);
+        assert.equal(out.ok, false);
+        assert.isObject(out.error);
+        done();
+      });
+
+      it("Should return weights of all nodes in ring", function (done) {
+        var data = null;
+        var out = server.weights(data, from);
+        assert.equal(out.ok, true);
+        assert.deepEqual(out.data, utils.mapToObject(gossip.ring().weights()));
         done();
       });
 

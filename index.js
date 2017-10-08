@@ -69,6 +69,7 @@ function createVClock(id, count) {
  * @param {Number} [opts.flushInterval] - Interval to flush the state of the ring to disk, with a granularity of milliseconds. Defaults to 1000.
  * @param {String} [opts.flushPath] - Path string to flush the state of the ring to; if set to `null`, the gossip ring will just skip flushing state to disk. Defaults to `null`.
  * @param {Object} [opts.vclockOpts] - Vector clock options for trimming; occurs at the same interval as `interval`. Defaults to `clusterluck.consts.vclockOpts`.
+ * @param {Object} [opts.connOpts] - Connection options for when connecting to new nodes.
  *
  * @return {Clusterluck.GossipRing} A new gossip ring instance.
  *

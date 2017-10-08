@@ -55,11 +55,14 @@ $ npm install --global istanbul
     - [`ping`](#ping)
     - [`get`](#get)
     - [`has`](#has)
+    - [`weight`](#weight)
+    - [`weights`](#weights)
     - [`join`](#join)
     - [`meet`](#meet)
     - [`leave`](#leave)
     - [`insert`](#insert)
     - [`minsert`](#minsert)
+    - [`update`](#update)
     - [`remove`](#remove)
     - [`mremove`](#mremove)
   - [Consistent Hash Ring](#ConsistentHashRing)
@@ -238,17 +241,39 @@ In the CLI session, type `inspect`. This command will print the cluster at a nod
 
 ```
 > inspect
-{ ok: true,
-  data: 
-   { rfactor: 3,
-     pfactor: 2,
-     tree: 
-      [ { key: 'avmox6bKHfmLdzmObwjwIrh2WC6XM471ods56FWbDo0=',
-          value: { id: 'foo', host: 'localhost', port: 7022 } },
-        { key: 'kL2YfHLEuxHGaEz4nOxWYyPSiFlGBsFMzoYDXXxuXK0=',
-          value: { id: 'foo', host: 'localhost', port: 7022 } },
-        { key: 'kzMt7C+SJZbxNQmrL3vhpfJ+a0RgPiGlRhrxwS57RWI=',
-          value: { id: 'foo', host: 'localhost', port: 7022 } } ] } }
+{
+  "ok": true,
+  "data": {
+    "rfactor": 3,
+    "pfactor": 2,
+    "tree": [
+      {
+        "key": "avmox6bKHfmLdzmObwjwIrh2WC6XM471ods56FWbDo0=",
+        "value": {
+          "id": "foo",
+          "host": "localhost",
+          "port": 7022
+        }
+      },
+      {
+        "key": "kL2YfHLEuxHGaEz4nOxWYyPSiFlGBsFMzoYDXXxuXK0=",
+        "value": {
+          "id": "foo",
+          "host": "localhost",
+          "port": 7022
+        }
+      },
+      {
+        "key": "kzMt7C+SJZbxNQmrL3vhpfJ+a0RgPiGlRhrxwS57RWI=",
+        "value": {
+          "id": "foo",
+          "host": "localhost",
+          "port": 7022
+        }
+      }
+    ]
+  }
+}
 ```
 
 ##### nodes
@@ -257,8 +282,16 @@ In the CLI session, type `nodes`. This command will print the nodes of the clust
 
 ```
 > nodes
-{ ok: true,
-  data: [ { id: 'foo', host: 'baconstation', port: 7021 } ] }
+{
+  "ok": true,
+  "data": [
+    {
+      "id": "foo",
+      "host": "localhost",
+      "port": 7021
+    }
+  ]
+}
 ```
 
 ##### ping
@@ -267,7 +300,10 @@ In the CLI session, type `ping`. This command will ping the node this session is
 
 ```
 > ping
-{ ok: true, data: 'pong' }
+{
+  "ok": true,
+  "data": "pong"
+}
 ```
 
 ##### get
@@ -276,14 +312,23 @@ This command will print metadata about an input node in the cluster, or will ret
 
 ```
 > get foo
-{ ok: true,
-  data: { id: 'foo', host: 'localhost', port: 7022 } }
+{
+  "ok": true,
+  "data": {
+    "id": "foo",
+    "host": "localhost",
+    "port": 7022
+  }
+}
 
 > get bar
-{ ok: false,
-  error: 
-   { message: '\'bar\' is not defined in this ring.',
-     _error: true } }
+{
+  "ok": false,
+  "error": {
+    "message": "'bar' is not defined in this ring.',
+    "_error": true
+  }
+}
 ```
 
 ##### has
@@ -292,12 +337,51 @@ This command will print whether an input node exists in the cluster (according t
 
 ```
 > has foo
-{ ok: true,
-  data: true }
+{
+  "ok": true,
+  "data": true
+}
 
 > has bar
-{ ok: true,
-  data: false }
+{
+  "ok": true,
+  "data": false
+}
+```
+
+##### weight
+
+This command will print metadata about an input node's weight (number of virtual nodes) in the cluster, or will return an error if the node doesn't exist in the cluster (according to the node our session targets). For example, given the previous setup:
+
+```
+> weight foo
+{
+  "ok": true,
+  "data": 3
+}
+
+> weight bar
+{
+  "ok": false,
+  "error": {
+    "message": "'bar' is not defined in this ring.',
+    "_error": true
+  }
+}
+```
+
+##### weights
+
+In the CLI session, type `weights`. This command will print the weights (number of virtual nodes) for every node in the cluster on the console. For example, if we've just started a new node with id `foo` at hostname `localhost` with port `7022` and default weight 3, we'd see the following output:
+
+```
+> weights
+{
+  "ok": true,
+  "data": {
+    "foo": 3
+  }
+}
 ```
 
 ##### join
@@ -307,14 +391,19 @@ This command will attempt to join a cluster if it doesn't already belong to a cl
 ```
 // assuming 'foo' isn't a part of a ring
 > join ring
-{ ok: true }
+{
+  "ok": true
+}
 
 // if it's in a ring
 > join ring
-{ ok: false,
-  error: 
-   { message: 'Node already belongs to ring \'ring\'',
-     _error: true } }
+{
+  "ok": false,
+  "error": {
+    "message": "Node already belongs to ring 'ring'",
+    "_error": true
+  }
+}
 ```
 
 ##### meet
@@ -326,7 +415,9 @@ For example, given the previous setup:
 
 ```
 > meet bar localhost 7023
-{ ok: true }
+{
+  "ok": true
+}
 
 // wait some time...
 > get bar
@@ -339,15 +430,21 @@ This command will tell the targeted node by this session to leave its current cl
 
 ```
 > leave
-{ ok: true }
+{
+  "ok": true
+}
 // immediately following this command...
 > has bar
-{ ok: true,
-  data: false }
+{
+  "ok": true,
+  "data": false
+}
 
 // leave is done forcefully
 > leave --force
-{ ok: true }
+{
+  "ok": true
+}
 ```
 
 For documentation on how the `--force` option works for this command, just run `help leave`.
@@ -361,17 +458,33 @@ For example:
 
 ```
 > insert bar localhost 7023
-{ ok: true }
+{
+  "ok": true
+}
 > get bar
-{ ok: true,
-  data: { id: 'bar', host: 'localhost', port: 7023 } }
+{
+  "ok": true,
+  "data": {
+    "id": "bar",
+    "host": "localhost",
+    "port": 7023
+  }
+}
 
 // insert is done forcefully
 > insert --force bar localhost 7023
-{ ok: true }
+{
+  "ok": true
+}
 > get bar
-{ ok: true,
-  data: { id: 'bar', host: 'localhost', port: 7023 } }
+{
+  "ok": true,
+  "data": {
+    "id": "bar",
+    "host": "localhost",
+    "port": 7023
+  }
+}
 ```
 
 For documentation on how the `--force` option works for this command, or any other option, just run `help insert`.
@@ -384,26 +497,93 @@ For example:
 
 ```
 > minsert bar localhost 7023 baz localhost 7024
-{ ok: true }
+{
+  "ok": true
+}
 > get bar
-{ ok: true,
-  data: { id: 'bar', host: 'localhost', port: 7023 } }
+{
+  "ok": true,
+  "data": {
+    "id": "bar",
+    "host": "localhost",
+    "port": 7023
+  }
+}
 > get baz
-{ ok: true,
-  data: { id: 'baz', host: 'localhost', port: 7024 } }
+{
+  "ok": true,
+  "data": {
+    "id": "baz",
+    "host": "localhost",
+    "port": 7024
+  }
+}
 
 // minsert is done forcefully
 > minsert --force bar localhost 7023 baz localhost 7024
-{ ok: true }
+{
+  "ok": true
+}
 > get bar
-{ ok: true,
-  data: { id: 'bar', host: 'localhost', port: 7023 } }
+{
+  "ok": true,
+  "data": {
+    "id": "bar",
+    "host": "localhost",
+    "port": 7023
+  }
+}
 > get baz
-{ ok: true,
-  data: { id: 'baz', host: 'localhost', port: 7024 } }
+{
+  "ok": true,
+  "data": {
+    "id": "baz",
+    "host": "localhost",
+    "port": 7024
+  }
+}
 ```
 
 For documentation on how the `--force` option works for this command, or any other option, just run `help minsert`.
+
+##### update
+
+This command will tell the targeted node by this session to update a node in its cluster (as it currently views it) with a new insertion weight.
+Subsequently, this information will be gossiped around the cluster, eventually resulting in every node thinking the input node belongs in the cluster.
+For example:
+
+```
+> update foo localhost 7022 4
+{
+  "ok": true
+}
+> get bar
+{
+  "ok": true,
+  "data": {
+    "id": "foo",
+    "host": "localhost",
+    "port": 7023
+  }
+}
+
+// update is done forcefully
+> update --force bar localhost 7022 4
+{
+  "ok": true
+}
+> get bar
+{
+  "ok": true,
+  "data": {
+    "id": "foo",
+    "host": "localhost",
+    "port": 7023
+  }
+}
+```
+
+For documentation on how the `--force` option works for this command, or any other option, just run `help insert`.
 
 ##### remove
 
@@ -413,17 +593,25 @@ For example:
 
 ```
 > remove bar localhost 7023
-{ ok: true }
+{
+  "ok": true
+}
 > has bar
-{ ok: true,
-  data: false }
+{
+  "ok": true,
+  "data": false
+}
 
 // remove is done forcefully
 > remove --force bar localhost 7023
-{ ok: true }
+{
+  "ok": true
+}
 > has bar
-{ ok: true,
-  data: false }
+{
+  "ok": true,
+  "data": false
+}
 ```
 
 For documentation on how the `--force` option works for this command, or any other option, just run `help remove`.
@@ -436,23 +624,35 @@ For example:
 
 ```
 > mremove bar localhost 7023 baz localhost 7024
-{ ok: true }
+{
+  "ok": true
+}
 > has bar
-{ ok: true,
-  data: false }
+{
+  "ok": true,
+  "data": false
+}
 > has baz
-{ ok: true,
-  data: false }
+{
+  "ok": true,
+  "data": false
+}
 
 // mremove is done forcefully
 > mremove --force bar localhost 7023 baz localhost 7024
-{ ok: true }
+{
+  "ok": true
+}
 > has bar
-{ ok: true,
-  data: false }
+{
+  "ok": true,
+  "data": false
+}
 > has baz
-{ ok: true,
-  data: false }
+{
+  "ok": true,
+  "data": false
+}
 ```
 
 For documentation on how the `--force` option works for this command, or any other option, just run `help mremove`.
