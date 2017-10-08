@@ -223,6 +223,25 @@ module.exports = function (mocks, lib) {
         out = server.decodeJob(Buffer.from(JSON.stringify({event: "not defined"})));
         assert.ok(out instanceof Error);
       });
+
+      it("Should decode singleton", function () {
+        var job = {
+          event: "rlock",
+          data: {
+            id: "id",
+            holder: "holder",
+            timeout: 1000
+          }
+        };
+        var out = server.decodeSingleton(job);
+        assert.deepEqual(out, job);
+
+        out = server.decodeSingleton({event: "rlock"});
+        assert.ok(out instanceof Error);
+
+        out = server.decodeSingleton({event: "not defined"});
+        assert.ok(out instanceof Error);
+      });
     });
 
     describe("DLMServer command tests", function () {
@@ -358,9 +377,9 @@ module.exports = function (mocks, lib) {
               holder: "holder",
               timeout: 1000
             });
-            return cb(null, [JSON.stringify({ok: true})]);
+            return cb(null, [{ok: true}]);
           });
-          return cb(null, [JSON.stringify({ok: false})]);
+          return cb(null, [{ok: false}]);
         });
         sinon.stub(server, "abcast");
         server.rlock("id", "holder", 1000, (err, res) => {
@@ -384,7 +403,7 @@ module.exports = function (mocks, lib) {
             holder: "holder",
             timeout: 1000
           });
-          return cb(null, [JSON.stringify({ok: true})]);
+          return cb(null, [{ok: true}]);
         });
         server.rlock("id", "holder", 1000, (err, res) => {
           assert.notOk(err);
@@ -486,9 +505,9 @@ module.exports = function (mocks, lib) {
               holder: "holder",
               timeout: 1000
             });
-            return cb(null, [JSON.stringify({ok: true})]);
+            return cb(null, [{ok: true}]);
           });
-          return cb(null, [JSON.stringify({ok: false})]);
+          return cb(null, [{ok: false}]);
         });
         sinon.stub(server, "abcast");
         server.wlock("id", "holder", 1000, (err, res) => {
@@ -502,7 +521,7 @@ module.exports = function (mocks, lib) {
         }, 1000, 1);
       });
 
-      it("Should perform rlock command", function (done) {
+      it("Should perform wlock command", function (done) {
         sinon.stub(server, "multicall", (nodes, id, event, msg, cb, timeout) => {
           assert.deepEqual(nodes, gossip.ring().nodes());
           assert.equal(id, server._id);
@@ -512,7 +531,7 @@ module.exports = function (mocks, lib) {
             holder: "holder",
             timeout: 1000
           });
-          return cb(null, [JSON.stringify({ok: true})]);
+          return cb(null, [{ok: true}]);
         });
         server.wlock("id", "holder", 1000, (err, res) => {
           assert.notOk(err);
@@ -637,7 +656,7 @@ module.exports = function (mocks, lib) {
           node: kernel.self()
         };
         sinon.stub(server, "reply", (from, out) => {
-          assert.deepEqual(JSON.parse(out), {ok: false});
+          assert.deepEqual(out, {ok: false});
         });
         server._doRLock({
           id: "foo",
@@ -654,7 +673,7 @@ module.exports = function (mocks, lib) {
           node: kernel.self()
         };
         sinon.stub(server, "reply", (from, out) => {
-          assert.deepEqual(JSON.parse(out), {ok: true});
+          assert.deepEqual(out, {ok: true});
         });
         server._doRLock({
           id: "foo",
@@ -672,7 +691,7 @@ module.exports = function (mocks, lib) {
           node: kernel.self()
         };
         sinon.stub(server, "reply", (from, out) => {
-          assert.deepEqual(JSON.parse(out), {ok: true});
+          assert.deepEqual(out, {ok: true});
         });
         server._doRLock({
           id: "foo",
@@ -703,7 +722,7 @@ module.exports = function (mocks, lib) {
           node: kernel.self()
         };
         sinon.stub(server, "reply", (from, out) => {
-          assert.deepEqual(JSON.parse(out), {ok: false});
+          assert.deepEqual(out, {ok: false});
         });
         server._doWLock({
           id: "foo",
@@ -719,7 +738,7 @@ module.exports = function (mocks, lib) {
           node: kernel.self()
         };
         sinon.stub(server, "reply", (from, out) => {
-          assert.deepEqual(JSON.parse(out), {ok: true});
+          assert.deepEqual(out, {ok: true});
         });
         server._doWLock({
           id: "foo",
@@ -738,7 +757,7 @@ module.exports = function (mocks, lib) {
           node: kernel.self()
         };
         sinon.stub(server, "_safeReply", (from, out) => {
-          assert.deepEqual(JSON.parse(out), {ok: false});
+          assert.deepEqual(out, {ok: false});
         });
         server._doRUnlock({
           id: "foo",
@@ -754,7 +773,7 @@ module.exports = function (mocks, lib) {
           node: kernel.self()
         };
         sinon.stub(server, "_safeReply", (from, out) => {
-          assert.deepEqual(JSON.parse(out), {ok: false});
+          assert.deepEqual(out, {ok: false});
         });
         server._doRUnlock({
           id: "foo",
@@ -770,7 +789,7 @@ module.exports = function (mocks, lib) {
           node: kernel.self()
         };
         sinon.stub(server, "_safeReply", (from, out) => {
-          assert.deepEqual(JSON.parse(out), {ok: false});
+          assert.deepEqual(out, {ok: false});
         });
         server._doRUnlock({
           id: "foo",
@@ -786,7 +805,7 @@ module.exports = function (mocks, lib) {
           node: kernel.self()
         };
         sinon.stub(server, "_safeReply", (from, out) => {
-          assert.deepEqual(JSON.parse(out), {ok: true});
+          assert.deepEqual(out, {ok: true});
         });
         server._doRUnlock({
           id: "foo",
@@ -808,7 +827,7 @@ module.exports = function (mocks, lib) {
           node: kernel.self()
         };
         sinon.stub(server, "_safeReply", (from, out) => {
-          assert.deepEqual(JSON.parse(out), {ok: false});
+          assert.deepEqual(out, {ok: false});
         });
         server._doWUnlock({
           id: "foo",
@@ -824,7 +843,7 @@ module.exports = function (mocks, lib) {
           node: kernel.self()
         };
         sinon.stub(server, "_safeReply", (from, out) => {
-          assert.deepEqual(JSON.parse(out), {ok: false});
+          assert.deepEqual(out, {ok: false});
         });
         server._doWUnlock({
           id: "foo",
@@ -841,7 +860,7 @@ module.exports = function (mocks, lib) {
           node: kernel.self()
         };
         sinon.stub(server, "_safeReply", (from, out) => {
-          assert.deepEqual(JSON.parse(out), {ok: false});
+          assert.deepEqual(out, {ok: false});
         });
         server._doWUnlock({
           id: "foo",
@@ -858,7 +877,7 @@ module.exports = function (mocks, lib) {
           node: kernel.self()
         };
         sinon.stub(server, "_safeReply", (from, out) => {
-          assert.deepEqual(JSON.parse(out), {ok: true});
+          assert.deepEqual(out, {ok: true});
         });
         server._doWUnlock({
           id: "foo",
@@ -959,13 +978,8 @@ module.exports = function (mocks, lib) {
         assert.deepEqual(DLMServer.parseJob(obj, "runlock"), obj);
       });
 
-      it("Should encode a response over the network kernel", function () {
-        var out = DLMServer.encodeResp({foo: "bar"});
-        assert.equal(out, JSON.stringify({foo: "bar"}));
-      });
-
       it("Should find, from a multicall response, which responses indicate success", function () {
-        var out = DLMServer.findLockPasses(["foo", "bar"], [JSON.stringify({ok: false}), JSON.stringify({ok: true})]);
+        var out = DLMServer.findLockPasses(["foo", "bar"], [{ok: false}, {ok: true}]);
         assert.deepEqual(out, ["bar"]);
       });
 

@@ -140,8 +140,30 @@ module.exports = function (mocks, lib) {
         var out = server.decodeJob(job);
         assert.deepEqual(out, {event: "foo", data: "bar"});
 
+        job = Buffer.from(JSON.stringify({event: "foo", data: Buffer.from("bar"), hello: "world"}));
+        out = server.decodeJob(job);
+        assert.deepEqual(out, {event: "foo", data: Buffer.from("bar")});
+
         out = server.decodeJob(Buffer.from("foo"));
         assert.ok(out instanceof Error);
+      });
+
+      it("Should decode singleton", function () {
+        var job = "foo";
+        var out = server.decodeSingleton(job);
+        assert.equal(job, out);
+
+        job = {event: "foo", data: "bar"};
+        out = server.decodeSingleton(job);
+        assert.deepEqual(job, out);
+
+        job = {event: "foo", data: {}};
+        out = server.decodeSingleton(job);
+        assert.deepEqual(job, out);
+
+        job = {event: "foo", data: Buffer.from("bar").toJSON()};
+        out = server.decodeSingleton(job);
+        assert.deepEqual(out, {event: "foo", data: Buffer.from("bar")});
       });
     });
 
@@ -184,6 +206,40 @@ module.exports = function (mocks, lib) {
         nKernel.stop();
       });
 
+      it("Should skip parsing job stream if paused", function () {
+        server._paused = true;
+        sinon.spy(server, "decodeSingleton");
+        server._parse("", {done: true}, {});
+        assert.notOk(server.decodeSingleton.called);
+        server.decodeSingleton.restore();
+        server._paused = false;
+      });
+
+      it("Should parse incoming singleton", function (done) {
+        server.once("foo", () => {
+          async.nextTick(done);
+        });
+        server._parse({event: "foo", data: "bar"}, {done: true}, {});
+      });
+
+      it("Should skip emitting message on failed singleton", function () {
+        sinon.spy(server, "emit");
+        sinon.stub(server, "decodeSingleton", () => {
+          return new Error("foo");
+        });
+        server._parse({event: "foo", data: "bar"}, {done: true}, {});
+        assert.notOk(server.emit.called);
+        server.emit.restore();
+        server.decodeSingleton.restore();
+      });
+
+      it("Should skip emitting singleton when stream has error", function () {
+        sinon.spy(server, "emit");
+        server._parse(null, {error: {}, done: true}, {});
+        assert.notOk(server.emit.called);
+        server.emit.restore();
+      });
+
       it("Should parse incoming job streams", function () {
         var data = Buffer.from(JSON.stringify({ok: true}));
         var stream = {stream: uuid.v4(), done: false};
@@ -206,11 +262,10 @@ module.exports = function (mocks, lib) {
 
       it("Should skip parsing full job if stream errors", function () {
         sinon.spy(server, "decodeJob");
-        var data = Buffer.from(JSON.stringify({ok: true}));
         var stream = {stream: uuid.v4(), error: {foo: "bar"}, done: true};
         var init = Buffer.from("foo");
         server.streams().set(stream.stream, {data: init});
-        server._parse(data, stream, {});
+        server._parse(null, stream, {});
         assert.notOk(server.streams().has(stream.stream));
         assert.notOk(server.decodeJob.called);
         server.decodeJob.restore();
@@ -228,7 +283,7 @@ module.exports = function (mocks, lib) {
         }));
         var stream = {stream: uuid.v4(), done: false};
         server._parse(data, stream, {});
-        server._parse(data, {stream: stream.stream, done: true}, {});
+        server._parse(null, {stream: stream.stream, done: true}, {});
         assert.notOk(server._streams.has(stream.stream));
         assert.ok(server.emit.called);
         server.emit.restore();
@@ -243,20 +298,10 @@ module.exports = function (mocks, lib) {
         }));
         var stream = {stream: uuid.v4(), done: false};
         server._parse(data, stream, {});
-        server._parse(data, {stream: stream.stream, done: true}, {});
+        server._parse(null, {stream: stream.stream, done: true}, {});
         assert.notOk(server._streams.has(stream.stream));
         assert.notOk(server.emit.calledWith(["idle"]));
         server.emit.restore();
-      });
-
-      it("Should decode incoming job", function () {
-        var buf = Buffer.from(JSON.stringify({
-          event: "msg",
-          data: "foo"
-        }));
-        var out = server.decodeJob(buf);
-        assert.equal(out.event, "msg");
-        assert.equal(out.data, "foo");
       });
 
       it("Should parse recipient as local node", function () {
