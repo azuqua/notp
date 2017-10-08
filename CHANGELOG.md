@@ -1,6 +1,14 @@
 # Change Log
 
-## [v1.2.3](https://github.com/azuqua/clusterluck/tree/v1.2.3) (2017-06-29)
+## [v1.3.0](https://github.com/azuqua/clusterluck/tree/v1.3.0) (2017-07-12)
+[Full Changelog](https://github.com/azuqua/clusterluck/compare/v1.2.3...v1.3.0)
+
+**Merged pull requests:**
+
+- DLM/DSM gen\_server functionality, more examples [\#37](https://github.com/azuqua/clusterluck/pull/37) ([kevinwilson541](https://github.com/kevinwilson541))
+- DLM/DSM gen\_servers, more examples, MTable class for non-persistent DTable [\#36](https://github.com/azuqua/clusterluck/pull/36) ([kevinwilson541](https://github.com/kevinwilson541))
+
+## [v1.2.3](https://github.com/azuqua/clusterluck/tree/v1.2.3) (2017-06-30)
 [Full Changelog](https://github.com/azuqua/clusterluck/compare/v1.2.2...v1.2.3)
 
 **Merged pull requests:**
