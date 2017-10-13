@@ -222,6 +222,10 @@ function createGenServer(cluster, opts) {
  * @param {Number} [opts.writeThreshold] - Number of write operations to the log file before triggering a snapshot flush to disk. Defaults to 100 writes.
  * @param {Number} [opts.autoSave] - Number of milliseconds this table will wait in an idle state before triggering a snapshot flush to disk. Defaults to 180000 milliseconds.
  * @param {Number} [opts.fsyncInterval] - Internval in milliseconds to fsync the log file. Defaults to 1000 milliseconds.
+ * @param {Boolean} [opts.compress] - Whether to run RDB snapshot streams through a GZIP compression stream. Defaults to `false`.
+ * @param {Function} [opts.encodeFn] - Encoding function to use when serializing writes to the AOF file and when saving to the RDB snapshot. Defaults to `DTable.encodeValue`.
+ * @param {Function} [opts.decodeFn] - Decoding function to use when loading contents from disk. Defaults to `DTable.decodeValue`.
+ * @param {String} [opts.name] - Name to start table with; can be used as a replacement for passing `name` to the start function. Required to be passed if you don't want a race condition between table loads and the idle interval that runs to trigger RDB snapshot logic. Defaults to `undefined`.
  *
  * @return {Clusterluck.DTable} A new dtable instance.
  *
@@ -233,6 +237,19 @@ function createGenServer(cluster, opts) {
  *   fsyncInterval: 1000
  * });
  * table.start("foo");
+ *
+ * @example
+ * let table = clusterluck.createDTable({
+ *   path: "/path/to/dir",
+ *   writeThreshold: 100,
+ *   autoSave: 180000,
+ *   fsyncInterval: 1000,
+ *   name: "TABLE_NAME"
+ * });
+ * table.load((err) => {
+ *   if (err) process.exit(1);
+ *   table.start();
+ * });
  *
  */
 function createDTable(opts) {
@@ -329,8 +346,6 @@ module.exports = {
   GossipRing: lib.gossip,
   NetKernel: lib.kernel,
   Node: lib.node,
-  StateTable: lib.table,
-  TableTerm: lib.table_term,
   VectorClock: lib.vclock,
   DTable: lib.dtable,
   MTable: lib.mtable,
