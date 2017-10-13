@@ -1,5 +1,14 @@
 # Change Log
 
+## [v2.0.1](https://github.com/azuqua/clusterluck/tree/v2.0.1) (2017-10-13)
+
+[Full Changelog](https://github.com/azuqua/clusterluck/compare/v2.0.0...v2.0.1)
+
+**Merged pull requests:**
+
+- Develop [\#53](https://github.com/azuqua/clusterluck/pull/53) ([kevinwilson541](https://github.com/kevinwilson541))
+- Kevin/develop [\#52](https://github.com/azuqua/clusterluck/pull/52) ([kevinwilson541](https://github.com/kevinwilson541))
+
 ## [v2.0.0](https://github.com/azuqua/clusterluck/tree/v2.0.0) (2017-10-08)
 [Full Changelog](https://github.com/azuqua/clusterluck/compare/v1.3.0...v2.0.0)
 
