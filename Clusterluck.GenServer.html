@@ -1,0 +1,3682 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Class: GenServer</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Class: GenServer</h1>
+
+    
+
+
+
+
+<section>
+
+<header>
+    
+        <h2><span class="attribs"><span class="type-signature"></span></span>
+            <span class="ancestors"><a href="Clusterluck.html">Clusterluck</a>.</span>GenServer<span class="signature">(kernel)</span><span class="type-signature"></span></h2>
+        
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+
+    
+
+    
+    <h4 class="name" id="GenServer"><span class="type-signature"></span>new GenServer<span class="signature">(kernel)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Generic server implementation. Basic unit of logic handling in clusterluck. Provides the ability to send/receive messages across a cluster using <code>call</code>, <code>cast</code>, <code>multicall</code>, and <code>abcast</code>. Largely derived from Erlang's gen_server model, but incorporated into node.js' EventEmitter model. Internally, message streams are memoized until finished, which then triggers the firing of an event for given event (say we're listening for event &quot;hello&quot;, if this server receives a message stream with event &quot;hello&quot;, we'll fire it under the hood). In addition to message streams, message singletons are supported, which are message streams with a singleton message and bypass any stream memoization.</p>
+<p>Think of it like event emitters that are targetable across a cluster, as well as internal to a node.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>kernel</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Clusterluck.NetKernel.html">Clusterluck.NetKernel</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Network kernel this instance will listen for messages on.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_gen_server.js.html">lib/gen_server.js</a>, <a href="lib_gen_server.js.html#line10">line 10</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="abcast"><span class="type-signature"></span>abcast<span class="signature">(nodes, id, event, data)</span><span class="type-signature"> &rarr; {<a href="Clusterluck.GenServer.html">Clusterluck.GenServer</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Analogous to <code>cast</code>, but makes the cast to the GenServer with name <code>id</code> on each node in <code>nodes</code>.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>nodes</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Array of nodes to send this message to.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>id</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Receiving GenServer.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>event</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Event this message will be emitted under on the receiving GenServer.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>data</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Buffer</span>
+|
+
+<span class="param-type">String</span>
+|
+
+<span class="param-type">Number</span>
+|
+
+<span class="param-type">Boolean</span>
+|
+
+<span class="param-type">Object</span>
+|
+
+<span class="param-type">Array</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Data to send with this message.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_gen_server.js.html">lib/gen_server.js</a>, <a href="lib_gen_server.js.html#line398">line 398</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>This instance.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="Clusterluck.GenServer.html">Clusterluck.GenServer</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="call"><span class="type-signature"></span>call<span class="signature">(id, event, data, cb<span class="signature-attributes">opt</span>, timeout<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Stream}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Makes a synchronous request against <code>id</code> with event <code>event</code> and event args <code>data</code>. If <code>id</code> is an object, it will be parsed into a GenServer id and a receiving node. If a callback is supplied, the response will be aggregated and returned on success as <code>cb(null, res)</code> or on error as <code>cb(err)</code>. In either case, the response stream is returned, which can be used to pipe to other streams.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>id</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+|
+
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Receiving GenServer. Can be a string, in which case this message will be sent locally to <code>id</code>. If an object, will be parsed into a receiving node and GenServer id.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>event</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Event this message will be emitted under on the receiving GenServer.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>data</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Buffer</span>
+|
+
+<span class="param-type">String</span>
+|
+
+<span class="param-type">Number</span>
+|
+
+<span class="param-type">Boolean</span>
+|
+
+<span class="param-type">Object</span>
+|
+
+<span class="param-type">Array</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Data to send with this message.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>cb</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Optional callback for response/error handling.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>timeout</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Timeout to wait for response before returning an error. If no callback is supplied, the response stream will emit an equivalent error. Defaults to Infinity, meaning no timeout will occur.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_gen_server.js.html">lib/gen_server.js</a>, <a href="lib_gen_server.js.html#line324">line 324</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>Response stream for request.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Stream</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="cast"><span class="type-signature"></span>cast<span class="signature">(id, event, data)</span><span class="type-signature"> &rarr; {<a href="Clusterluck.GenServer.html">Clusterluck.GenServer</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Makes an asynchronous request against <code>id</code> with event <code>event</code> and event args <code>data</code>. If <code>id</code> is an object, it will be parsed into a GenServer id and a receiving node.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>id</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+|
+
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Receiving GenServer. Can be a string, in which case this message will be sent locally to <code>id</code>. If an object, will be parsed into a receiving node and GenServer id.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>event</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Event this message will be emitted under on the receiving GenServer.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>data</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Buffer</span>
+|
+
+<span class="param-type">String</span>
+|
+
+<span class="param-type">Number</span>
+|
+
+<span class="param-type">Boolean</span>
+|
+
+<span class="param-type">Object</span>
+|
+
+<span class="param-type">Array</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Data to send with this message.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_gen_server.js.html">lib/gen_server.js</a>, <a href="lib_gen_server.js.html#line374">line 374</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>This instance.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="Clusterluck.GenServer.html">Clusterluck.GenServer</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="decodeJob"><span class="type-signature">(abstract) </span>decodeJob<span class="signature">(job)</span><span class="type-signature"> &rarr; {Object}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Parses a fully memoized message stream into an object containing a key/value pair. If we fail to parse the job buffer (invalid JSON, etc), we just return an error and this GenServer will skip emitting an event. Otherwise, triggers user-defined logic for the parsed event.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>job</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Buffer</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Memoized buffer that represents complete message stream.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_gen_server.js.html">lib/gen_server.js</a>, <a href="lib_gen_server.js.html#line173">line 173</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>Object containing an event and data key/value pair, which are used to emit an event for user-defined logic.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Object</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="decodeJob"><span class="type-signature">(abstract) </span>decodeJob<span class="signature">(job)</span><span class="type-signature"> &rarr; {Object}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Parses a message singleton into an object containing a key/value pair. If we fail to parse the job, we just return an error and this GenServer will skip emitting an event. Otherwise, triggers user-defined logic for the parsed event.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>job</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Memoized buffer that represents complete message stream.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_gen_server.js.html">lib/gen_server.js</a>, <a href="lib_gen_server.js.html#line203">line 203</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>Object containing an event and data key/value pair, which are used to emit an event for user-defined logic.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Object</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="id"><span class="type-signature"></span>id<span class="signature">(id<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {String}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Acts as a getter/setter for the ID of this instance.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>id</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Handler ID to set on this instance.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_gen_server.js.html">lib/gen_server.js</a>, <a href="lib_gen_server.js.html#line227">line 227</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>The ID of this instance.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">String</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="idle"><span class="type-signature">(abstract) </span>idle<span class="signature">()</span><span class="type-signature"> &rarr; {Boolean}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Returns whether this handler is in an idle state or not.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_gen_server.js.html">lib/gen_server.js</a>, <a href="lib_gen_server.js.html#line287">line 287</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>Whether this process is idle or not.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Boolean</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="kernel"><span class="type-signature"></span>kernel<span class="signature">(kernel<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {<a href="Clusterluck.NetKernel.html">Clusterluck.NetKernel</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Acts as a getter/setter for the netkernel of this instance.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>kernel</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Clusterluck.NetKernel.html">Clusterluck.NetKernel</a></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>NetKernel to set on this instance.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_gen_server.js.html">lib/gen_server.js</a>, <a href="lib_gen_server.js.html#line247">line 247</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>NetKernel of this instance.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="Clusterluck.NetKernel.html">Clusterluck.NetKernel</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="multicall"><span class="type-signature"></span>multicall<span class="signature">(nodes, id, event, data, cb<span class="signature-attributes">opt</span>, timeout<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Array}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Analogous to <code>call</code>, but makes the call to the GenServer with name <code>id</code> on each node in <code>nodes</code>.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>nodes</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Array of nodes to send this message to.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>id</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Receiving GenServer name.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>event</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Event this message will be emitted under on the receiving GenServer.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>data</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Buffer</span>
+|
+
+<span class="param-type">String</span>
+|
+
+<span class="param-type">Number</span>
+|
+
+<span class="param-type">Boolean</span>
+|
+
+<span class="param-type">Object</span>
+|
+
+<span class="param-type">Array</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Data to send with this message.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>cb</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Optional callback for response/error handling.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>timeout</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Timeout to wait for response before returning an error. If no callback is supplied, the response stream will emit an equivalent error. Defaults to Infinity, meaning no timeout will occur.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_gen_server.js.html">lib/gen_server.js</a>, <a href="lib_gen_server.js.html#line349">line 349</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>Array of response streams.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Array</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="pause"><span class="type-signature">(abstract) </span>pause<span class="signature">()</span><span class="type-signature"> &rarr; {<a href="Clusterluck.GenServer.html">Clusterluck.GenServer</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Pauses the GenServer's message processing. As a result, any messages routed from the network kernel to this GenServer will be missed until <code>this.resume()</code> is called.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_gen_server.js.html">lib/gen_server.js</a>, <a href="lib_gen_server.js.html#line96">line 96</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<h5>Fires:</h5>
+<ul>
+    <li><a href="Clusterluck.GenServer.html#event:GenServer:pause">Clusterluck.GenServer#GenServer:pause</a></li>
+</ul>
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>This instance.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="Clusterluck.GenServer.html">Clusterluck.GenServer</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="reply"><span class="type-signature"></span>reply<span class="signature">(from, data)</span><span class="type-signature"> &rarr; {<a href="Clusterluck.GenServer.html">Clusterluck.GenServer</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Replies to the sending node for an event stream. Used when a triggered event contains synchronous logic, in which we need to respond to the calling node of this event.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>from</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Object received on synchronous message. This contains a tag to uniquely identify the request on the sender's end.</p>
+                <h6>Properties</h6>
+                
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>tag</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Unique identifer for request.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>node</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Clusterluck.Node.html">Clusterluck.Node</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Node representing the sender.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>data</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Buffer</span>
+|
+
+<span class="param-type">String</span>
+|
+
+<span class="param-type">Number</span>
+|
+
+<span class="param-type">Boolean</span>
+|
+
+<span class="param-type">Object</span>
+|
+
+<span class="param-type">Array</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Data to reply to synchronous message with.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_gen_server.js.html">lib/gen_server.js</a>, <a href="lib_gen_server.js.html#line303">line 303</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>This instance.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="Clusterluck.GenServer.html">Clusterluck.GenServer</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="resume"><span class="type-signature">(abstract) </span>resume<span class="signature">()</span><span class="type-signature"> &rarr; {<a href="Clusterluck.GenServer.html">Clusterluck.GenServer</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Resumes the processing of message streams on this GenServer. Any messages missed in between pausing and now will result in failed message parsing (since all JSON contents are sent in one message).</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_gen_server.js.html">lib/gen_server.js</a>, <a href="lib_gen_server.js.html#line132">line 132</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<h5>Fires:</h5>
+<ul>
+    <li><a href="Clusterluck.GenServer.html#event:GenServer:resume">Clusterluck.GenServer#GenServer:resume</a></li>
+</ul>
+
+
+
+<h5>Listens to Events:</h5>
+<ul>
+    <li><a href="Clusterluck.GenServer.html#event:GenServer:pause">Clusterluck.GenServer#GenServer:pause</a></li>
+</ul>
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>This instance.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="Clusterluck.GenServer.html">Clusterluck.GenServer</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="start"><span class="type-signature">(abstract) </span>start<span class="signature">(name<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Starts this GenServer. Use this to start processing messages. As a result of this function call, any message with an id equal to this server's id (or name, if provided) will be routed by the network kernel to this server. If called multiple times in a row, this function will throw, since name uniqueness is enforced by the network kernel. If no name is provided, the generated short id at construction-time will be used as the routing name.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>name</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Name to register this handler with instead of the unique id attached. Any message received on the network kernel with id <code>name</code> will be routed to this instance for message stream parsing, and possible event firing.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_gen_server.js.html">lib/gen_server.js</a>, <a href="lib_gen_server.js.html#line31">line 31</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+<h5>Listens to Events:</h5>
+<ul>
+    <li><a href="Clusterluck.GenServer.html#event:GenServer:pause">Clusterluck.GenServer#GenServer:pause</a></li>
+
+    <li><a href="Clusterluck.NetKernel.html#event:NetKernel:user_defined">Clusterluck.NetKernel#NetKernel:user_defined</a></li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="stop"><span class="type-signature">(abstract) </span>stop<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Stops the processing of messages on this GenServer. As a result, any further messages sent to the network kernel will fail to route to this GenServer. Additionally, all current message streams will be discarded, and the current name will be regenerated to another short id.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_gen_server.js.html">lib/gen_server.js</a>, <a href="lib_gen_server.js.html#line57">line 57</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<h5>Fires:</h5>
+<ul>
+    <li><a href="Clusterluck.GenServer.html#event:GenServer:stop">Clusterluck.GenServer#GenServer:stop</a></li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="streams"><span class="type-signature"></span>streams<span class="signature">(streams<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Map}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Acts as a getter/setter for the internal message stream map of this instance.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>streams</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Map</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Internal message stream map to set on this instance.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_gen_server.js.html">lib/gen_server.js</a>, <a href="lib_gen_server.js.html#line267">line 267</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>Internal message stream map of this instance.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Map</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+    
+
+    
+
+    
+        <h3 class="subsection-title">Events</h3>
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="event:GenServer:idle">GenServer:idle</h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Emitted when the number of active messages streams on this server is zero (or, if extending the GenServer class, when this.idle() returns true).</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_gen_server.js.html">lib/gen_server.js</a>, <a href="lib_gen_server.js.html#line466">line 466</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+<h5>Listeners of This Event:</h5>
+<ul>
+    <li><a href="Clusterluck.GossipRing.html#insert">Clusterluck.GossipRing#insert</a></li>
+
+    <li><a href="Clusterluck.GossipRing.html#leave">Clusterluck.GossipRing#leave</a></li>
+
+    <li><a href="Clusterluck.GossipRing.html#minsert">Clusterluck.GossipRing#minsert</a></li>
+
+    <li><a href="Clusterluck.GossipRing.html#mremove">Clusterluck.GossipRing#mremove</a></li>
+
+    <li><a href="Clusterluck.GossipRing.html#remove">Clusterluck.GossipRing#remove</a></li>
+
+    <li><a href="Clusterluck.GossipRing.html#update">Clusterluck.GossipRing#update</a></li>
+</ul>
+
+
+
+
+
+
+
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>server.once("idle", () => {
+  // now we could safely stop the server w/o killing any message streams
+});</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="event:GenServer:pause">GenServer:pause</h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Emitted when the server has paused. On 'pause', if the server is started with name <code>name</code>, the network kernel will remove this server's event handler for <code>name</code>.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_gen_server.js.html">lib/gen_server.js</a>, <a href="lib_gen_server.js.html#line111">line 111</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+<h5>Listeners of This Event:</h5>
+<ul>
+    <li><a href="Clusterluck.GenServer.html#resume">Clusterluck.GenServer#resume</a></li>
+
+    <li><a href="Clusterluck.GenServer.html#start">Clusterluck.GenServer#start</a></li>
+
+    <li><a href="Clusterluck.GossipRing.html#join">Clusterluck.GossipRing#join</a></li>
+
+    <li><a href="Clusterluck.GossipRing.html#resume">Clusterluck.GossipRing#resume</a></li>
+</ul>
+
+
+
+
+
+
+
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>let name = server.id();
+let old = server.kernel().listeners(name).length;
+server.once("pause", () => {
+  assert.lengthOf(server.kernel().listeners(name), old-1);
+});
+server.pause();</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="event:GenServer:resume">GenServer:resume</h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Emitted when the server has been resumed. Before 'resume' is emitted, the network kernel restarts the server's event handler for <code>name</code>, where <code>name</code> is the name of the server.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_gen_server.js.html">lib/gen_server.js</a>, <a href="lib_gen_server.js.html#line152">line 152</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>let name = server.id();
+let old = server.kernel().listeners(name).length;
+server.once("resume", () => {
+  assert.lengthOf(server.kernel().listeners(name), old+1);
+});
+server.resume();</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="event:GenServer:stop">GenServer:stop</h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Emitted when the server has completely stopped executing handler logic on any user-defined events it's listening for.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_gen_server.js.html">lib/gen_server.js</a>, <a href="lib_gen_server.js.html#line72">line 72</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+<h5>Listeners of This Event:</h5>
+<ul>
+    <li><a href="Clusterluck.GossipRing.html#start">Clusterluck.GossipRing#start</a></li>
+</ul>
+
+
+
+
+
+
+
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>// in any subclasses og GenServer, we could make stop fire asynchronously
+server.on("stop", () => {
+  console.log("We've stopped!");
+});
+server.stop();</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="event:GenServer:user_defined">GenServer:user_defined</h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Events defined by users for message handling.</p>
+<p>Suppose we have a GenServer named <code>server</code> started with name <code>name_goes_here</code>. Any message stream routed to our node, both internal and external, with id set to <code>name_goes_here</code> will be gathered by <code>serve</code> into a map of streams. Each stream has a stream ID <code>stream</code> and a boolean flag <code>done</code> which indicates whether the stream has finished sending data. This stream ID is used as an index for stream memoization between concurrent requests.</p>
+<pre class="prettyprint source lang-javascript"><code>// 'data' is the input data for this part of the stream
+if (!this._streams.has(stream.stream)) {
+  this._streams.set(stream.stream, {data: Buffer.from(&quot;&quot;), ...});
+}
+let inner = this._streams.get(stream.stream);
+inner.data = Buffer.concat([inner.data, data], ...);</code></pre><p>Once sending has finished, the job is parsed using <code>decodeJob</code> into an event and message, under <code>event</code> and <code>data</code> respectively. From here, the server emits an event just like an EventEmitter with <code>event</code> and <code>data</code>.</p>
+<pre class="prettyprint source lang-javascript"><code>// similar to this
+if (stream.done === true) {
+  let job = this.decodeJob(memo);
+  serve.emit(job.event, job.data, from);
+}</code></pre><p>This is where our own event handling logic comes into play. Everything else is handled under the hood by this class.</p>
+<p>Diagram of data flow for message streams:</p>
+<pre class="prettyprint source"><code>Messages comes into node with id set to `name_goes_here` ---------------> this._parse
+Message comes into node with `stream.done` set to true -----------------> this.decodeJob ---> this.emit(event, data,from) ---> this.on(event, handlerLogic...)</code></pre><p>As for singleton message streams (a message stream with only one message, and <code>done</code> set to true), no memoization of streams into a stream map occurs. The data is parsed by <code>decodeSingleton</code> into an event and message, under <code>event</code> and <code>data</code> respectively. From here, the server emits an event just like an EventEmitter with <code>event</code> and <code>data</code>.</p>
+<p>Diagram of data flow for message singletons:</p>
+<pre class="prettyprint source"><code>Messages comes into node with id set to `name_goes_here` ---------------> this._parse ---> this.decodeSingleton ---> this.emit(event, data,from) ---> this.on(event, handlerLogic...)</code></pre>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <h5 class="subsection-title">Properties:</h5>
+
+    
+
+<table class="props">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>data</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Any</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Data emitted with this user-defined event. Analogous to how an EventEmitter emits events.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>from</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Object received on synchronous message. This contains a tag to uniquely identify the request on the sender's end.</p>
+                <h6>Properties</h6>
+
+<table class="props">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>tag</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Unique identifer for request.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>node</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Clusterluck.Node.html">Clusterluck.Node</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Node representing the sender.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_gen_server.js.html">lib/gen_server.js</a>, <a href="lib_gen_server.js.html#line544">line 544</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>server.on("hello", (data, from) => {
+  server.reply(from, "world");
+});</code></pre>
+
+
+
+        
+    
+</article>
+
+</section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Clusterluck.CHash.html">CHash</a></li><li><a href="Clusterluck.ClusterNode.html">ClusterNode</a></li><li><a href="Clusterluck.Connection.html">Connection</a></li><li><a href="Clusterluck.DLMServer.html">DLMServer</a></li><li><a href="Clusterluck.DSMServer.html">DSMServer</a></li><li><a href="Clusterluck.DTable.html">DTable</a></li><li><a href="Clusterluck.GenServer.html">GenServer</a></li><li><a href="Clusterluck.GossipRing.html">GossipRing</a></li><li><a href="Clusterluck.Lock.html">Lock</a></li><li><a href="Clusterluck.MTable.html">MTable</a></li><li><a href="Clusterluck.NetKernel.html">NetKernel</a></li><li><a href="Clusterluck.Node.html">Node</a></li><li><a href="Clusterluck.Semaphore.html">Semaphore</a></li><li><a href="Clusterluck.VectorClock.html">VectorClock</a></li></ul><h3>Events</h3><ul><li><a href="Clusterluck.ClusterNode.html#event:ClusterNode:ready">ClusterNode:ready</a></li><li><a href="Clusterluck.ClusterNode.html#event:ClusterNode:stop">ClusterNode:stop</a></li><li><a href="Clusterluck.GenServer.html#event:GenServer:idle">GenServer:idle</a></li><li><a href="Clusterluck.GenServer.html#event:GenServer:pause">GenServer:pause</a></li><li><a href="Clusterluck.GenServer.html#event:GenServer:resume">GenServer:resume</a></li><li><a href="Clusterluck.GenServer.html#event:GenServer:stop">GenServer:stop</a></li><li><a href="Clusterluck.GenServer.html#event:GenServer:user_defined">GenServer:user_defined</a></li><li><a href="Clusterluck.GossipRing.html#event:GossipRing:close">GossipRing:close</a></li><li><a href="Clusterluck.GossipRing.html#event:GossipRing:conflict">GossipRing:conflict</a></li><li><a href="Clusterluck.GossipRing.html#event:GossipRing:flushing">GossipRing:flushing</a></li><li><a href="Clusterluck.GossipRing.html#event:GossipRing:leave">GossipRing:leave</a></li><li><a href="Clusterluck.GossipRing.html#event:GossipRing:process">GossipRing:process</a></li><li><a href="Clusterluck.GossipRing.html#event:GossipRing:ring">GossipRing:ring</a></li><li><a href="Clusterluck.GossipRing.html#event:GossipRing:send">GossipRing:send</a></li><li><a href="Clusterluck.NetKernel.html#event:NetKernel:_ready">NetKernel:_ready</a></li><li><a href="Clusterluck.NetKernel.html#event:NetKernel:_skip">NetKernel:_skip</a></li><li><a href="Clusterluck.NetKernel.html#event:NetKernel:_stop">NetKernel:_stop</a></li><li><a href="Clusterluck.NetKernel.html#event:NetKernel:user_defined">NetKernel:user_defined</a></li></ul><h3>Namespaces</h3><ul><li><a href="Clusterluck.html">Clusterluck</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Fri Oct 13 2017 19:09:12 GMT+0000 (UTC)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

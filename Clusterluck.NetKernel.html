@@ -1,0 +1,5336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Class: NetKernel</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Class: NetKernel</h1>
+
+    
+
+
+
+
+<section>
+
+<header>
+    
+        <h2><span class="attribs"><span class="type-signature"></span></span>
+            <span class="ancestors"><a href="Clusterluck.html">Clusterluck</a>.</span>NetKernel<span class="signature">(ipc, id, host, port)</span><span class="type-signature"></span></h2>
+        
+            <div class="class-description"><p>NetKernel NetKernel</p></div>
+        
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+
+    
+    <h2>Constructor</h2>
+    
+
+    
+    <h4 class="name" id="NetKernel"><span class="type-signature"></span>new NetKernel<span class="signature">(ipc, id, host, port)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Networking kernel implementation, responsible for routing messages to/from internal/external nodes, which processors can then read from. Messages can be either synchronous or asynchronous, and can be sent to single nodes or to a list of nodes simulataneously. On start, listens on hostname <code>host</code> and port <code>port</code> for IPC messages. Maintains two maps: the <code>sink</code> map contains information about which nodes this kernel has IPC connections to, while the <code>source</code> map contains the sockets of nodes this kernel has connections from. To ensure messages are only from members of a cluster, the kernel has a secret cookie responsible for calculating hmac signatures of incoming and outgoing messages. Any messages that don't match the hmac signature calculated with this cookie are ignored.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>ipc</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">IPC</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>IPC instance to route node communication through.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>id</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Unique identifier of this node.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>host</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The hostname this node will listen on. Can be either an IP address (longname) or a hostname (shortname).</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>port</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>The port this node will listen on.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_kernel.js.html">lib/kernel.js</a>, <a href="lib_kernel.js.html#line36">line 36</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="abcast"><span class="type-signature"></span>abcast<span class="signature">(nodes, event, data)</span><span class="type-signature"> &rarr; {<a href="Clusterluck.NetKernel.html">Clusterluck.NetKernel</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Makes an asynchronous call to an array of external nodes <code>nodes</code>, streaming <code>data</code> over. Ignores any error handling or if no connection exists to any node in <code>nodes</code>.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>nodes</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Nodes to send <code>data</code> to.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>event</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Event this message is sent under.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>data</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Stream</span>
+|
+
+<span class="param-type">Buffer</span>
+|
+
+<span class="param-type">String</span>
+|
+
+<span class="param-type">Number</span>
+|
+
+<span class="param-type">Boolean</span>
+|
+
+<span class="param-type">Object</span>
+|
+
+<span class="param-type">Array</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Data to send with this message. <code>data</code> is coerced into a stream format, throwing on failed coersion.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_kernel.js.html">lib/kernel.js</a>, <a href="lib_kernel.js.html#line608">line 608</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>This instance.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="Clusterluck.NetKernel.html">Clusterluck.NetKernel</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="call"><span class="type-signature"></span>call<span class="signature">(node, event, data, cb<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Stream}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Makes a synchronous call to external node <code>node</code>, streaming <code>data</code> over and then waits for a complete response. To accomplish this, a tag is passed that uniquely identifies the returnee. This netkernel then listens for messages with the event ID'd as this tag and passes data into the return stream, closing the stream when a <code>done</code> message is passed for this tag. If <code>cb</code> is passed, the return stream is collected into a single Buffer and then returned. Otherwise, the return stream is given to the caller to do manual data collection and error handling.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>node</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Clusterluck.Node.html">Clusterluck.Node</a></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Node to send <code>data</code> to.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>event</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Event this message is sent under.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>data</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Stream</span>
+|
+
+<span class="param-type">Buffer</span>
+|
+
+<span class="param-type">String</span>
+|
+
+<span class="param-type">Number</span>
+|
+
+<span class="param-type">Boolean</span>
+|
+
+<span class="param-type">Object</span>
+|
+
+<span class="param-type">Array</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Data to send with this message. <code>data</code> is coerced into a stream format, throwing on failed coersion.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>cb</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Optional callback to collect stream data and handle error reporting. Useful for smaller payloads with minimal memory footprints. Has two parameters: the first is error for when an error occurs at any point in the request, and the second is a returned Buffer on successful completion.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_kernel.js.html">lib/kernel.js</a>, <a href="lib_kernel.js.html#line399">line 399</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>If <code>cb</code> is not passed, the return stream.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Stream</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+    <h5>Examples</h5>
+    
+    <pre class="prettyprint"><code>// with callback
+kernel.call(node, "job", "hello", (err, data) => {
+  // data is a Buffer on success
+  // ...
+});</code></pre>
+
+    <pre class="prettyprint"><code>// w/o callback
+var rstream = kernel.call(node, "job", "hello");
+rstream.on("data", (data) => {
+  // data handler ...
+}).on("error", (error) => {
+  // error handler ...
+}).on("end", () => {
+  // end handler ...
+});</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="callSingleton"><span class="type-signature"></span>callSingleton<span class="signature">(node, event, data, cb)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Makes a synchronous call to external node <code>node</code>, sending <code>data</code> over and then waits for a complete response. To accomplish this, a tag is passed that uniquely identifies the returnee. This netkernel then listens for a single message with the event ID'd as this tag and passes data into the return callback.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>node</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Clusterluck.Node.html">Clusterluck.Node</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Node to send <code>data</code> to.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>event</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Event this message is sent under.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>data</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Buffer</span>
+|
+
+<span class="param-type">Stream</span>
+|
+
+<span class="param-type">String</span>
+|
+
+<span class="param-type">Number</span>
+|
+
+<span class="param-type">Object</span>
+|
+
+<span class="param-type">Array</span>
+|
+
+<span class="param-type">Boolean</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Data to send with this message.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>cb</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Callback to receive the response from <code>node</code> to our message.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_kernel.js.html">lib/kernel.js</a>, <a href="lib_kernel.js.html#line452">line 452</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>// with callback
+kernel.callSingleton(node, "job", "hello", (err, data) => {
+  // data can be any JSON or Buffer
+  // ...
+}, 5000);</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="cast"><span class="type-signature"></span>cast<span class="signature">(node, event, data)</span><span class="type-signature"> &rarr; {<a href="Clusterluck.NetKernel.html">Clusterluck.NetKernel</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Makes an asynchronous call to external node <code>node</code>, streaming <code>data</code> over. Ignores any error handling or if no connection exists to <code>node</code>.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>node</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Clusterluck.Node.html">Clusterluck.Node</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Node to send <code>data</code> to.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>event</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Event this message is sent under.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>data</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Stream</span>
+|
+
+<span class="param-type">Buffer</span>
+|
+
+<span class="param-type">String</span>
+|
+
+<span class="param-type">Number</span>
+|
+
+<span class="param-type">Boolean</span>
+|
+
+<span class="param-type">Object</span>
+|
+
+<span class="param-type">Array</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Data to send with this message. <code>data</code> is coerced into a stream format, throwing on failed coersion.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_kernel.js.html">lib/kernel.js</a>, <a href="lib_kernel.js.html#line584">line 584</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>This instance.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="Clusterluck.NetKernel.html">Clusterluck.NetKernel</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="connect"><span class="type-signature"></span>connect<span class="signature">(node, cb<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Creates a socket connection to external node <code>node</code>, which this netkernel can use to send messages to <code>node</code>. If <code>node</code> is identical to <code>this.self()</code> or a connection already exists, this will immediately return. Otherwise, creates the connection and inserts <code>node</code> into this netkernel's sink map.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>node</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Clusterluck.Node.html">Clusterluck.Node</a></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Node to create socket connection with.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>cb</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Callback to call once this process has finished.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_kernel.js.html">lib/kernel.js</a>, <a href="lib_kernel.js.html#line278">line 278</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="connection"><span class="type-signature"></span>connection<span class="signature">(node)</span><span class="type-signature"> &rarr; {<a href="Clusterluck.Connection.html">Clusterluck.Connection</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Grabs the connection object between this netkernel and <code>node</code>.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>node</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Clusterluck.Node.html">Clusterluck.Node</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Node to grab connection of.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_kernel.js.html">lib/kernel.js</a>, <a href="lib_kernel.js.html#line345">line 345</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>Connection of <code>node</code>, or null if it doesn't exist.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="Clusterluck.Connection.html">Clusterluck.Connection</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="cookie"><span class="type-signature"></span>cookie<span class="signature">(cookie<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {String}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Acts as a getter/setter for the cookie this netkernel uses for cluster member verification.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>cookie</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Cookie to set on this netkernel.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_kernel.js.html">lib/kernel.js</a>, <a href="lib_kernel.js.html#line258">line 258</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>Cookie of this instance.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">String</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="disconnect"><span class="type-signature"></span>disconnect<span class="signature">(node)</span><span class="type-signature"> &rarr; {<a href="Clusterluck.NetKernel.html">Clusterluck.NetKernel</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Disconnects socket connection to <code>node</code>. If <code>node</code> is identical to <code>this.self()</code> or a connection doesn't exist, this will immediately return. Otherwise, terminates the connection and removes <code>node</code> from this netkernel's sink and source map.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>node</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Clusterluck.Node.html">Clusterluck.Node</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_kernel.js.html">lib/kernel.js</a>, <a href="lib_kernel.js.html#line306">line 306</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>This instance.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="Clusterluck.NetKernel.html">Clusterluck.NetKernel</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="host"><span class="type-signature"></span>host<span class="signature">(host<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {String}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Acts as a getter/setter for the hostname of this netkernel, modifying the host value of the <code>self</code> node if used as a setter. Can be either a shortname (host) or a longname (ip).</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>host</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Host to set on this netkernel.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_kernel.js.html">lib/kernel.js</a>, <a href="lib_kernel.js.html#line153">line 153</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>Host of this instance.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">String</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="id"><span class="type-signature"></span>id<span class="signature">(id<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {String}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Acts as a getter/setter for the unique identifier of this netkernel, modifying the ID value of the <code>self</code> node if used as a setter.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>id</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>ID to set on this netkernel.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_kernel.js.html">lib/kernel.js</a>, <a href="lib_kernel.js.html#line132">line 132</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>ID of this instance.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">String</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="ipc"><span class="type-signature"></span>ipc<span class="signature">(ipc<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {IPC}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Acts as a getter/setter for the IPC instance of this netkernel. Only safe to do when this instance is in an unstarted state.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>ipc</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">IPC</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>IPC instance to set on this netkernel.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_kernel.js.html">lib/kernel.js</a>, <a href="lib_kernel.js.html#line112">line 112</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>IPC instance of this kernel.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">IPC</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="isConnected"><span class="type-signature"></span>isConnected<span class="signature">(node)</span><span class="type-signature"> &rarr; {Boolean}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Checks if a connections exists with <code>node</code>.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>node</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Clusterluck.Node.html">Clusterluck.Node</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Node to check existing connection to.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_kernel.js.html">lib/kernel.js</a>, <a href="lib_kernel.js.html#line327">line 327</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>Whether an existing connection exists.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Boolean</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="multicall"><span class="type-signature"></span>multicall<span class="signature">(nodes, event, data, cb<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Array}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Makes a synchronous call to a list of external nodes <code>nodes</code>, streaming <code>data</code> over and then waits for a complete response from all nodes (using <code>this.call(...)</code> on each node in <code>nodes</code>). If <code>cb</code> is passed, each return stream is collected into a single Buffer and then returned. Otherwise, the list of return streams is given to the caller to do manual data collection and error handling. If <code>cb</code> is passed and any node in the list incurs an error at any point, it's called with this error and any further processing on the other nodes is ignored.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>nodes</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Nodes to send <code>data</code> to.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>event</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Event this message is sent under.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>data</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Stream</span>
+|
+
+<span class="param-type">Buffer</span>
+|
+
+<span class="param-type">String</span>
+|
+
+<span class="param-type">Number</span>
+|
+
+<span class="param-type">Boolean</span>
+|
+
+<span class="param-type">Object</span>
+|
+
+<span class="param-type">Array</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Data to send with each message. <code>data</code> is coerced into a stream format, throwing on failed coersion.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>cb</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Optional callback to wait for collect stream data and handle error reporting on each node in <code>nodes</code>. Useful for smaller payloads with minimal memory footprints. Has two parameters: the first is an error for when an error occurs at any point in the request for any node, and the second is an array of returned Buffers on successful completion.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_kernel.js.html">lib/kernel.js</a>, <a href="lib_kernel.js.html#line491">line 491</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>If <code>cb</code> is passed, an array of return streams.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Array</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+    <h5>Examples</h5>
+    
+    <pre class="prettyprint"><code>// with callback
+kernel.multicall([node1, node2], "job", "hello", (err, data) => {
+  // data is an array of Buffers on success
+  // ...
+});</code></pre>
+
+    <pre class="prettyprint"><code>// w/o callback
+var rstreamList = kernel.multicall([node1, node2], "job", "hello");
+rstreamList.forEach((rstream) => {
+  rstream.on("data", (data) => {
+    // data handler ...
+  }).on("error", (error) => {
+    // error handler ...
+  }).on("end", () => {
+    // end handler ...
+  });
+});</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="multicallSingleton"><span class="type-signature"></span>multicallSingleton<span class="signature">(nodes, event, data, cb)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Makes a synchronous call to a list of external nodes <code>nodes</code>, sending <code>data</code> over and then waits for a complete response from all nodes (using <code>this.call(...)</code> on each node in <code>nodes</code>).</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>nodes</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Nodes to send <code>data</code> to.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>event</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Event this message is sent under.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>data</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Buffer</span>
+|
+
+<span class="param-type">String</span>
+|
+
+<span class="param-type">Number</span>
+|
+
+<span class="param-type">Object</span>
+|
+
+<span class="param-type">Array</span>
+|
+
+<span class="param-type">Boolean</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Data to send with each message.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>cb</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Callback to wait for message data and handle error reporting on each node in <code>nodes</code>. Has two parameters: the first is an error for when an error occurs at any point in the request for any node, and the second is an array of returned messages on successful completion.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_kernel.js.html">lib/kernel.js</a>, <a href="lib_kernel.js.html#line536">line 536</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>kernel.multicallSingleton([node1, node2], "job", "hello", (err, data) => {
+  // data is an array of JSON and/or Buffers on success
+  // ...
+});</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="ping"><span class="type-signature"></span>ping<span class="signature">(node, cb)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Makes a synchronous ping to external node <code>node</code>. To accomplish this, a tag is passed that uniquely identifies the returnee. This netkernel then listens for a message with the event ID'd as this tag and passes data into the callback.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>node</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Clusterluck.Node.html">Clusterluck.Node</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Node to send <code>data</code> to.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>cb</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Callback to receive the ping response to <code>node</code> from.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_kernel.js.html">lib/kernel.js</a>, <a href="lib_kernel.js.html#line363">line 363</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="port"><span class="type-signature"></span>port<span class="signature">(port<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Number}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Acts as a getter/setter for the port of this netkernel, modifying the port value of the <code>self</code> node if used as a setter.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>port</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Port to set on this netkernel.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_kernel.js.html">lib/kernel.js</a>, <a href="lib_kernel.js.html#line174">line 174</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>Port of this instance.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Number</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="reply"><span class="type-signature"></span>reply<span class="signature">(from, data)</span><span class="type-signature"> &rarr; {<a href="Clusterluck.NetKernel.html">Clusterluck.NetKernel</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Replies to a synchronous message received on this netkernel. If responding to a request made with <code>callSingleton</code>, a stream should not be passed in, as the reqquester is only listening for a single message (whereas a stream has at least two messages).</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>from</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>From object received on synchronous message. This contains a tag to uniquely identity the request on the sender's end.</p>
+                <h6>Properties</h6>
+                
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>tag</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Unique identifier for request.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>node</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Clusterluck.Node.html">Clusterluck.Node</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Node representing the sender.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>data</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Stream</span>
+|
+
+<span class="param-type">Buffer</span>
+|
+
+<span class="param-type">String</span>
+|
+
+<span class="param-type">Number</span>
+|
+
+<span class="param-type">Boolean</span>
+|
+
+<span class="param-type">Object</span>
+|
+
+<span class="param-type">Array</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Data to send with this message. <code>data</code> is coerced into a stream format, throwing on failed coersion.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_kernel.js.html">lib/kernel.js</a>, <a href="lib_kernel.js.html#line560">line 560</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>This instance.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="Clusterluck.NetKernel.html">Clusterluck.NetKernel</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="self"><span class="type-signature"></span>self<span class="signature">(node<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {<a href="Clusterluck.Node.html">Clusterluck.Node</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Acts as a getter/setter for the node representing this netkernel, modifying the id, port, and host of this instance if used as a setter.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>node</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Clusterluck.Node.html">Clusterluck.Node</a></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Node to set as &quot;self&quot; on this netkernel.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_kernel.js.html">lib/kernel.js</a>, <a href="lib_kernel.js.html#line195">line 195</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>Self-referencing node of this instance.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="Clusterluck.Node.html">Clusterluck.Node</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="sinks"><span class="type-signature"></span>sinks<span class="signature">(sinks<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Map}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Acts as a getter/setter for the sink map this netkernel has external connections to.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>sinks</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Map</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Map of (node id =&gt; node) to set on this netkernel.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_kernel.js.html">lib/kernel.js</a>, <a href="lib_kernel.js.html#line238">line 238</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>Map of external node connections of this instance.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Map</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="sources"><span class="type-signature"></span>sources<span class="signature">(sources<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Map}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Acts as a getter/setter for the source map this netkernel has sockets receiving data from.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>sources</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Map</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Map of (node =&gt; socket connections) to set on this netkernel.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_kernel.js.html">lib/kernel.js</a>, <a href="lib_kernel.js.html#line218">line 218</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>Map of socket connections of this instance.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Map</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="start"><span class="type-signature"></span>start<span class="signature">(opts<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {<a href="Clusterluck.NetKernel.html">Clusterluck.NetKernel</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Starts the IPC server on the configured host and port, as well as the routing routine. Can be configured with a cluster cookie (for hmac signature cluster member checks), the retry interval for failed message sends, the number of times to retry sending a message, and whether to use TLS on TCP sockets between nodes or not.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>opts</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Options object for IPC server configuration between nodes.</p>
+                <h6>Properties</h6>
+                
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>retry</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Retry internval for failed message sends.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>maxRetries</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Maximum number of times to retry sending a message.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>cookie</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Cluster cookie to use for hmac signature verification. If undefined or null, will default to not checking cluster membership.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>tls</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>TLS configuration object for IPC socket communication.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_kernel.js.html">lib/kernel.js</a>, <a href="lib_kernel.js.html#line48">line 48</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>This instance.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="Clusterluck.NetKernel.html">Clusterluck.NetKernel</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="stop"><span class="type-signature"></span>stop<span class="signature">()</span><span class="type-signature"> &rarr; {<a href="Clusterluck.NetKernel.html">Clusterluck.NetKernel</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Stops the IPC server on this node and empties any sockets receiving data from external nodes. Maintains connections for sending messages to external nodes. All listening processes should be terminated before calling this function, in order to safely finish any job streams.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_kernel.js.html">lib/kernel.js</a>, <a href="lib_kernel.js.html#line80">line 80</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<h5>Fires:</h5>
+<ul>
+    <li><a href="Clusterluck.NetKernel.html#event:NetKernel:_stop">Clusterluck.NetKernel#NetKernel:_stop</a></li>
+</ul>
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>This instance.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="Clusterluck.NetKernel.html">Clusterluck.NetKernel</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+    
+
+    
+
+    
+        <h3 class="subsection-title">Events</h3>
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="event:NetKernel:_ready">NetKernel:_ready</h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Emitted when this instance's IPC server has started, and ready to receive messages from other nodes.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_kernel.js.html">lib/kernel.js</a>, <a href="lib_kernel.js.html#line683">line 683</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="event:NetKernel:_skip">NetKernel:_skip</h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Emitted whenever this instance has received a message that a) contained invalid JSON or b) had a mismatched HMAC checksum in the body.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <h5 class="subsection-title">Properties:</h5>
+
+    
+
+<table class="props">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>data</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Contents of skipped message.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_kernel.js.html">lib/kernel.js</a>, <a href="lib_kernel.js.html#line1129">line 1129</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="event:NetKernel:_stop">NetKernel:_stop</h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Emitted when this instance has stopped it's IPC server and stopped receiving messages from other nodes.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_kernel.js.html">lib/kernel.js</a>, <a href="lib_kernel.js.html#line100">line 100</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="event:NetKernel:user_defined">NetKernel:user_defined</h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Emitted whenever this instance has received a message that has passed security checks and ready to be routed to a GenServer/event handler.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <h5 class="subsection-title">Properties:</h5>
+
+    
+
+<table class="props">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>id</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Local target of this message (corresponding to a GenServer).</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>data</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Buffer</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Data buffer of message.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>stream</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Stream object for this message.</p>
+                <h6>Properties</h6>
+
+<table class="props">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>stream</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>ID of stream.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>done</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Boolean</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Whether this stream has more data coming or not.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>from</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>From object received on a message. This contains a tag to uniquely identity the request on the sender's end.</p>
+                <h6>Properties</h6>
+
+<table class="props">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>tag</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Unique identifier for request.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>node</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Clusterluck.Node.html">Clusterluck.Node</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Node representing the sender.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_kernel.js.html">lib/kernel.js</a>, <a href="lib_kernel.js.html#line649">line 649</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+<h5>Listeners of This Event:</h5>
+<ul>
+    <li><a href="Clusterluck.GenServer.html#start">Clusterluck.GenServer#start</a></li>
+
+    <li><a href="Clusterluck.GossipRing.html#join">Clusterluck.GossipRing#join</a></li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+        
+    
+</article>
+
+</section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Clusterluck.CHash.html">CHash</a></li><li><a href="Clusterluck.ClusterNode.html">ClusterNode</a></li><li><a href="Clusterluck.Connection.html">Connection</a></li><li><a href="Clusterluck.DLMServer.html">DLMServer</a></li><li><a href="Clusterluck.DSMServer.html">DSMServer</a></li><li><a href="Clusterluck.DTable.html">DTable</a></li><li><a href="Clusterluck.GenServer.html">GenServer</a></li><li><a href="Clusterluck.GossipRing.html">GossipRing</a></li><li><a href="Clusterluck.Lock.html">Lock</a></li><li><a href="Clusterluck.MTable.html">MTable</a></li><li><a href="Clusterluck.NetKernel.html">NetKernel</a></li><li><a href="Clusterluck.Node.html">Node</a></li><li><a href="Clusterluck.Semaphore.html">Semaphore</a></li><li><a href="Clusterluck.VectorClock.html">VectorClock</a></li></ul><h3>Events</h3><ul><li><a href="Clusterluck.ClusterNode.html#event:ClusterNode:ready">ClusterNode:ready</a></li><li><a href="Clusterluck.ClusterNode.html#event:ClusterNode:stop">ClusterNode:stop</a></li><li><a href="Clusterluck.GenServer.html#event:GenServer:idle">GenServer:idle</a></li><li><a href="Clusterluck.GenServer.html#event:GenServer:pause">GenServer:pause</a></li><li><a href="Clusterluck.GenServer.html#event:GenServer:resume">GenServer:resume</a></li><li><a href="Clusterluck.GenServer.html#event:GenServer:stop">GenServer:stop</a></li><li><a href="Clusterluck.GenServer.html#event:GenServer:user_defined">GenServer:user_defined</a></li><li><a href="Clusterluck.GossipRing.html#event:GossipRing:close">GossipRing:close</a></li><li><a href="Clusterluck.GossipRing.html#event:GossipRing:conflict">GossipRing:conflict</a></li><li><a href="Clusterluck.GossipRing.html#event:GossipRing:flushing">GossipRing:flushing</a></li><li><a href="Clusterluck.GossipRing.html#event:GossipRing:leave">GossipRing:leave</a></li><li><a href="Clusterluck.GossipRing.html#event:GossipRing:process">GossipRing:process</a></li><li><a href="Clusterluck.GossipRing.html#event:GossipRing:ring">GossipRing:ring</a></li><li><a href="Clusterluck.GossipRing.html#event:GossipRing:send">GossipRing:send</a></li><li><a href="Clusterluck.NetKernel.html#event:NetKernel:_ready">NetKernel:_ready</a></li><li><a href="Clusterluck.NetKernel.html#event:NetKernel:_skip">NetKernel:_skip</a></li><li><a href="Clusterluck.NetKernel.html#event:NetKernel:_stop">NetKernel:_stop</a></li><li><a href="Clusterluck.NetKernel.html#event:NetKernel:user_defined">NetKernel:user_defined</a></li></ul><h3>Namespaces</h3><ul><li><a href="Clusterluck.html">Clusterluck</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Fri Oct 13 2017 19:09:12 GMT+0000 (UTC)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

@@ -1,0 +1,6282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Class: GossipRing</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Class: GossipRing</h1>
+
+    
+
+
+
+
+<section>
+
+<header>
+    
+        <h2><span class="attribs"><span class="type-signature"></span></span>
+            <span class="ancestors"><a href="Clusterluck.html">Clusterluck</a>.</span>GossipRing<span class="signature">(kernel, chash, vclock, opts)</span><span class="type-signature"></span></h2>
+        
+            <div class="class-description"><p>GossipRing GossipRing</p></div>
+        
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+
+    
+    <h2>Constructor</h2>
+    
+
+    
+    <h4 class="name" id="GossipRing"><span class="type-signature"></span>new GossipRing<span class="signature">(kernel, chash, vclock, opts)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Gossip ring implementation. Maintains a consistent hash ring to manage cluster membership and external connections in the netkernel. Maintains a vector clock to compare the most up-to-date information about the cluster. Listens for messages from the netkernel about cluster joins/departures/updates, with an internal map to register message streams. On an interval, sends messages to the cluster about current state and trims it's internal vector clock. To handle vector clock conflicts, which are possible in this architecture, a LWW approach is adopted. This is largely because insertions/deletions (the deciding factor for LWW) are centralized from a task-management standpoint (the system administrator will be the one administering these operations), therefore time is a practically controllable dimension. In addition, for future work, metrics will be emitted on a routine basis from the same source (a node sharing work-load information across the cluster), meaning any conflict that occurs with this data can easily be resolved.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>kernel</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Clusterluck.NetKernel.html">Clusterluck.NetKernel</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Network kernel to communicate with other nodes.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>chash</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Clusterluck.CHash.html">Clusterluck.CHash</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Consistent hash ring to represent cluster membership.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>vclock</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Clusterluck.VectorClock.html">Clusterluck.VectorClock</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Vector clock to represent current state of ring relative to other nodes in the cluster.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>opts</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Options object for state management.</p>
+                <h6>Properties</h6>
+                
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>interval</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Internval in ms to send ring to members of cluster.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>wquorum</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Write quorum for distributed writes. Prototypical member of this class.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>vclockOpts</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Options for periodic trimming of internal vector clock.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>connOpts</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Options for whe connecting to new nodes.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_gossip.js.html">lib/gossip.js</a>, <a href="lib_gossip.js.html#line32">line 32</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="actor"><span class="type-signature"></span>actor<span class="signature">(actor<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {String}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Acts as a getter/setter for the current actor of this instance.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>actor</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Actor to set on this instance.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_gossip.js.html">lib/gossip.js</a>, <a href="lib_gossip.js.html#line235">line 235</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>Actor of this instance.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">String</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="find"><span class="type-signature"></span>find<span class="signature">(data, size<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Array}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Finds the bucket of this instance's hash ring that <code>data</code> routes to, based on the nodes the corresponding <code>node</code> replicates to. This differs from <code>range</code> in that <code>range</code> provides replication on a per-key basis, whereas with <code>find</code> any data routed to <code>node</code> has the same replicants.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>data</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Buffer</span>
+|
+
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Data to find hash bucket of.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>size</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Number of elements to return in bucket.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_gossip.js.html">lib/gossip.js</a>, <a href="lib_gossip.js.html#line613">line 613</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>Array of nodes responsible for the bucket <code>data</code> hashes to.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Array</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="flush"><span class="type-signature"></span>flush<span class="signature">()</span><span class="type-signature"> &rarr; {<a href="Clusterluck.GossipRing.html">Clusterluck.GossipRing</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Function that executes on this cluster's internal flush interval. Flushes this node's ring state to disk.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_gossip.js.html">lib/gossip.js</a>, <a href="lib_gossip.js.html#line670">line 670</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<h5>Fires:</h5>
+<ul>
+    <li><a href="Clusterluck.GossipRing.html#event:GossipRing:flushing">Clusterluck.GossipRing#GossipRing:flushing</a></li>
+</ul>
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>This instance.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="Clusterluck.GossipRing.html">Clusterluck.GossipRing</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="insert"><span class="type-signature"></span>insert<span class="signature">(node, weight, force<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {<a href="Clusterluck.GossipRing.html">Clusterluck.GossipRing</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Inserts <code>node</code> into this node's cluster, asynchronously propagating this new state through the cluster. Provides the option to forcibly insert <code>node</code>, meaning it will precede any existing internal message streams pending completion.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>node</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Clusterluck.Node.html">Clusterluck.Node</a></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Node to insert into this gossip ring's cluster.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>weight</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Number of virtual nodes to assign to <code>node</code>.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>force</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Whether to forcibly add <code>node</code> into the current state of this ring, or wait for an idle state. Defaults to false.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_gossip.js.html">lib/gossip.js</a>, <a href="lib_gossip.js.html#line389">line 389</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<h5>Fires:</h5>
+<ul>
+    <li><a href="Clusterluck.GossipRing.html#event:GossipRing:process">Clusterluck.GossipRing#GossipRing:process</a></li>
+</ul>
+
+
+
+<h5>Listens to Events:</h5>
+<ul>
+    <li><a href="Clusterluck.GenServer.html#event:GenServer:idle">Clusterluck.GenServer#GenServer:idle</a></li>
+</ul>
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>This instance.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="Clusterluck.GossipRing.html">Clusterluck.GossipRing</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="join"><span class="type-signature"></span>join<span class="signature">(ringID)</span><span class="type-signature"> &rarr; {<a href="Clusterluck.GossipRing.html">Clusterluck.GossipRing</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Joins the ring <code>ringID</code> if not already a member of a ring. Otherwise, will return an error noting that this instance already belongs to a ring.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>ringID</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Ring ID for this node to join.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_gossip.js.html">lib/gossip.js</a>, <a href="lib_gossip.js.html#line315">line 315</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+<h5>Listens to Events:</h5>
+<ul>
+    <li><a href="Clusterluck.NetKernel.html#event:NetKernel:user_defined">Clusterluck.NetKernel#NetKernel:user_defined</a></li>
+
+    <li><a href="Clusterluck.GenServer.html#event:GenServer:pause">Clusterluck.GenServer#GenServer:pause</a></li>
+</ul>
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>This instance.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="Clusterluck.GossipRing.html">Clusterluck.GossipRing</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="leave"><span class="type-signature"></span>leave<span class="signature">(force<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {<a href="Clusterluck.GossipRing.html">Clusterluck.GossipRing</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Leaves the current cluster, removing all nodes from it's hash ring and creating a new vector clock for this new ring. Triggers the removal of this ring's message handler on the network kernel. Provides the option to forcibly leave the cluster, meaning this function won't wait for an idle state to execute and execute immediately. Otherwise, will wait for message streams to complete.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>force</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Whether to forcibly leave this ring or not. If false, will wait for an idle state before leaving the ring and clearing the internal message stream map. Otherwise, will immediately clear any pending updates and leave the ring. Defaults to false.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_gossip.js.html">lib/gossip.js</a>, <a href="lib_gossip.js.html#line509">line 509</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<h5>Fires:</h5>
+<ul>
+    <li><a href="Clusterluck.GossipRing.html#event:GossipRing:leave">Clusterluck.GossipRing#GossipRing:leave</a></li>
+
+    <li><a href="Clusterluck.GossipRing.html#event:GossipRing:close">Clusterluck.GossipRing#GossipRing:close</a></li>
+</ul>
+
+
+
+<h5>Listens to Events:</h5>
+<ul>
+    <li><a href="Clusterluck.GenServer.html#event:GenServer:idle">Clusterluck.GenServer#GenServer:idle</a></li>
+</ul>
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>This instance.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="Clusterluck.GossipRing.html">Clusterluck.GossipRing</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="load"><span class="type-signature"></span>load<span class="signature">(cb)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Loads existing gossip ring from disk. If no path is specified or the file does not exist, we simple do nothing. Otherwise, the result JSON is parsed read into this instance's hash ring, vector clock, ring ID, and current actor.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>cb</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Called when loading state has finished. On error, will operate as <code>cb(err)</code>. Otherwise, will operate as <code>cb()</code>.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_gossip.js.html">lib/gossip.js</a>, <a href="lib_gossip.js.html#line205">line 205</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="meet"><span class="type-signature"></span>meet<span class="signature">(node)</span><span class="type-signature"> &rarr; {<a href="Clusterluck.GossipRing.html">Clusterluck.GossipRing</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Joins the cluster present at <code>node</code>, using it as a seed node for inserting this instance's node identifier in to the cluster. This process occurs asynchronously, thus this node's cluster state won't be updated until future rounds of gossip.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>node</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Clusterluck.Node.html">Clusterluck.Node</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Node to seed ring-join with.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_gossip.js.html">lib/gossip.js</a>, <a href="lib_gossip.js.html#line343">line 343</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<h5>Fires:</h5>
+<ul>
+    <li><a href="Clusterluck.GossipRing.html#event:GossipRing:send">Clusterluck.GossipRing#GossipRing:send</a></li>
+</ul>
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>This instance.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="Clusterluck.GossipRing.html">Clusterluck.GossipRing</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="minsert"><span class="type-signature"></span>minsert<span class="signature">(nodes, weight, force<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {<a href="Clusterluck.GossipRing.html">Clusterluck.GossipRing</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Inserts <code>nodes</code> into this node's cluster, asynchronously propagating this new state through the cluster. Provides the option to forcibly insert <code>nodes</code>, meaning it will precede any existing internal message streams pending completion.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>nodes</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Nodes to insert into this gossip ring's cluster.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>weight</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Number of virtual nodes to assign to each node in <code>nodes</code>.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>force</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Whether to forcibly add <code>nodes</code> into the current state of this ring, or wait for an idle state. Defaults to false.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_gossip.js.html">lib/gossip.js</a>, <a href="lib_gossip.js.html#line436">line 436</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<h5>Fires:</h5>
+<ul>
+    <li><a href="Clusterluck.GossipRing.html#event:GossipRing:process">Clusterluck.GossipRing#GossipRing:process</a></li>
+</ul>
+
+
+
+<h5>Listens to Events:</h5>
+<ul>
+    <li><a href="Clusterluck.GenServer.html#event:GenServer:idle">Clusterluck.GenServer#GenServer:idle</a></li>
+</ul>
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>This instance.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="Clusterluck.GossipRing.html">Clusterluck.GossipRing</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="mremove"><span class="type-signature"></span>mremove<span class="signature">(nodes, force<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {<a href="Clusterluck.GossipRing.html">Clusterluck.GossipRing</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Removes <code>nodes</code> from this node's cluster, asynchronously propagating this new state through the cluster. Provides the option to forcibly remove <code>nodes</code>, meaning it will precede any existing internal message streams pending completion.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>nodes</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Nodes to remove from this gossip ring's cluster.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>force</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Whether to forcibly remove <code>nodes</code> from the current state of this ring, or wait for an idle state. Defaults to false.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_gossip.js.html">lib/gossip.js</a>, <a href="lib_gossip.js.html#line579">line 579</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<h5>Fires:</h5>
+<ul>
+    <li><a href="Clusterluck.GossipRing.html#event:GossipRing:process">Clusterluck.GossipRing#GossipRing:process</a></li>
+</ul>
+
+
+
+<h5>Listens to Events:</h5>
+<ul>
+    <li><a href="Clusterluck.GenServer.html#event:GenServer:idle">Clusterluck.GenServer#GenServer:idle</a></li>
+</ul>
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>This instance.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="Clusterluck.GossipRing.html">Clusterluck.GossipRing</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="pause"><span class="type-signature"></span>pause<span class="signature">()</span><span class="type-signature"> &rarr; {<a href="Clusterluck.GossipRing.html">Clusterluck.GossipRing</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Pauses the GossipRing's message processing. As a reuslt, any messages routed from the network kernel to this instance will be missed until <code>this.resume()</code> is called.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_gossip.js.html">lib/gossip.js</a>, <a href="lib_gossip.js.html#line115">line 115</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<h5>Fires:</h5>
+<ul>
+    <li><a href="Clusterluck.GenServer.html#event:GenServer:pause">Clusterluck.GenServer#GenServer:pause</a></li>
+</ul>
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>This instance.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="Clusterluck.GossipRing.html">Clusterluck.GossipRing</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="poll"><span class="type-signature"></span>poll<span class="signature">()</span><span class="type-signature"> &rarr; {<a href="Clusterluck.GossipRing.html">Clusterluck.GossipRing</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Function that executes on this cluster's internal interval. Trims this instance's vector clock and sends the ring to random recipients in the cluster.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_gossip.js.html">lib/gossip.js</a>, <a href="lib_gossip.js.html#line651">line 651</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>This instance.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="Clusterluck.GossipRing.html">Clusterluck.GossipRing</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="range"><span class="type-signature"></span>range<span class="signature">(data, size<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Array}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Finds the bucket of this instance's hash ring that <code>data</code> routes to, based on a per-key replication strategy. This differs from <code>find</code> in that <code>find</code> provides per-node replication, where as with <code>range</code> every key has it's own set of nodes for replication.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>data</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Buffer</span>
+|
+
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Data to find hash bucket of.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>size</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Number of elements to return in bucket.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_gossip.js.html">lib/gossip.js</a>, <a href="lib_gossip.js.html#line633">line 633</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>Array of nodes responsible for the bucket <code>data</code> hashes to.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Array</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="remove"><span class="type-signature"></span>remove<span class="signature">(node, force<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {<a href="Clusterluck.GossipRing.html">Clusterluck.GossipRing</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Removes <code>node</code> from this node's cluster, asynchronously propagating this new state through the cluster. Provides the option to forcibly remove <code>node</code>, meaning it will precede any existing internal message streams pending completion.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>node</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Node</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Node to remove from this gossip ring's cluster.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>force</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Whether to forcibly remove <code>node</code> from the current state of this ring, or wait for an idle state. Defaults to false.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_gossip.js.html">lib/gossip.js</a>, <a href="lib_gossip.js.html#line545">line 545</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<h5>Fires:</h5>
+<ul>
+    <li><a href="Clusterluck.GossipRing.html#event:GossipRing:process">Clusterluck.GossipRing#GossipRing:process</a></li>
+</ul>
+
+
+
+<h5>Listens to Events:</h5>
+<ul>
+    <li><a href="Clusterluck.GenServer.html#event:GenServer:idle">Clusterluck.GenServer#GenServer:idle</a></li>
+</ul>
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>This instance.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="Clusterluck.GossipRing.html">Clusterluck.GossipRing</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="resume"><span class="type-signature"></span>resume<span class="signature">()</span><span class="type-signature"> &rarr; {<a href="Clusterluck.GossipRing.html">Clusterluck.GossipRing</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Resumes the processing of message streams on this instance. Any messages missed in between pausing and now will result in failed message parsing (since all JSON contents are sent in one message).</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_gossip.js.html">lib/gossip.js</a>, <a href="lib_gossip.js.html#line138">line 138</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<h5>Fires:</h5>
+<ul>
+    <li><a href="Clusterluck.GenServer.html#event:GenServer:resume">Clusterluck.GenServer#GenServer:resume</a></li>
+</ul>
+
+
+
+<h5>Listens to Events:</h5>
+<ul>
+    <li><a href="Clusterluck.GenServer.html#event:GenServer:pause">Clusterluck.GenServer#GenServer:pause</a></li>
+</ul>
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>This instance.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="Clusterluck.GossipRing.html">Clusterluck.GossipRing</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="ring"><span class="type-signature"></span>ring<span class="signature">(ring<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {<a href="Clusterluck.CHash.html">Clusterluck.CHash</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Acts as a getter/setter for the hash ring of this instance.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>ring</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Clusterluck.CHash.html">Clusterluck.CHash</a></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Consistent hash ring to set on this instance.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_gossip.js.html">lib/gossip.js</a>, <a href="lib_gossip.js.html#line255">line 255</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>Consistent hash ring of this instance.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="Clusterluck.CHash.html">Clusterluck.CHash</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="ringID"><span class="type-signature"></span>ringID<span class="signature">(ring<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {String}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Acts as a getter/setter for the ring ID of this instance.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>ring</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Ring ID to set on this instance.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_gossip.js.html">lib/gossip.js</a>, <a href="lib_gossip.js.html#line295">line 295</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>Ring ID of this instance.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">String</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="route"><span class="type-signature"></span>route<span class="signature">(nodes, event, msg, actor, clock, n<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {<a href="Clusterluck.GossipRing.html">Clusterluck.GossipRing</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Sends <code>event</code> of this ring at round <code>n</code> with message <code>msg</code>, sending it to <code>nodes</code> if the round number is greater than zero.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>nodes</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Nodes to send this message to.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>event</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Event to send.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>msg</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Value to send with this message.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>actor</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Actor representing the snapshot of this message.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>clock</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Clusterluck.VectorClock.html">Clusterluck.VectorClock</a></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Vector clock to send this message with.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>n</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Gossip round of this message. Defaults to 1.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_gossip.js.html">lib/gossip.js</a>, <a href="lib_gossip.js.html#line785">line 785</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<h5>Fires:</h5>
+<ul>
+    <li><a href="Clusterluck.GossipRing.html#event:GossipRing:send">Clusterluck.GossipRing#GossipRing:send</a></li>
+</ul>
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>This instance.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="Clusterluck.GossipRing.html">Clusterluck.GossipRing</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="selectRandom"><span class="type-signature"></span>selectRandom<span class="signature">(n<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Array}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Selects <code>n</code> random nodes, different than this node, from it's hash ring.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>n</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Number of nodes to randomly select from this ring. Defaults to 1.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_gossip.js.html">lib/gossip.js</a>, <a href="lib_gossip.js.html#line727">line 727</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>Array of nodes selected from this instance's hash ring.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Array</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="selectRandomFrom"><span class="type-signature"></span>selectRandomFrom<span class="signature">(nodes, n<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Array}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Selects <code>n</code> random nodes from a list of nodes.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>nodes</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Array of nodes to select random nodes from.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>n</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Number of nodes to randomly select from this ring. Defaults to 1.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_gossip.js.html">lib/gossip.js</a>, <a href="lib_gossip.js.html#line746">line 746</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>Array of nodes selected.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Array</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="send"><span class="type-signature"></span>send<span class="signature">(event, msg, actor, clock, n<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {<a href="Clusterluck.GossipRing.html">Clusterluck.GossipRing</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Sends <code>event</code> of this ring at round <code>n</code> with message <code>msg</code>, selecting several nodes to propagate this gossip message to if the round number is non-zero.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>event</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Event to send.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>msg</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Value to send with this message.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>actor</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Actor representing the snapshot of this message.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>clock</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Clusterluck.VectorClock.html">Clusterluck.VectorClock</a></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Vector clock to send this message with.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>n</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Gossip round of this message. Defaults to 1.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_gossip.js.html">lib/gossip.js</a>, <a href="lib_gossip.js.html#line764">line 764</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>This instance.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="Clusterluck.GossipRing.html">Clusterluck.GossipRing</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="sendRing"><span class="type-signature"></span>sendRing<span class="signature">(n<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {<a href="Clusterluck.GossipRing.html">Clusterluck.GossipRing</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Sends the state of this ring at round <code>n</code> as type 'update', selecting several nodes to propagate this gossip message to if the round number is non-zero and the internal ring is non-trivial.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>n</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Number of rounds to send this data in the cluster. Defauls to 1.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_gossip.js.html">lib/gossip.js</a>, <a href="lib_gossip.js.html#line709">line 709</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>This instance.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="Clusterluck.GossipRing.html">Clusterluck.GossipRing</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="start"><span class="type-signature"></span>start<span class="signature">(ringID)</span><span class="type-signature"> &rarr; {<a href="Clusterluck.GossipRing.html">Clusterluck.GossipRing</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Starts the gossip handler: listens for events related to <code>ringID</code> on the netkernel, and sets the internal interval to send messages about this instance's state. When this process leaves the current ring ID, will remove the previously created kernel event listener.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>ringID</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Ring ID to listen for events on.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_gossip.js.html">lib/gossip.js</a>, <a href="lib_gossip.js.html#line47">line 47</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+<h5>Listens to Events:</h5>
+<ul>
+    <li><a href="Clusterluck.GenServer.html#event:GenServer:stop">Clusterluck.GenServer#GenServer:stop</a></li>
+
+    <li><a href="Clusterluck.GossipRing.html#event:GossipRing:ring">Clusterluck.GossipRing#GossipRing:ring</a></li>
+</ul>
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>This instance.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="Clusterluck.GossipRing.html">Clusterluck.GossipRing</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="stop"><span class="type-signature"></span>stop<span class="signature">(force<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {<a href="Clusterluck.GossipRing.html">Clusterluck.GossipRing</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Stops this handler. Provides the option to forcibly stop, meaning all internal message streams will be cleared and this node will immediately leave it's current cluster.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>force</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Whether to forcibly stop this process. If false, will wait for an idle state before leaving the ring and clearing the internal message stream map. Otherwise, will immediately clear any pending updates and leave the ring. Defaults to false.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_gossip.js.html">lib/gossip.js</a>, <a href="lib_gossip.js.html#line93">line 93</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<h5>Fires:</h5>
+<ul>
+    <li><a href="Clusterluck.GenServer.html#event:GenServer:stop">Clusterluck.GenServer#GenServer:stop</a></li>
+</ul>
+
+
+
+<h5>Listens to Events:</h5>
+<ul>
+    <li><a href="Clusterluck.GossipRing.html#event:GossipRing:close">Clusterluck.GossipRing#GossipRing:close</a></li>
+</ul>
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>This instance.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="Clusterluck.GossipRing.html">Clusterluck.GossipRing</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="update"><span class="type-signature"></span>update<span class="signature">(node, weight, force<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {<a href="Clusterluck.GossipRing.html">Clusterluck.GossipRing</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Updates <code>node</code> in this node's cluster with weight <code>weight</code>, asynchronously propagating this new state through the cluster. Provides the option to forcibly update <code>node</code>, meaning it will precede any existing internal message streams pending completion.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>node</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Clusterluck.Node.html">Clusterluck.Node</a></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Node to update in this gossip ring's cluster.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>weight</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Number of virtual nodes to assign <code>node</code> in the hash ring.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>force</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Whether to forcibly update <code>node</code> into the current state of this ring, or wait for an idle state. Defaults to false.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_gossip.js.html">lib/gossip.js</a>, <a href="lib_gossip.js.html#line471">line 471</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+<h5>Fires:</h5>
+<ul>
+    <li><a href="Clusterluck.GossipRing.html#event:GossipRing:process">Clusterluck.GossipRing#GossipRing:process</a></li>
+</ul>
+
+
+
+<h5>Listens to Events:</h5>
+<ul>
+    <li><a href="Clusterluck.GenServer.html#event:GenServer:idle">Clusterluck.GenServer#GenServer:idle</a></li>
+</ul>
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>This instance.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="Clusterluck.GossipRing.html">Clusterluck.GossipRing</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="vclock"><span class="type-signature"></span>vclock<span class="signature">(vclock<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {<a href="Clusterluck.VectorClock.html">Clusterluck.VectorClock</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Acts as a getter/setter for the vector clock of this instance.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>vclock</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Clusterluck.VectorClock.html">Clusterluck.VectorClock</a></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Vector clock to set on this instance.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_gossip.js.html">lib/gossip.js</a>, <a href="lib_gossip.js.html#line275">line 275</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>Vector clock of this instance.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="Clusterluck.VectorClock.html">Clusterluck.VectorClock</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+    
+
+    
+
+    
+        <h3 class="subsection-title">Events</h3>
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="event:GossipRing:close">GossipRing:close</h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Emitted when this instance has left it's current ring, overwritten it's ring ID to <code>null</code>, and disconnected from all other nodes in the cluster.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_gossip.js.html">lib/gossip.js</a>, <a href="lib_gossip.js.html#line1012">line 1012</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+<h5>Listeners of This Event:</h5>
+<ul>
+    <li><a href="Clusterluck.GossipRing.html#stop">Clusterluck.GossipRing#stop</a></li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="event:GossipRing:conflict">GossipRing:conflict</h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Emitted when the ring state of another node, based off a received message off the network kernel, is in conflict with the current state of this instance. More for documenting purposes in this class, since all ring conflicts are handled with a &quot;Last Write Wins&quot; approach. However, in any new classes that may use similar logic to this, will be useful for custom state conflict.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <h5 class="subsection-title">Properties:</h5>
+
+    
+
+<table class="props">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>RecRing</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Clusterluck.CHash.html">Clusterluck.CHash</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Received ring in conflict with the current ring.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>RecClock</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Clusterluck.VectorClock.html">Clusterluck.VectorClock</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Received vector clock conflicting with the current vector clock.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_gossip.js.html">lib/gossip.js</a>, <a href="lib_gossip.js.html#line911">line 911</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="event:GossipRing:flushing">GossipRing:flushing</h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Emitted when this instance begins to flush state to disk. NOT a reliable indicator for when state is actually flushed to disk, as this event is fired whenever <code>this.flush()</code> is called (as opposed to firing when it makes an fs call).</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_gossip.js.html">lib/gossip.js</a>, <a href="lib_gossip.js.html#line684">line 684</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="event:GossipRing:leave">GossipRing:leave</h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Emitted when the ring state on this instance has been cleared, and the resulting ring with this node removed has been sent.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <h5 class="subsection-title">Properties:</h5>
+
+    
+
+<table class="props">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>sendRing</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Clusterluck.CHash.html">Clusterluck.CHash</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Ring that will be sent to all nodes in the old cluster except this node (since we're leaving when this event has fired).</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_gossip.js.html">lib/gossip.js</a>, <a href="lib_gossip.js.html#line999">line 999</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="event:GossipRing:process">GossipRing:process</h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Emitted whenever this instance changes it's consistent hash ring, either based on events generated by the CLI or<br>by gossipped messages.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <h5 class="subsection-title">Properties:</h5>
+
+    
+
+<table class="props">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>oldRing</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Clusterluck.CHash.html">Clusterluck.CHash</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Previous ring before this event is fired.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>currRing</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Clusterluck.CHash.html">Clusterluck.CHash</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Current ring when this event is fired.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_gossip.js.html">lib/gossip.js</a>, <a href="lib_gossip.js.html#line418">line 418</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="event:GossipRing:ring">GossipRing:ring</h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Event emitted when any ring updates occur and are gossipped around the cluster. Since the GossipRing class extends the GenServer class, this event is emitted whenever a message stream is parsed with event &quot;ring&quot;.</p>
+</div>
+
+
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">Object</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+
+
+
+
+    <h5 class="subsection-title">Properties:</h5>
+
+    
+
+<table class="props">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>data</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Clusterluck.CHash.html">Clusterluck.CHash</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Consistent hash ring sent with this ring update message.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>vclock</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Clusterluck.VectorClock.html">Clusterluck.VectorClock</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Vector clock associated with this message. Based on comparison between this value and this instance's own vector clock, the message may be ignored.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>actor</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Actor associated with the most recent update to <code>vclock</code>.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>type</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Update type. Can be either &quot;join&quot; (meet request) or &quot;update&quot; (anything else).</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_gossip.js.html">lib/gossip.js</a>, <a href="lib_gossip.js.html#line69">line 69</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+<h5>Listeners of This Event:</h5>
+<ul>
+    <li><a href="Clusterluck.GossipRing.html#start">Clusterluck.GossipRing#start</a></li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="event:GossipRing:send">GossipRing:send</h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Emitted whenever this instance sends a message to another node in the cluster.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <h5 class="subsection-title">Properties:</h5>
+
+    
+
+<table class="props">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>vclock</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Clusterluck.VectorClock.html">Clusterluck.VectorClock</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Vector clock of message sent.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>event</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Event name of message sent.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>msg</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Message contents.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_gossip.js.html">lib/gossip.js</a>, <a href="lib_gossip.js.html#line374">line 374</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+    
+</article>
+
+</section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Clusterluck.CHash.html">CHash</a></li><li><a href="Clusterluck.ClusterNode.html">ClusterNode</a></li><li><a href="Clusterluck.Connection.html">Connection</a></li><li><a href="Clusterluck.DLMServer.html">DLMServer</a></li><li><a href="Clusterluck.DSMServer.html">DSMServer</a></li><li><a href="Clusterluck.DTable.html">DTable</a></li><li><a href="Clusterluck.GenServer.html">GenServer</a></li><li><a href="Clusterluck.GossipRing.html">GossipRing</a></li><li><a href="Clusterluck.Lock.html">Lock</a></li><li><a href="Clusterluck.MTable.html">MTable</a></li><li><a href="Clusterluck.NetKernel.html">NetKernel</a></li><li><a href="Clusterluck.Node.html">Node</a></li><li><a href="Clusterluck.Semaphore.html">Semaphore</a></li><li><a href="Clusterluck.VectorClock.html">VectorClock</a></li></ul><h3>Events</h3><ul><li><a href="Clusterluck.ClusterNode.html#event:ClusterNode:ready">ClusterNode:ready</a></li><li><a href="Clusterluck.ClusterNode.html#event:ClusterNode:stop">ClusterNode:stop</a></li><li><a href="Clusterluck.GenServer.html#event:GenServer:idle">GenServer:idle</a></li><li><a href="Clusterluck.GenServer.html#event:GenServer:pause">GenServer:pause</a></li><li><a href="Clusterluck.GenServer.html#event:GenServer:resume">GenServer:resume</a></li><li><a href="Clusterluck.GenServer.html#event:GenServer:stop">GenServer:stop</a></li><li><a href="Clusterluck.GenServer.html#event:GenServer:user_defined">GenServer:user_defined</a></li><li><a href="Clusterluck.GossipRing.html#event:GossipRing:close">GossipRing:close</a></li><li><a href="Clusterluck.GossipRing.html#event:GossipRing:conflict">GossipRing:conflict</a></li><li><a href="Clusterluck.GossipRing.html#event:GossipRing:flushing">GossipRing:flushing</a></li><li><a href="Clusterluck.GossipRing.html#event:GossipRing:leave">GossipRing:leave</a></li><li><a href="Clusterluck.GossipRing.html#event:GossipRing:process">GossipRing:process</a></li><li><a href="Clusterluck.GossipRing.html#event:GossipRing:ring">GossipRing:ring</a></li><li><a href="Clusterluck.GossipRing.html#event:GossipRing:send">GossipRing:send</a></li><li><a href="Clusterluck.NetKernel.html#event:NetKernel:_ready">NetKernel:_ready</a></li><li><a href="Clusterluck.NetKernel.html#event:NetKernel:_skip">NetKernel:_skip</a></li><li><a href="Clusterluck.NetKernel.html#event:NetKernel:_stop">NetKernel:_stop</a></li><li><a href="Clusterluck.NetKernel.html#event:NetKernel:user_defined">NetKernel:user_defined</a></li></ul><h3>Namespaces</h3><ul><li><a href="Clusterluck.html">Clusterluck</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Fri Oct 13 2017 19:09:12 GMT+0000 (UTC)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

@@ -1,0 +1,4061 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Namespace: Clusterluck</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Namespace: Clusterluck</h1>
+
+    
+
+
+
+
+<section>
+
+<header>
+    
+        <h2>Clusterluck</h2>
+        
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+
+        
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_cluster_node.js.html">lib/cluster_node.js</a>, <a href="lib_cluster_node.js.html#line6">line 6</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+        
+    
+    </div>
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Classes</h3>
+
+        <dl>
+            <dt><a href="Clusterluck.CHash.html">CHash</a></dt>
+            <dd></dd>
+        
+            <dt><a href="Clusterluck.ClusterNode.html">ClusterNode</a></dt>
+            <dd></dd>
+        
+            <dt><a href="Clusterluck.Connection.html">Connection</a></dt>
+            <dd></dd>
+        
+            <dt><a href="Clusterluck.DLMServer.html">DLMServer</a></dt>
+            <dd></dd>
+        
+            <dt><a href="Clusterluck.DSMServer.html">DSMServer</a></dt>
+            <dd></dd>
+        
+            <dt><a href="Clusterluck.DTable.html">DTable</a></dt>
+            <dd></dd>
+        
+            <dt><a href="Clusterluck.GenServer.html">GenServer</a></dt>
+            <dd></dd>
+        
+            <dt><a href="Clusterluck.GossipRing.html">GossipRing</a></dt>
+            <dd></dd>
+        
+            <dt><a href="Clusterluck.Lock.html">Lock</a></dt>
+            <dd></dd>
+        
+            <dt><a href="Clusterluck.MTable.html">MTable</a></dt>
+            <dd></dd>
+        
+            <dt><a href="Clusterluck.NetKernel.html">NetKernel</a></dt>
+            <dd></dd>
+        
+            <dt><a href="Clusterluck.Node.html">Node</a></dt>
+            <dd></dd>
+        
+            <dt><a href="Clusterluck.Semaphore.html">Semaphore</a></dt>
+            <dd></dd>
+        
+            <dt><a href="Clusterluck.VectorClock.html">VectorClock</a></dt>
+            <dd></dd>
+        </dl>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".createCHash"><span class="type-signature">(static) </span>createCHash<span class="signature">(rfactor, pfactor)</span><span class="type-signature"> &rarr; {<a href="Clusterluck.CHash.html">Clusterluck.CHash</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Constructs a new instance of the consistent hash ring class.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>rfactor</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Replication factor for every node inserted into the ring. Defaults to 3.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>pfactor</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Persistence factor for every node inserted into the ring (used when calling .next on a consistent hash ring). Defaults to 2.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line10">line 10</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>A consistent hash ring instance.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="Clusterluck.CHash.html">Clusterluck.CHash</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>let chash = clusterluck.createCHash(3, 2);
+assert.equal(chash.rfactor(), 3);
+assert.equal(chash.pfactor(), 2);</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".createCluster"><span class="type-signature">(static) </span>createCluster<span class="signature">(Identifier, host, port, opts<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {<a href="Clusterluck.ClusterNode.html">Clusterluck.ClusterNode</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Constructs an instance of a cluster node, the preferred and encompassing way to start/stop the underlying IPC node, as well as refer to underlying actors in the cluster (gossip ring, kernel, command server, forthcoming actors, etc.).</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>Identifier</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>for the node associated with this network kernel. Needs to be unique across the cluster, since nodes are addressed by id this way.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>host</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Hostname for this network kernel to bind to. Can be an IPV4 address, IPV6 address, or a hostname. Hostname resolution isn't done when checking the existence of a node inside a cluster, so this hostname is taken literally for the lifetime of the node (i.e. localhost vs. 127.0.0.1 vs <code>&gt; hostname</code>). Defaults to <code>os.hostname()</code>.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>port</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Port for this network kernel to listen on. Defaults to 7022.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>opts</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Options object that controls configuration options for the constructed network kernel and gossip ring.</p>
+                <h6>Properties</h6>
+                
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>kernelOpts</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Refer to <code>createKernel</code> for an explanation of available options.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>gossipOpts</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Refer to <code>createGossip</code> for an explanation of available options.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line152">line 152</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>A new cluster node instance.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="Clusterluck.ClusterNode.html">Clusterluck.ClusterNode</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>let node = clusterluck.createCluster("foo", "localhost", 7022);
+assert.equal(node.kernel().id(), "foo");
+assert.equal(node.kernel().host(), "localhost");
+assert.equal(node.kernel().port(), 7022);
+assert.ok(node.kernel().self().equals(new Node("foo", "localhost", 7022)));
+assert.equal(node.gossip().ring().rfactor(), 3);
+assert.equal(node.gossip().ring().pfactor(), 2);</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".createCommServer"><span class="type-signature">(static) </span>createCommServer<span class="signature">(gossip, kernel)</span><span class="type-signature"> &rarr; {Clusterluck.CommandServer}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Constructs an instance of a command server, which responds to CLI commands.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>gossip</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Clusterluck.Gossip</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Gossip processor for this command server to report/manipulate the state of.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>kernel</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Clusterluck.Kernel</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Network kernel this command server uses to reply over to a CLI process' IPC socket.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line130">line 130</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>A new command server instance.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Clusterluck.CommandServer</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>let comms = clusterluck.createCommServer(gossip, kernel);
+assert.deepEqual(comms.gossip(), gossip);
+assert.deepEqual(comms.kernel(), kernel);</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".createDLM"><span class="type-signature">(static) </span>createDLM<span class="signature">(cluster, opts<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {<a href="Clusterluck.DLMServer.html">Clusterluck.DLMServer</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Constructs a DLM server instance. Handles creating read locks, write locks, as well as removing such locks across a cluster of nodes. See documentation of the DLMServer class for how locks are routed and partitioned across the cluster.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>cluster</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Clusterluck.ClusterNode.html">Clusterluck.ClusterNode</a></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Cluster for this generic server to bind to.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>opts</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Options object for creating DLM server.</p>
+                <h6>Properties</h6>
+                
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>rquorum</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Quorum for read lock requests.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>wquorum</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Quorum for write lock requests.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>minWaitTimeout</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Minimum amount of time in milliseconds to wait for a retry on a locking request.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>maxWaitTimeout</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Maximum amount of time in milliseconds to wait for a retry on a locking request.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>disk</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Whether to persist lock state to disk. If <code>true</code> is passed, the following options will be read.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>path</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Path for underlying DTable instance to flush state to.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>writeThreshold</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Write threshold of underlying DTable instance.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>autoSave</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Autosave interval of underlying DTable instance.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>fsyncInterval</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Fsync interval of underlying DTable instance.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>compress</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Whether to run RDB snapshot streams through a GZIP compression stream. Defaults to <code>false</code>.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>name</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Name to start table with; can be used as a replacement for passing <code>name</code> to the start function. Required to be passed if you don't want a race condition between table loads and the idle interval that runs to trigger RDB snapshot logic. Defaults to <code>undefined</code>.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line277">line 277</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>A new generic server instance.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="Clusterluck.DLMServer.html">Clusterluck.DLMServer</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>let server = clusterluck.createDLM(cluster, {disk: true, path: "/path/to/dir"});
+server.load((err) => {
+  server.start("foo");
+});</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".createDSM"><span class="type-signature">(static) </span>createDSM<span class="signature">(cluster, opts<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {<a href="Clusterluck.DSMServer.html">Clusterluck.DSMServer</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Constructs a DSM server instance. Handles creating/reading/destroying semaphores, as well as posting and closing semaphores with requesters/actors. See documentation of the DSMServer class for how semaphores are routed and partitioned across the cluster.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>cluster</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Clusterluck.ClusterNode.html">Clusterluck.ClusterNode</a></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Cluster for this generic server to bind to.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>opts</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Options object for creating DSM server.</p>
+                <h6>Properties</h6>
+                
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>minWaitTimeout</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Minimum amount of time in milliseconds to wait for a retry on a post request.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>maxWaitTimeout</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Maximum amount of time in milliseconds to wait for a retry on a post request.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>disk</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Whether to persist semaphore state to disk. If <code>true</code> is passed, the following options will be read.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>path</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Path for underlying DTable instance to flush state to.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>writeThreshold</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Write threshold of underlying DTable instance.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>autoSave</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Autosave interval of underlying DTable instance.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>fsyncInterval</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Fsync interval of underlying DTable instance.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>compress</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Whether to run RDB snapshot streams through a GZIP compression stream. Defaults to <code>false</code>.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>name</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Name to start table with; can be used as a replacement for passing <code>name</code> to the start function. Required to be passed if you don't want a race condition between table loads and the idle interval that runs to trigger RDB snapshot logic. Defaults to <code>undefined</code>.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line312">line 312</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>A new generic server instance.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="Clusterluck.DSMServer.html">Clusterluck.DSMServer</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>let server = clusterluck.createDSM(cluster, {disk: true, path: "/path/to/dir"});
+server.load((err) => {
+  server.start("foo");
+});</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".createDTable"><span class="type-signature">(static) </span>createDTable<span class="signature">(opts)</span><span class="type-signature"> &rarr; {<a href="Clusterluck.DTable.html">Clusterluck.DTable</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Constructs a dtable instance, an in-memory key/value storage that persists to disk periodically.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>opts</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Options object for creating dtable.</p>
+                <h6>Properties</h6>
+                
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>path</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Directory store table snapshot and log files under.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>writeThreshold</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Number of write operations to the log file before triggering a snapshot flush to disk. Defaults to 100 writes.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>autoSave</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Number of milliseconds this table will wait in an idle state before triggering a snapshot flush to disk. Defaults to 180000 milliseconds.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>fsyncInterval</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Internval in milliseconds to fsync the log file. Defaults to 1000 milliseconds.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>compress</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Whether to run RDB snapshot streams through a GZIP compression stream. Defaults to <code>false</code>.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>encodeFn</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Encoding function to use when serializing writes to the AOF file and when saving to the RDB snapshot. Defaults to <code>DTable.encodeValue</code>.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>decodeFn</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Decoding function to use when loading contents from disk. Defaults to <code>DTable.decodeValue</code>.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>name</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Name to start table with; can be used as a replacement for passing <code>name</code> to the start function. Required to be passed if you don't want a race condition between table loads and the idle interval that runs to trigger RDB snapshot logic. Defaults to <code>undefined</code>.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line212">line 212</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>A new dtable instance.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="Clusterluck.DTable.html">Clusterluck.DTable</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+    <h5>Examples</h5>
+    
+    <pre class="prettyprint"><code>let table = clusterluck.createDTable({
+  path: "/path/to/dir",
+  writeThreshold: 100,
+  autoSave: 180000,
+  fsyncInterval: 1000
+});
+table.start("foo");</code></pre>
+
+    <pre class="prettyprint"><code>let table = clusterluck.createDTable({
+  path: "/path/to/dir",
+  writeThreshold: 100,
+  autoSave: 180000,
+  fsyncInterval: 1000,
+  name: "TABLE_NAME"
+});
+table.load((err) => {
+  if (err) process.exit(1);
+  table.start();
+});</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".createGenServer"><span class="type-signature">(static) </span>createGenServer<span class="signature">(cluster, opts<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {<a href="Clusterluck.GenServer.html">Clusterluck.GenServer</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Constructs a generic server instance. Generic servers listen to the network kernel for events targetted at it's name/ID. For example, the gossip ring is a generic server that listens for events on the ID of the ring it belongs to.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>cluster</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Clusterluck.ClusterNode.html">Clusterluck.ClusterNode</a></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Cluster for this generic server to bind to.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>opts</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Options object for creating generic server.</p>
+                <h6>Properties</h6>
+                
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>streamTimeout</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Timeframe a generic server will receive data for a given stream before invalidating it.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line186">line 186</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>A new generic server instance.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="Clusterluck.GenServer.html">Clusterluck.GenServer</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>let server = clusterluck.createGenServer(cluster);
+// based on how messages are parsed, will operate on event 'command_name' sent by another actor to this node
+server.on("command_name", handlerForCommand);
+// will listen on server.kernel() for messages emitted on event 'foo'.
+server.start("foo");</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".createGossip"><span class="type-signature">(static) </span>createGossip<span class="signature">(kernel, opts<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {<a href="Clusterluck.GossipRing.html">Clusterluck.GossipRing</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Constructs an instance of a gossip processor against network kernel <code>kernel</code>.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>kernel</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Clusterluck.NetKernel.html">Clusterluck.NetKernel</a></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Network kernel this new gossip processor instance will listen for jobs against.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>opts</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Gossip ring options to instantiate with. Affects vector clock trimming options, consistent hash ring instantiation, how often to gossip ring state against the cluster, and when/where to flush state to disk.</p>
+                <h6>Properties</h6>
+                
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>rfactor</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Replication factor for every node inserted into the ring. Defaults to 3.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>pfactor</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Persistence factor for every node inserted into the ring (used when calling .next on a consistent hash ring). Defaults to 2.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>interval</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Interval to select a random node from the cluster and gossip the state of the ring with, with a granularity of milliseconds. Defaults to 1000.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>flushInterval</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Interval to flush the state of the ring to disk, with a granularity of milliseconds. Defaults to 1000.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>flushPath</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Path string to flush the state of the ring to; if set to <code>null</code>, the gossip ring will just skip flushing state to disk. Defaults to <code>null</code>.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>vclockOpts</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Vector clock options for trimming; occurs at the same interval as <code>interval</code>. Defaults to <code>clusterluck.consts.vclockOpts</code>.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>connOpts</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Connection options for when connecting to new nodes.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line56">line 56</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>A new gossip ring instance.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="Clusterluck.GossipRing.html">Clusterluck.GossipRing</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>// initializes gossip ring with defaults found in `clusterluck.consts.gossipOpts`
+let gossip = clusterluck.createGossip(kernel);
+assert.equal(gossip.ring().rfactor(), 3);
+assert.equal(gossip.ring().pfactor(), 2);
+assert.deepEqual(gossip.kernel(), kernel);</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".createKernel"><span class="type-signature">(static) </span>createKernel<span class="signature">(id, host, port, opts<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {<a href="Clusterluck.NetKernel.html">Clusterluck.NetKernel</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Constructs an instance of a network kernel with <code>id</code>, listening on hostname <code>host</code> and port <code>port</code>.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>id</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Identifier for the node associated with this network kernel. Needs to be unique across the cluster, since nodes are addressed by id this way.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>host</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Hostname for this network kernel to bind to. Can be an IPV4 address, IPV6 address, or a hostname. Hostname resolution isn't done when checking the existence of a node inside a cluster, so this hostname is taken literally for the lifetime of the node (i.e. localhost vs. 127.0.0.1 vs <code>&gt; hostname</code>). Defaults to <code>os.hostname()</code>.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>port</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Port for this network kernel to listen on. Defaults to 7022.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>opts</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Network kernel options to instantiate with. Affects whether the server runs with TLS or just TCP, on what interval to attempt reconnect logic on a closed socket, and how many times to retry.</p>
+                <h6>Properties</h6>
+                
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>networkHost</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Default network hostname to set on this network kernel. Defaults to <code>os.hostname()</code>.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>networkPort</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Default network port to listen on for this network kernel. Defaults to 7022.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>retry</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Default amount of time to wait before retrying a connection attempt between two nodes. Defaults to 5000.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>tls</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>TLS options to set on this network kernel. Defaults to <code>null</code>.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>maxRetries</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Maximum number of attempts to reconnect to a node; currently, Infinity is the most stable option, since the Connection class only listens for the 'connect' and 'disconnect' events on the underlying IPC socket. Defaults to Infinity.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>silent</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Whether to silence underlying IPC logs emitted by the <code>node-ipc</code> module. Defaults to true.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line90">line 90</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>A new network kernel instance.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="Clusterluck.NetKernel.html">Clusterluck.NetKernel</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>let kernel = clusterluck.createKernel("foo", "localhost", 7022);
+assert.equal(kernel.id(), "foo");
+assert.equal(kernel.host(), "localhost");
+assert.equal(kernel.port(), 7022);
+assert.ok(kernel.self().equals(new Node("foo", "localhost", 7022)));</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".createMTable"><span class="type-signature">(static) </span>createMTable<span class="signature">()</span><span class="type-signature"> &rarr; {<a href="Clusterluck.MTable.html">Clusterluck.MTable</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Constructs a mtable instance, an in-memory key/value storage.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line259">line 259</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>A new mtable instance.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="Clusterluck.MTable.html">Clusterluck.MTable</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>let table = clusterluck.createMTable();
+table.start("foo");</code></pre>
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id=".createVClock"><span class="type-signature">(static) </span>createVClock<span class="signature">(id, count)</span><span class="type-signature"> &rarr; {<a href="Clusterluck.VectorClock.html">Clusterluck.VectorClock</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    <p>Constructs a new instance of the vector clock class.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>id</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Identifier to insert this new vector clock on creation.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>count</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Count to initialize <code>id</code> at in this new vector clock.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="index.js.html">index.js</a>, <a href="index.js.html#line32">line 32</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>A vector clock instance.</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="Clusterluck.VectorClock.html">Clusterluck.VectorClock</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>let vclock = clusterluck.createVClock();
+assert.equal(vclock.size(), 0);
+vclock = clutserluck.createVClock("id", 1);
+assert.equal(vclock.size(), 1);
+assert.ok(vclock.has("id"));</code></pre>
+
+
+
+        
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Clusterluck.CHash.html">CHash</a></li><li><a href="Clusterluck.ClusterNode.html">ClusterNode</a></li><li><a href="Clusterluck.Connection.html">Connection</a></li><li><a href="Clusterluck.DLMServer.html">DLMServer</a></li><li><a href="Clusterluck.DSMServer.html">DSMServer</a></li><li><a href="Clusterluck.DTable.html">DTable</a></li><li><a href="Clusterluck.GenServer.html">GenServer</a></li><li><a href="Clusterluck.GossipRing.html">GossipRing</a></li><li><a href="Clusterluck.Lock.html">Lock</a></li><li><a href="Clusterluck.MTable.html">MTable</a></li><li><a href="Clusterluck.NetKernel.html">NetKernel</a></li><li><a href="Clusterluck.Node.html">Node</a></li><li><a href="Clusterluck.Semaphore.html">Semaphore</a></li><li><a href="Clusterluck.VectorClock.html">VectorClock</a></li></ul><h3>Events</h3><ul><li><a href="Clusterluck.ClusterNode.html#event:ClusterNode:ready">ClusterNode:ready</a></li><li><a href="Clusterluck.ClusterNode.html#event:ClusterNode:stop">ClusterNode:stop</a></li><li><a href="Clusterluck.GenServer.html#event:GenServer:idle">GenServer:idle</a></li><li><a href="Clusterluck.GenServer.html#event:GenServer:pause">GenServer:pause</a></li><li><a href="Clusterluck.GenServer.html#event:GenServer:resume">GenServer:resume</a></li><li><a href="Clusterluck.GenServer.html#event:GenServer:stop">GenServer:stop</a></li><li><a href="Clusterluck.GenServer.html#event:GenServer:user_defined">GenServer:user_defined</a></li><li><a href="Clusterluck.GossipRing.html#event:GossipRing:close">GossipRing:close</a></li><li><a href="Clusterluck.GossipRing.html#event:GossipRing:conflict">GossipRing:conflict</a></li><li><a href="Clusterluck.GossipRing.html#event:GossipRing:flushing">GossipRing:flushing</a></li><li><a href="Clusterluck.GossipRing.html#event:GossipRing:leave">GossipRing:leave</a></li><li><a href="Clusterluck.GossipRing.html#event:GossipRing:process">GossipRing:process</a></li><li><a href="Clusterluck.GossipRing.html#event:GossipRing:ring">GossipRing:ring</a></li><li><a href="Clusterluck.GossipRing.html#event:GossipRing:send">GossipRing:send</a></li><li><a href="Clusterluck.NetKernel.html#event:NetKernel:_ready">NetKernel:_ready</a></li><li><a href="Clusterluck.NetKernel.html#event:NetKernel:_skip">NetKernel:_skip</a></li><li><a href="Clusterluck.NetKernel.html#event:NetKernel:_stop">NetKernel:_stop</a></li><li><a href="Clusterluck.NetKernel.html#event:NetKernel:user_defined">NetKernel:user_defined</a></li></ul><h3>Namespaces</h3><ul><li><a href="Clusterluck.html">Clusterluck</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Fri Oct 13 2017 19:09:12 GMT+0000 (UTC)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

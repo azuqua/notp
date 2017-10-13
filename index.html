@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Home</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Home</h1>
+
+    
+
+
+
+    
+
+
+    <h3> </h3>
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+
+    <section>
+        <article><h1>Clusterluck</h1><p><a href="https://travis-ci.org/azuqua/clusterluck"><img src="https://travis-ci.org/azuqua/clusterluck.svg?branch=master" alt="Build Status"></a><br><a href="https://coveralls.io/github/azuqua/clusterluck?branch=master"><img src="https://coveralls.io/repos/github/azuqua/clusterluck/badge.svg?branch=master" alt="Code Coverage"></a></p>
+<p><a href="https://azuqua.github.io/clusterluck">Documentation</a></p>
+<p>A library for writing distributed systems that use a gossip protocol to communicate state management, consistent hash rings for sharding, and vector clocks for history.</p>
+<h2>Install</h2><pre class="prettyprint source"><code>$ npm install clusterluck</code></pre><h2>Dependencies</h2><p>This module uses a native module called <code>node-microtime</code> for microsecond insert/update granularity for vector clocks, and by extension requires a C++-11 compatible compiler. The <code>.travis.yml</code> file lists g++-4.8 as an addon in response, but other compatible versions of g++ or clang should suffice. The following g++ compiler versions have been tested:</p>
+<ul>
+<li>6.<em>.</em></li>
+<li>4.8</li>
+</ul>
+<h2>Test</h2><p>To run tests, you can use:</p>
+<pre class="prettyprint source"><code>$ grunt test</code></pre><p>or just:</p>
+<pre class="prettyprint source"><code>$ mocha test</code></pre><p>For code coverage information, you can use <code>istanbul</code> and run:</p>
+<pre class="prettyprint source"><code>$ istanbul cover _mocha test</code></pre><p>If <code>istanbul</code> isn't installed, just run:</p>
+<pre class="prettyprint source"><code>$ npm install --global istanbul</code></pre><h2>Index</h2><ul>
+<li><a href="#Usage">Usage</a><ul>
+<li><a href="#CreatingClusters">Creating Clusters</a></li>
+<li><a href="#ManipulatingClusters">Manipulating Clusters</a></li>
+<li><a href="#ExampleCluster">Example Cluster</a></li>
+<li><a href="#WritingGenServers">Writing GenServers</a></li>
+<li><a href="#UsingTheCLI">Using the CLI</a><ul>
+<li><a href="#inspect"><code>inspect</code></a></li>
+<li><a href="#nodes"><code>nodes</code></a></li>
+<li><a href="#ping"><code>ping</code></a></li>
+<li><a href="#get"><code>get</code></a></li>
+<li><a href="#has"><code>has</code></a></li>
+<li><a href="#weight"><code>weight</code></a></li>
+<li><a href="#weights"><code>weights</code></a></li>
+<li><a href="#join"><code>join</code></a></li>
+<li><a href="#meet"><code>meet</code></a></li>
+<li><a href="#leave"><code>leave</code></a></li>
+<li><a href="#insert"><code>insert</code></a></li>
+<li><a href="#minsert"><code>minsert</code></a></li>
+<li><a href="#update"><code>update</code></a></li>
+<li><a href="#remove"><code>remove</code></a></li>
+<li><a href="#mremove"><code>mremove</code></a></li>
+</ul>
+</li>
+<li><a href="#ConsistentHashRing">Consistent Hash Ring</a></li>
+<li><a href="#VectorClocks">Vector Clocks</a></li>
+</ul>
+</li>
+<li><a href="#TODO">TODO</a></li>
+</ul>
+<h3><a name="Usage"></a>Usage</h3><p>Clusterluck can be used as a module to write decentralized distributed systems with full-mesh IPC network topologies, or in isolation to use the consistent hash ring and vector clock data structures.</p>
+<h4><a name="CreatingClusters"></a>Creatings Clusters</h4><p>To get started, we can use the following code:</p>
+<pre class="prettyprint source lang-javascript"><code>const cl = require(&quot;clusterluck&quot;);
+
+let node = cl.createCluster(&quot;foo&quot;, &quot;localhost&quot;, 7022);
+node.start(&quot;cookie&quot;, &quot;ring&quot;, () => {
+  console.log(&quot;Listening on port 7022!&quot;);
+});</code></pre><p>This will create a single node in cluster <code>ring</code> with name <code>foo</code>, using cookie <code>cookie</code> to sign messages within the cluster.<br>If another program tries to communicate with this node, but doesn't sign requests with this cookie, the message will be ignored with an <code>INVALID_CHECKSUM</code> error emitted in the debug logs.<br>When nodes are added to <code>ring</code>, each node will attempt to form TCP-based IPC connections to any new node added into the cluster.<br>Similarly, each IPC server will generate new IPC-client connections. Each external connection will queue up messages if the socket goes down, sending all queued up messages once the socket reconnects.<br>Once nodes are removed, both ends of the connection are closed forcibly.</p>
+<p>In the background, several listeners attached to the network kernel for this node will be created, including a gossip ring listener and a command line server listener.<br>In short, the command line server listener exists to handle requests made by the CLI tool under <code>bin/cli.js</code>, while the gossip ring listens for ring maniuplations on the cluster. On additions to the cluster, new IPC connections to external nodes will be created, and vice versa for removals from the cluster.</p>
+<h4><a name="ManipulatingClusters"></a>Manipulating Clusters</h4><p>To manipulate the cluster, we interact with the gossip property of the cluster node. For example:</p>
+<pre class="prettyprint source lang-javascript"><code>// meeting another node
+let gossip = node.gossip();
+let kernel = node.kernel();
+let nNode = new Node(&quot;bar&quot;, &quot;localhost&quot;, 7023);
+gossip.meet(nNode);
+// wait some time, eventually the node will show up in this node's ring...
+assert.ok(gossip.ring().has(nNode));
+
+// inserting nodes
+gossip.insert(nNode);
+assert.ok(gossip.ring().has(nNode));
+// after some time, node &quot;bar&quot; should have &quot;foo&quot; in its ring...
+
+// removing nodes
+gossip.remove(nNode);
+assert.notOk(gossip.ring().has(nNode));
+// after some time, ndoe &quot;bar&quot; should remove &quot;foo&quot; from its ring...
+
+// leaving a cluster
+gossip.leave();
+gossip.once(&quot;leave&quot;, () => {
+  assert.lengthOf(gossip.ring().nodes(), 1);
+  assert.ok(gossip.ring.nodes()[0].equals(kernel.self()));
+});
+
+// joining a cluster
+gossip.join(&quot;another_ring_id&quot;);
+// after some time, this node will receive messages from the existing nodes in the cluster
+// (if any exist)</code></pre><p>For documentation on available methods/inputs for cluster manipulation, visit the documentation for the <code>GossipRing</code> class.</p>
+<h4><a name="ExampleCluster"></a>Example Cluster</h4><p>In an example.js file, insert the following:</p>
+<pre class="prettyprint source lang-javascript"><code>const cl = require(&quot;clusterluck&quot;),
+      os = require(&quot;os&quot;);
+
+let id = process.argv[2],
+    port = parseInt(process.argv[3]);
+
+let node = cl.createCluster(id, os.hostname(), port);
+node.start(&quot;cookie&quot;, &quot;ring&quot;, () => {
+  console.log(&quot;Listening on port %s!&quot;, port);
+});</code></pre><p>Then, in one terminal, run:</p>
+<pre class="prettyprint source"><code>$ node example.js foo 7022</code></pre><p>And in another terminal, run:</p>
+<pre class="prettyprint source"><code>$ node example.js bar 7023</code></pre><p>Now, if we spin up the CLI and connect to <code>foo</code>, we can then run:</p>
+<pre class="prettyprint source"><code>// whatever os.hostname() resolves to, replace localhost with that
+$ meet bar localhost 7023</code></pre><p>If we then go to inspect the ring on each node, we should see both node <code>foo</code> and node <code>bar</code> in the ring.</p>
+<h4><a name="WritingGenServers"></a>Writing GenServers</h4><p>The <code>GenServer</code> class is used to create actors that send messages around and receive messages from the rest of the cluster.<br>They're the basic unit of logic handling in clusterluck, and heavily derived off of Erlang's gen_server's, but incorporated into node.js' EventEmitter model.<br>To start a <code>GenServer</code> with no event handling, we can use the following code:</p>
+<pre class="prettyprint source lang-javascript"><code>let serve = cl.createGenServer(cluster);
+serve.start(&quot;name_to_listen_for&quot;);</code></pre><p>This will tell the network kernel <code>kernel</code> that any messages with id <code>name_to_listen_for</code> received on this node should be routed to <code>serve</code> for processing.<br>Names for <code>GenServer</code>s on the same node have a uniqueness property, so trying to declare multiple instances listening on the same name will raise an error.</p>
+<p>To add some event handling to our <code>GenServer</code>, we can modify the above code as such:</p>
+<pre class="prettyprint source lang-javascript"><code>let serve = cl.createGenServer(cluster);
+serve.on(&quot;hello&quot;, (data, from) => {
+  serve.reply(from, &quot;world&quot;);
+});
+serve.start(&quot;name_to_listen_for&quot;);</code></pre><p>With this additional logic, any &quot;hello&quot; event sent to this node with id <code>name_to_listen_for</code> will be responded to with &quot;world&quot;.<br>This includes messages sent from the local node, as well from other nodes in the cluster.</p>
+<p>Once we've declared our <code>GenServer</code> and added event handling logic, we can start sending and receiving messages to/from other nodes in the cluster.</p>
+<pre class="prettyprint source lang-javascript"><code>// serve is a GenServer instance, kernel is serve's network kernel
+// synchronous requests
+// this makes a call to a GenServer listening on &quot;server_name&quot; locally
+serve.call(&quot;server_name&quot;, &quot;event&quot;, &quot;data&quot;, (err, out) => {...});
+// this makes the same call
+serve.call({id: &quot;server_name&quot;, node: kernel.self()}, &quot;event&quot;, &quot;data&quot;, (err, out) => {...});
+// this makes the same call but to another node
+serve.call({id: &quot;server_name&quot;, node: another_node}, &quot;event&quot;, &quot;data&quot;, (err, out) => {...});
+
+// asynchronous requests
+// this makes an async call to a GenServer listening on &quot;server_name&quot; locally
+serve.cast(&quot;server_name&quot;, &quot;event&quot;, &quot;data&quot;);
+// this makes the same call
+serve.cast({id: &quot;server_name&quot;, node: kernel.self()}, &quot;event&quot;, &quot;data&quot;);
+// this makes the same call but to another node
+serve.cast({id: &quot;server_name&quot;, node: another_node}, &quot;event&quot;, &quot;data&quot;);</code></pre><p>Here, we see the true power of <code>GenServer</code>s as a unified interface for distributed communication with a local node as well as external nodes!</p>
+<p>As an implementation note, <code>GenServer</code>s should not be used as a replacement for EventEmitters when orchestrating state local to a node.<br>Generally speaking, there is little overhead in using this over a raw EventEmitter, but there are conditional branches and extra V8 constructions<br>that may be unneeded for your implementation.<br>Instead, making other <code>GenServer</code>s part of the constructor of other <code>GenServer</code>s is preferred (using OOP principles to enforce actor relations), similar to how the <code>CommandServer</code> class works.<br>In fact, both the <code>GossipRing</code> and <code>CommandServer</code> classes, built into every node in the cluster, are <code>GenServer</code>s themselves!</p>
+<h4><a name="UsingTheCLI"></a>Using the CLI</h4><p>In the working directory of this module, we see the <code>bin/cli.js</code> script. This node script communicates with a single node in a cluster to manipulate the ring.<br>The following options specify which node to communicate with and how:</p>
+<ul>
+<li><code>-I, --instance</code>: The unique instance identifier of the node being connected to.</li>
+<li><code>-H, --hostname</code>: Server hostname of the node being connected to.</li>
+<li><code>-p, --port</code>: Server port of the node being connected to.</li>
+<li><code>-a, --key</code>: Distributed cookie to use for signing requests to the connecting node.</li>
+</ul>
+<p>Once run, a CLI session is created that provides the following commands. For any given command, help documentation can be printed to the console by typing <code>help &lt;command_name&gt;</code>.</p>
+<h5>inspect</h5><p>In the CLI session, type <code>inspect</code>. This command will print the cluster at a node on the console. For example, if we've just started a new node with id <code>foo</code> at hostname <code>localhost</code> with port <code>7022</code>, we'd see the following output:</p>
+<pre class="prettyprint source"><code>> inspect
+{
+  &quot;ok&quot;: true,
+  &quot;data&quot;: {
+    &quot;rfactor&quot;: 3,
+    &quot;pfactor&quot;: 2,
+    &quot;tree&quot;: [
+      {
+        &quot;key&quot;: &quot;avmox6bKHfmLdzmObwjwIrh2WC6XM471ods56FWbDo0=&quot;,
+        &quot;value&quot;: {
+          &quot;id&quot;: &quot;foo&quot;,
+          &quot;host&quot;: &quot;localhost&quot;,
+          &quot;port&quot;: 7022
+        }
+      },
+      {
+        &quot;key&quot;: &quot;kL2YfHLEuxHGaEz4nOxWYyPSiFlGBsFMzoYDXXxuXK0=&quot;,
+        &quot;value&quot;: {
+          &quot;id&quot;: &quot;foo&quot;,
+          &quot;host&quot;: &quot;localhost&quot;,
+          &quot;port&quot;: 7022
+        }
+      },
+      {
+        &quot;key&quot;: &quot;kzMt7C+SJZbxNQmrL3vhpfJ+a0RgPiGlRhrxwS57RWI=&quot;,
+        &quot;value&quot;: {
+          &quot;id&quot;: &quot;foo&quot;,
+          &quot;host&quot;: &quot;localhost&quot;,
+          &quot;port&quot;: 7022
+        }
+      }
+    ]
+  }
+}</code></pre><h5>nodes</h5><p>In the CLI session, type <code>nodes</code>. This command will print the nodes of the cluster on the console. For example, if we've just started a new node with id <code>foo</code> at hostname <code>localhost</code> with port <code>7022</code>, we'd see the following output:</p>
+<pre class="prettyprint source"><code>> nodes
+{
+  &quot;ok&quot;: true,
+  &quot;data&quot;: [
+    {
+      &quot;id&quot;: &quot;foo&quot;,
+      &quot;host&quot;: &quot;localhost&quot;,
+      &quot;port&quot;: 7021
+    }
+  ]
+}</code></pre><h5>ping</h5><p>In the CLI session, type <code>ping</code>. This command will ping the node this session is targetting. For example, we'd see the following output:</p>
+<pre class="prettyprint source"><code>> ping
+{
+  &quot;ok&quot;: true,
+  &quot;data&quot;: &quot;pong&quot;
+}</code></pre><h5>get</h5><p>This command will print metadata about an input node in the cluster, or will return an error if the node doesn't exist in the cluster (according to the node our session targets). For example, given the previous setup:</p>
+<pre class="prettyprint source"><code>> get foo
+{
+  &quot;ok&quot;: true,
+  &quot;data&quot;: {
+    &quot;id&quot;: &quot;foo&quot;,
+    &quot;host&quot;: &quot;localhost&quot;,
+    &quot;port&quot;: 7022
+  }
+}
+
+> get bar
+{
+  &quot;ok&quot;: false,
+  &quot;error&quot;: {
+    &quot;message&quot;: &quot;'bar' is not defined in this ring.',
+    &quot;_error&quot;: true
+  }
+}</code></pre><h5>has</h5><p>This command will print whether an input node exists in the cluster (according to the node our session targets). For example, given the previous setup:</p>
+<pre class="prettyprint source"><code>> has foo
+{
+  &quot;ok&quot;: true,
+  &quot;data&quot;: true
+}
+
+> has bar
+{
+  &quot;ok&quot;: true,
+  &quot;data&quot;: false
+}</code></pre><h5>weight</h5><p>This command will print metadata about an input node's weight (number of virtual nodes) in the cluster, or will return an error if the node doesn't exist in the cluster (according to the node our session targets). For example, given the previous setup:</p>
+<pre class="prettyprint source"><code>> weight foo
+{
+  &quot;ok&quot;: true,
+  &quot;data&quot;: 3
+}
+
+> weight bar
+{
+  &quot;ok&quot;: false,
+  &quot;error&quot;: {
+    &quot;message&quot;: &quot;'bar' is not defined in this ring.',
+    &quot;_error&quot;: true
+  }
+}</code></pre><h5>weights</h5><p>In the CLI session, type <code>weights</code>. This command will print the weights (number of virtual nodes) for every node in the cluster on the console. For example, if we've just started a new node with id <code>foo</code> at hostname <code>localhost</code> with port <code>7022</code> and default weight 3, we'd see the following output:</p>
+<pre class="prettyprint source"><code>> weights
+{
+  &quot;ok&quot;: true,
+  &quot;data&quot;: {
+    &quot;foo&quot;: 3
+  }
+}</code></pre><h5>join</h5><p>This command will attempt to join a cluster if it doesn't already belong to a cluster. For example, given the previous setup:</p>
+<pre class="prettyprint source"><code>// assuming 'foo' isn't a part of a ring
+> join ring
+{
+  &quot;ok&quot;: true
+}
+
+// if it's in a ring
+> join ring
+{
+  &quot;ok&quot;: false,
+  &quot;error&quot;: {
+    &quot;message&quot;: &quot;Node already belongs to ring 'ring'&quot;,
+    &quot;_error&quot;: true
+  }
+}</code></pre><h5>meet</h5><p>This command will tell the targeted node by this session to meet another node in the cluster. Currently, this is the only way to make ring insertions transitive.<br>Subsequently, if as a result two nodes are meeting for the first time, a ring merge will occur.<br>The resulting state will be gossiped around the cluster, eventually resulting in every node thinking the input node belongs in the cluster.<br>For example, given the previous setup:</p>
+<pre class="prettyprint source"><code>> meet bar localhost 7023
+{
+  &quot;ok&quot;: true
+}
+
+// wait some time...
+> get bar
+// metadata about node bar...</code></pre><h5>leave</h5><p>This command will tell the targeted node by this session to leave its current cluster (if it belongs to one). For example:</p>
+<pre class="prettyprint source"><code>> leave
+{
+  &quot;ok&quot;: true
+}
+// immediately following this command...
+> has bar
+{
+  &quot;ok&quot;: true,
+  &quot;data&quot;: false
+}
+
+// leave is done forcefully
+> leave --force
+{
+  &quot;ok&quot;: true
+}</code></pre><p>For documentation on how the <code>--force</code> option works for this command, just run <code>help leave</code>.</p>
+<h5>insert</h5><p>This command will tell the targeted node by this session to insert a node into its cluster (as it currently views it).<br>Subsequently, this information will be gossiped around the cluster, eventually resulting in every node thinking the input node belongs in the cluster.<br>This differs from <code>meet</code> in that insertions are not transitive between nodes; it's a new event on the ring state, and therefore overriding when state conflicts occur between nodes sharing ring history.<br>For example:</p>
+<pre class="prettyprint source"><code>> insert bar localhost 7023
+{
+  &quot;ok&quot;: true
+}
+> get bar
+{
+  &quot;ok&quot;: true,
+  &quot;data&quot;: {
+    &quot;id&quot;: &quot;bar&quot;,
+    &quot;host&quot;: &quot;localhost&quot;,
+    &quot;port&quot;: 7023
+  }
+}
+
+// insert is done forcefully
+> insert --force bar localhost 7023
+{
+  &quot;ok&quot;: true
+}
+> get bar
+{
+  &quot;ok&quot;: true,
+  &quot;data&quot;: {
+    &quot;id&quot;: &quot;bar&quot;,
+    &quot;host&quot;: &quot;localhost&quot;,
+    &quot;port&quot;: 7023
+  }
+}</code></pre><p>For documentation on how the <code>--force</code> option works for this command, or any other option, just run <code>help insert</code>.</p>
+<h5>minsert</h5><p>This command will tell the targeted node by this session to insert multiple nodes into its cluster (as it currently views it).<br>Similar to how <code>insert</code> works, only it allows batch insertion.<br>For example:</p>
+<pre class="prettyprint source"><code>> minsert bar localhost 7023 baz localhost 7024
+{
+  &quot;ok&quot;: true
+}
+> get bar
+{
+  &quot;ok&quot;: true,
+  &quot;data&quot;: {
+    &quot;id&quot;: &quot;bar&quot;,
+    &quot;host&quot;: &quot;localhost&quot;,
+    &quot;port&quot;: 7023
+  }
+}
+> get baz
+{
+  &quot;ok&quot;: true,
+  &quot;data&quot;: {
+    &quot;id&quot;: &quot;baz&quot;,
+    &quot;host&quot;: &quot;localhost&quot;,
+    &quot;port&quot;: 7024
+  }
+}
+
+// minsert is done forcefully
+> minsert --force bar localhost 7023 baz localhost 7024
+{
+  &quot;ok&quot;: true
+}
+> get bar
+{
+  &quot;ok&quot;: true,
+  &quot;data&quot;: {
+    &quot;id&quot;: &quot;bar&quot;,
+    &quot;host&quot;: &quot;localhost&quot;,
+    &quot;port&quot;: 7023
+  }
+}
+> get baz
+{
+  &quot;ok&quot;: true,
+  &quot;data&quot;: {
+    &quot;id&quot;: &quot;baz&quot;,
+    &quot;host&quot;: &quot;localhost&quot;,
+    &quot;port&quot;: 7024
+  }
+}</code></pre><p>For documentation on how the <code>--force</code> option works for this command, or any other option, just run <code>help minsert</code>.</p>
+<h5>update</h5><p>This command will tell the targeted node by this session to update a node in its cluster (as it currently views it) with a new insertion weight.<br>Subsequently, this information will be gossiped around the cluster, eventually resulting in every node thinking the input node belongs in the cluster.<br>For example:</p>
+<pre class="prettyprint source"><code>> update foo localhost 7022 4
+{
+  &quot;ok&quot;: true
+}
+> get bar
+{
+  &quot;ok&quot;: true,
+  &quot;data&quot;: {
+    &quot;id&quot;: &quot;foo&quot;,
+    &quot;host&quot;: &quot;localhost&quot;,
+    &quot;port&quot;: 7023
+  }
+}
+
+// update is done forcefully
+> update --force bar localhost 7022 4
+{
+  &quot;ok&quot;: true
+}
+> get bar
+{
+  &quot;ok&quot;: true,
+  &quot;data&quot;: {
+    &quot;id&quot;: &quot;foo&quot;,
+    &quot;host&quot;: &quot;localhost&quot;,
+    &quot;port&quot;: 7023
+  }
+}</code></pre><p>For documentation on how the <code>--force</code> option works for this command, or any other option, just run <code>help insert</code>.</p>
+<h5>remove</h5><p>This command will tell the targeted node by this session to remove a node from its cluster (as it currently views it).<br>Subsequently, this information will be gossiped around the cluster, eventually resulting in every node thinking the input node no longer belongs in the cluster.<br>For example:</p>
+<pre class="prettyprint source"><code>> remove bar localhost 7023
+{
+  &quot;ok&quot;: true
+}
+> has bar
+{
+  &quot;ok&quot;: true,
+  &quot;data&quot;: false
+}
+
+// remove is done forcefully
+> remove --force bar localhost 7023
+{
+  &quot;ok&quot;: true
+}
+> has bar
+{
+  &quot;ok&quot;: true,
+  &quot;data&quot;: false
+}</code></pre><p>For documentation on how the <code>--force</code> option works for this command, or any other option, just run <code>help remove</code>.</p>
+<h5>mremove</h5><p>This command will tell the targeted node by this session to remove multiple nodes from its cluster (as it currently views it).<br>Similar to how <code>remove</code> works, only it allows batch removal.<br>For example:</p>
+<pre class="prettyprint source"><code>> mremove bar localhost 7023 baz localhost 7024
+{
+  &quot;ok&quot;: true
+}
+> has bar
+{
+  &quot;ok&quot;: true,
+  &quot;data&quot;: false
+}
+> has baz
+{
+  &quot;ok&quot;: true,
+  &quot;data&quot;: false
+}
+
+// mremove is done forcefully
+> mremove --force bar localhost 7023 baz localhost 7024
+{
+  &quot;ok&quot;: true
+}
+> has bar
+{
+  &quot;ok&quot;: true,
+  &quot;data&quot;: false
+}
+> has baz
+{
+  &quot;ok&quot;: true,
+  &quot;data&quot;: false
+}</code></pre><p>For documentation on how the <code>--force</code> option works for this command, or any other option, just run <code>help mremove</code>.</p>
+<h4><a name="ConsistentHashRing"></a>Consistent Hash Ring</h4><p>Some helpful resources for learning about consistent hash rings:</p>
+<ul>
+<li><a href="https://en.wikipedia.org/wiki/Consistent_hashing">Wikipedia Entry</a></li>
+<li><a href="https://github.com/RJ/ketama">libketama</a>, which has a corresponding blog post, and an alternative way of implementing a consistent hash ring.</li>
+</ul>
+<p>From here, you can reference the documentation found on the github pages for the CHash class.</p>
+<h4><a name="VectorClocks"></a>Vector Clocks</h4><p>Some helpful resources for learning about vector clocks:</p>
+<ul>
+<li><a href="https://en.wikipedia.org/wiki/Vector_clock">Wikipedia Entry</a></li>
+<li><a href="http://basho.com/posts/technical/why-vector-clocks-are-easy/">Basho's Why Vector Clocks Are Easy</a></li>
+<li><a href="http://basho.com/posts/technical/why-vector-clocks-are-hard/">Basho's Why Vector Clocks Are Hard</a></li>
+<li><a href="http://docs.basho.com/riak/kv/2.2.1/learn/concepts/causal-context/">Riak Documentation</a></li>
+</ul>
+<p>From here, you can reference the documentation found on the github pages for the VectorClock class.</p>
+<h3><a name="TODO"></a>TODO</h3><p>In addition to what currently exists in this library, here's a list of features to possibly add:</p>
+<ul>
+<li>Provide listener for permanent close on connection between two nodes (<code>maxRetries</code> option on kernel creation).</li>
+<li>Add a GenStream class similar to GenServer, but strictly uses streams for communication instead of JS natives (will also require a protocol definition for indicating stream start, etc).</li>
+<li>Discuss making disconnects between nodes on a node departure forceful or not (it's forceful right now).</li>
+</ul></article>
+    </section>
+
+
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Clusterluck.CHash.html">CHash</a></li><li><a href="Clusterluck.ClusterNode.html">ClusterNode</a></li><li><a href="Clusterluck.Connection.html">Connection</a></li><li><a href="Clusterluck.DLMServer.html">DLMServer</a></li><li><a href="Clusterluck.DSMServer.html">DSMServer</a></li><li><a href="Clusterluck.DTable.html">DTable</a></li><li><a href="Clusterluck.GenServer.html">GenServer</a></li><li><a href="Clusterluck.GossipRing.html">GossipRing</a></li><li><a href="Clusterluck.Lock.html">Lock</a></li><li><a href="Clusterluck.MTable.html">MTable</a></li><li><a href="Clusterluck.NetKernel.html">NetKernel</a></li><li><a href="Clusterluck.Node.html">Node</a></li><li><a href="Clusterluck.Semaphore.html">Semaphore</a></li><li><a href="Clusterluck.VectorClock.html">VectorClock</a></li></ul><h3>Events</h3><ul><li><a href="Clusterluck.ClusterNode.html#event:ClusterNode:ready">ClusterNode:ready</a></li><li><a href="Clusterluck.ClusterNode.html#event:ClusterNode:stop">ClusterNode:stop</a></li><li><a href="Clusterluck.GenServer.html#event:GenServer:idle">GenServer:idle</a></li><li><a href="Clusterluck.GenServer.html#event:GenServer:pause">GenServer:pause</a></li><li><a href="Clusterluck.GenServer.html#event:GenServer:resume">GenServer:resume</a></li><li><a href="Clusterluck.GenServer.html#event:GenServer:stop">GenServer:stop</a></li><li><a href="Clusterluck.GenServer.html#event:GenServer:user_defined">GenServer:user_defined</a></li><li><a href="Clusterluck.GossipRing.html#event:GossipRing:close">GossipRing:close</a></li><li><a href="Clusterluck.GossipRing.html#event:GossipRing:conflict">GossipRing:conflict</a></li><li><a href="Clusterluck.GossipRing.html#event:GossipRing:flushing">GossipRing:flushing</a></li><li><a href="Clusterluck.GossipRing.html#event:GossipRing:leave">GossipRing:leave</a></li><li><a href="Clusterluck.GossipRing.html#event:GossipRing:process">GossipRing:process</a></li><li><a href="Clusterluck.GossipRing.html#event:GossipRing:ring">GossipRing:ring</a></li><li><a href="Clusterluck.GossipRing.html#event:GossipRing:send">GossipRing:send</a></li><li><a href="Clusterluck.NetKernel.html#event:NetKernel:_ready">NetKernel:_ready</a></li><li><a href="Clusterluck.NetKernel.html#event:NetKernel:_skip">NetKernel:_skip</a></li><li><a href="Clusterluck.NetKernel.html#event:NetKernel:_stop">NetKernel:_stop</a></li><li><a href="Clusterluck.NetKernel.html#event:NetKernel:user_defined">NetKernel:user_defined</a></li></ul><h3>Namespaces</h3><ul><li><a href="Clusterluck.html">Clusterluck</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Fri Oct 13 2017 19:09:12 GMT+0000 (UTC)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
