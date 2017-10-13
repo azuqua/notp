@@ -1,7 +1,6 @@
 var _ = require("lodash"),
     ipc = require("node-ipc"),
     os = require("os"),
-    util = require("util"),
     lib = require("./lib");
 
 var utils = lib.utils;
@@ -293,6 +292,8 @@ function createMTable() {
  * @param {Number} [opts.writeThreshold] - Write threshold of underlying DTable instance.
  * @param {Number} [opts.autoSave] - Autosave interval of underlying DTable instance.
  * @param {Number} [opts.fsyncInterval] - Fsync interval of underlying DTable instance.
+ * @param {Boolean} [opts.compress] - Whether to run RDB snapshot streams through a GZIP compression stream. Defaults to `false`.
+ * @param {String} [opts.name] - Name to start table with; can be used as a replacement for passing `name` to the start function. Required to be passed if you don't want a race condition between table loads and the idle interval that runs to trigger RDB snapshot logic. Defaults to `undefined`.
  *
  * @return {Clusterluck.DLMServer} A new generic server instance.
  *
@@ -324,6 +325,8 @@ function createDLM(cluster, opts) {
  * @param {Number} [opts.writeThreshold] - Write threshold of underlying DTable instance.
  * @param {Number} [opts.autoSave] - Autosave interval of underlying DTable instance.
  * @param {Number} [opts.fsyncInterval] - Fsync interval of underlying DTable instance.
+ * @param {Boolean} [opts.compress] - Whether to run RDB snapshot streams through a GZIP compression stream. Defaults to `false`.
+ * @param {String} [opts.name] - Name to start table with; can be used as a replacement for passing `name` to the start function. Required to be passed if you don't want a race condition between table loads and the idle interval that runs to trigger RDB snapshot logic. Defaults to `undefined`.
  *
  * @return {Clusterluck.DSMServer} A new generic server instance.
  *
