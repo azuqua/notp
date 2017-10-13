@@ -18,7 +18,11 @@ module.exports = function (mocks, lib) {
     });
 
     after(function (done) {
-      fs.unlink("./data/foo_LATEST.LOG", done);
+      async.parallel([
+        _.partial(fs.unlink, "./data/foo_LATEST.LOG"),
+        _.partial(fs.unlink, "./data/name_LATEST.LOG"),
+        _.partial(fs.unlink, "./data/bar_LATEST.LOG")
+      ], done);
     });
 
     it("Should construct a DTable", function () {
@@ -43,6 +47,16 @@ module.exports = function (mocks, lib) {
       assert.deepEqual(dtable._encodeFn, _.identity);
       assert.deepEqual(dtable._decodeFn, _.identity);
 
+      dtable = new DTable({
+        path: "./data",
+        name: "FOO"
+      });
+      assert.isString(dtable._name);
+      assert.isString(dtable._path);
+      assert.isString(dtable._tmpDumpPath);
+      assert.isString(dtable._aofPath);
+      assert.isString(dtable._tmpAOFPath);
+
       var out;
       try {
         dtable = new DTable();
@@ -55,6 +69,46 @@ module.exports = function (mocks, lib) {
     it("Should start dtable instance", function (done) {
       dtable.start("foo");
       dtable.once("open", () => {
+        assert.isString(dtable._id);
+        assert.isNumber(dtable._fd);
+        assert.ok(dtable._idleInterval);
+        assert.ok(dtable._syncInterval);
+        assert.ok(dtable._fstream);
+        done();
+      });
+    });
+
+    it("Should start dtable instance with name found in opts", function (done) {
+      dtable._name = "name";
+      dtable._path = "./data/name_DATA.SNAP";
+      dtable._tmpDumpPath = "./data/name_DATA_PREV.SNAP";
+      dtable._aofPath = "./data/name_LATEST.LOG";
+      dtable._tmpAOFPath = "./data/name_PREV.LOG";
+      dtable.start();
+      dtable.once("open", () => {
+        assert.equal(dtable._name, "name");
+        assert.isString(dtable._id);
+        assert.isNumber(dtable._fd);
+        assert.ok(dtable._idleInterval);
+        assert.ok(dtable._syncInterval);
+        assert.ok(dtable._fstream);
+        done();
+      });
+    });
+
+    it("Should start dtable instance, change name if not maching one found in optss", function (done) {
+      dtable._name = "name";
+      dtable._path = "./data/name_DATA.SNAP";
+      dtable._tmpDumpPath = "./data/name_DATA_PREV.SNAP";
+      dtable._aofPath = "./data/name_LATEST.LOG";
+      dtable._tmpAOFPath = "./data/name_PREV.LOG";
+      dtable.start("bar");
+      dtable.once("open", () => {
+        assert.equal(dtable._name, "bar");
+        assert.equal(dtable._path, "data/bar_DATA.SNAP");
+        assert.equal(dtable._tmpDumpPath, "data/bar_DATA_PREV.SNAP");
+        assert.equal(dtable._aofPath, "data/bar_LATEST.LOG");
+        assert.equal(dtable._tmpAOFPath, "data/bar_PREV.LOG");
         assert.isString(dtable._id);
         assert.isNumber(dtable._fd);
         assert.ok(dtable._idleInterval);
@@ -125,6 +179,11 @@ module.exports = function (mocks, lib) {
       assert.equal(dtable.compress(), false);
       dtable.compress(true);
       assert.equal(dtable.compress(), true);
+    });
+
+    it("Should return raw table for manual insertion", function () {
+      var table = dtable.raw();
+      assert.ok(_.isEqual(table, dtable._table));
     });
 
     it("Should get value in table", function () {
@@ -237,6 +296,15 @@ module.exports = function (mocks, lib) {
         key: "val",
         key2: "val2"
       });
+    });
+
+    it("Should only setup disk ops on 'start' if not already started", function () {
+      // set to anything other than null
+      dtable._idleInterval = "foo";
+      sinon.spy(dtable, "_setupDiskOps");
+      dtable._startDiskOps();
+      assert.notOk(dtable._setupDiskOps.called);
+      dtable._setupDiskOps.restore();
     });
 
     it("Should setup idle flush interval", function (done) {
