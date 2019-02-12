@@ -1,7 +1,7 @@
 DLM example
 ===========
 
-A distributed lock manager `gen_server` implementation for reference, using the [Redlock algorithm](https://redis.io/topics/distlock). May be added into clusterluck as an optional feature if there's community interest.
+A distributed lock manager `gen_server` implementation for reference, using the [Redlock algorithm](https://redis.io/topics/distlock). May be added into notp as an optional feature if there's community interest.
 
 Example Usage
 -------------
