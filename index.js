@@ -20,7 +20,7 @@ var consts = lib.consts;
  * @return {Clusterluck.CHash} A consistent hash ring instance.
  *
  * @example
- * let chash = clusterluck.createCHash(3, 2);
+ * let chash = notp.createCHash(3, 2);
  * assert.equal(chash.rfactor(), 3);
  * assert.equal(chash.pfactor(), 2);
  *
@@ -42,7 +42,7 @@ function createCHash(rfactor = 3, pfactor = 2) {
  * @return {Clusterluck.VectorClock} A vector clock instance.
  *
  * @example
- * let vclock = clusterluck.createVClock();
+ * let vclock = notp.createVClock();
  * assert.equal(vclock.size(), 0);
  * vclock = clutserluck.createVClock("id", 1);
  * assert.equal(vclock.size(), 1);
@@ -67,14 +67,14 @@ function createVClock(id, count) {
  * @param {Number} [opts.interval] - Interval to select a random node from the cluster and gossip the state of the ring with, with a granularity of milliseconds. Defaults to 1000.
  * @param {Number} [opts.flushInterval] - Interval to flush the state of the ring to disk, with a granularity of milliseconds. Defaults to 1000.
  * @param {String} [opts.flushPath] - Path string to flush the state of the ring to; if set to `null`, the gossip ring will just skip flushing state to disk. Defaults to `null`.
- * @param {Object} [opts.vclockOpts] - Vector clock options for trimming; occurs at the same interval as `interval`. Defaults to `clusterluck.consts.vclockOpts`.
+ * @param {Object} [opts.vclockOpts] - Vector clock options for trimming; occurs at the same interval as `interval`. Defaults to `notp.consts.vclockOpts`.
  * @param {Object} [opts.connOpts] - Connection options for when connecting to new nodes.
  *
  * @return {Clusterluck.GossipRing} A new gossip ring instance.
  *
  * @example
- * // initializes gossip ring with defaults found in `clusterluck.consts.gossipOpts`
- * let gossip = clusterluck.createGossip(kernel);
+ * // initializes gossip ring with defaults found in `notp.consts.gossipOpts`
+ * let gossip = notp.createGossip(kernel);
  * assert.equal(gossip.ring().rfactor(), 3);
  * assert.equal(gossip.ring().pfactor(), 2);
  * assert.deepEqual(gossip.kernel(), kernel);
@@ -108,7 +108,7 @@ function createGossip(kernel, opts) {
  * @return {Clusterluck.NetKernel} A new network kernel instance.
  *
  * @example
- * let kernel = clusterluck.createKernel("foo", "localhost", 7022);
+ * let kernel = notp.createKernel("foo", "localhost", 7022);
  * assert.equal(kernel.id(), "foo");
  * assert.equal(kernel.host(), "localhost");
  * assert.equal(kernel.port(), 7022);
@@ -140,7 +140,7 @@ function createKernel(id, host = os.hostname(), port = 7022, opts = {}) {
  * @return {Clusterluck.CommandServer} A new command server instance.
  *
  * @example
- * let comms = clusterluck.createCommServer(gossip, kernel);
+ * let comms = notp.createCommServer(gossip, kernel);
  * assert.deepEqual(comms.gossip(), gossip);
  * assert.deepEqual(comms.kernel(), kernel);
  *
@@ -166,7 +166,7 @@ function createCommServer(gossip, kernel) {
  * @return {Clusterluck.ClusterNode} A new cluster node instance.
  *
  * @example
- * let node = clusterluck.createCluster("foo", "localhost", 7022);
+ * let node = notp.createCluster("foo", "localhost", 7022);
  * assert.equal(node.kernel().id(), "foo");
  * assert.equal(node.kernel().host(), "localhost");
  * assert.equal(node.kernel().port(), 7022);
@@ -197,7 +197,7 @@ function createCluster(id, host = os.hostname(), port = 7022, opts = {}) {
  * @return {Clusterluck.GenServer} A new generic server instance.
  *
  * @example
- * let server = clusterluck.createGenServer(cluster);
+ * let server = notp.createGenServer(cluster);
  * // based on how messages are parsed, will operate on event 'command_name' sent by another actor to this node
  * server.on("command_name", handlerForCommand);
  * // will listen on server.kernel() for messages emitted on event 'foo'.
@@ -229,7 +229,7 @@ function createGenServer(cluster, opts) {
  * @return {Clusterluck.DTable} A new dtable instance.
  *
  * @example
- * let table = clusterluck.createDTable({
+ * let table = notp.createDTable({
  *   path: "/path/to/dir",
  *   writeThreshold: 100,
  *   autoSave: 180000,
@@ -238,7 +238,7 @@ function createGenServer(cluster, opts) {
  * table.start("foo");
  *
  * @example
- * let table = clusterluck.createDTable({
+ * let table = notp.createDTable({
  *   path: "/path/to/dir",
  *   writeThreshold: 100,
  *   autoSave: 180000,
@@ -266,7 +266,7 @@ function createDTable(opts) {
  * @return {Clusterluck.MTable} A new mtable instance.
  *
  * @example
- * let table = clusterluck.createMTable();
+ * let table = notp.createMTable();
  * table.start("foo");
  *
  */
@@ -298,7 +298,7 @@ function createMTable() {
  * @return {Clusterluck.DLMServer} A new generic server instance.
  *
  * @example
- * let server = clusterluck.createDLM(cluster, {disk: true, path: "/path/to/dir"});
+ * let server = notp.createDLM(cluster, {disk: true, path: "/path/to/dir"});
  * server.load((err) => {
  *   server.start("foo");
  * });
@@ -331,7 +331,7 @@ function createDLM(cluster, opts) {
  * @return {Clusterluck.DSMServer} A new generic server instance.
  *
  * @example
- * let server = clusterluck.createDSM(cluster, {disk: true, path: "/path/to/dir"});
+ * let server = notp.createDSM(cluster, {disk: true, path: "/path/to/dir"});
  * server.load((err) => {
  *   server.start("foo");
  * });
