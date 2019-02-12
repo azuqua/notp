@@ -2,7 +2,7 @@ var _ = require("lodash"),
     microtime = require("microtime"),
     cl = require("../../../index"),
     util = require("util"),
-    debug = require("debug")("clusterluck:examples:dlm");
+    debug = require("debug")("notp:examples:dlm");
 
 var GenServer = cl.GenServer;
 const mcsToMs = 1000;

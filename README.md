@@ -1,17 +1,17 @@
 Clusterluck
 ===========
 
-[![Build Status](https://travis-ci.org/azuqua/clusterluck.svg?branch=master)](https://travis-ci.org/azuqua/clusterluck)
-[![Code Coverage](https://coveralls.io/repos/github/azuqua/clusterluck/badge.svg?branch=master)](https://coveralls.io/github/azuqua/clusterluck?branch=master)
+[![Build Status](https://travis-ci.org/azuqua/notp.svg?branch=master)](https://travis-ci.org/azuqua/notp)
+[![Code Coverage](https://coveralls.io/repos/github/azuqua/notp/badge.svg?branch=master)](https://coveralls.io/github/azuqua/notp?branch=master)
 
-[Documentation](https://azuqua.github.io/clusterluck)
+[Documentation](https://azuqua.github.io/notp)
 
 A library for writing distributed systems that use a gossip protocol to communicate state management, consistent hash rings for sharding, and vector clocks for history.
 
 ## Install
 
 ```
-$ npm install clusterluck
+$ npm install notp
 ```
 
 ## Dependencies
@@ -77,7 +77,7 @@ Clusterluck can be used as a module to write decentralized distributed systems w
 
 To get started, we can use the following code:
 ```javascript
-const cl = require("clusterluck");
+const cl = require("notp");
 
 let node = cl.createCluster("foo", "localhost", 7022);
 node.start("cookie", "ring", () => {
@@ -137,7 +137,7 @@ For documentation on available methods/inputs for cluster manipulation, visit th
 In an example.js file, insert the following:
 
 ```javascript
-const cl = require("clusterluck"),
+const cl = require("notp"),
       os = require("os");
 
 let id = process.argv[2],
@@ -170,7 +170,7 @@ If we then go to inspect the ring on each node, we should see both node `foo` an
 #### <a name="WritingGenServers"></a>Writing GenServers
 
 The `GenServer` class is used to create actors that send messages around and receive messages from the rest of the cluster.
-They're the basic unit of logic handling in clusterluck, and heavily derived off of Erlang's gen_server's, but incorporated into node.js' EventEmitter model.
+They're the basic unit of logic handling in notp, and heavily derived off of Erlang's gen_server's, but incorporated into node.js' EventEmitter model.
 To start a `GenServer` with no event handling, we can use the following code:
 
 ```javascript

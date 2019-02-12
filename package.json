@@ -1,5 +1,5 @@
 {
-  "name": "clusterluck",
+  "name": "notp",
   "version": "2.0.0",
   "description": "Distributed systems library for gossip protocols, consistent hash rings, and vector clocks.",
   "main": "index.js",
@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/azuqua/clusterluck.git"
+    "url": "https://github.com/azuqua/notp.git"
   },
   "engines": {
     "node": ">=6.9.1"
@@ -17,7 +17,7 @@
   "author": "Kevin Wilson <kevinw@azuqua.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/azuqua/clusterluck/issues"
+    "url": "https://github.com/azuqua/notp/issues"
   },
   "keywords": [
     "consistent hashing",
@@ -34,7 +34,7 @@
   "bin": {
     "ncl": "./bin/cli.js"
   },
-  "homepage": "https://github.com/azuqua/clusterluck",
+  "homepage": "https://github.com/azuqua/notp",
   "dependencies": {
     "async": "^1.5.2",
     "debug": "^2.2.0",
